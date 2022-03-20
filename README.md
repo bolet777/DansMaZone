@@ -1,12 +1,15 @@
-Amazon-Killer
-=============
+MaZoneLocale from Amazon-Killer
+=======================================
 
-Extension Chrome et Firefox pour chercher un livre sur Amazon et l'acheter dans une vraie librairie.
-L'extension récupère le numéro ISBN du livre que vous regardez et le cherche dans plusieurs bases de données de librairies indépendantes.
+Extension Chrome pour trouver à partir d'une recherche dans Amazon des livres ou des produits chez des marchands locaux au Québec.
+Cette extension est basée sur Amazon Killer mais a été adaptée pour le Québec.
 
-Pour installer l'extension 
+Elle inclut en l'occurence une direction vers le site Les libraires et Panier Bleu.
 
-sur chrome : https://chrome.google.com/webstore/detail/amazon-killer/jndbieelpiaihakdaflepdbamcllgobd
-sur firefox : https://addons.mozilla.org/fr/firefox/addon/amazon-killer-/
+Pour installer l'extension :
+  - sur chrome : https://chrome.google.com/webstore/detail/ma-zone-locale/fpcpekagfnicnnmichpafmbihcpmbibg
+  - sur firefox : pas encore faite
 
-Pour voir une démo : https://www.youtube.com/watch?v=FZnEB1jMS3o
+Pour voir une démo de AmazonKiller : https://www.youtube.com/watch?v=FZnEB1jMS3o
+
+La version originale de AmazonKiller sur Github est disponible ici : https://github.com/elliotlepers/Amazon-Killer
