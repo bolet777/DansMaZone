@@ -1,11 +1,11 @@
 {
   "extensionName": {
-    "message": "Amazon killer",
+    "message": "Ma Zone Locale",
     "description": "Name of the extension."
   },
 
   "extensionDescription": {
-    "message": "Chrome and Firefox extension to search for a book on Amazon and buy it in a real bookstore.",
+    "message": "Chrome and Firefox extension to search for a product on Amazon and buy it on Panier Bleu.",
     "description": "Description of the extension."
   },
 

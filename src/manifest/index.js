@@ -17,19 +17,19 @@ const manifestInput = {
   },
 
   description: '__MSG_extensionDescription__',
-  homepage_url: 'https://github.com/lowwebtech/webextension-starter',
-  short_name: 'amazon-killer',
+  homepage_url: 'https://github.com/bolet777/MaZoneLocale',
+  short_name: 'mazonelocale',
 
-  permissions: ['storage', 'tabs', 'webNavigation', 'webRequest', 'webRequestBlocking', '<all_urls>'],
+  // permissions: ['storage', 'tabs', 'webNavigation', 'webRequest', 'webRequestBlocking', '<all_urls>'],
   content_security_policy: csp,
 
-  '__chrome|firefox__author': 'lowwebtech',
+  '__chrome|firefox__author': 'bolet',
   __opera__developer: {
-    name: 'lowwebtech',
+    name: 'bolet',
   },
 
   __firefox__applications: {
-    gecko: { id: 'hello@amazonkiller.org' },
+    gecko: { id: 'ccosenza.dlab@gmail.com' },
   },
 
   __chrome__minimum_chrome_version: '49',
@@ -37,7 +37,7 @@ const manifestInput = {
 
   // browser_action: {
   //   browser_style: true,
-  //   default_title: 'amazon-killer',
+  //   default_title: 'MaZoneLocale',
   //   default_popup: 'popup/popup.html',
   //   default_icon: {
   //     32: 'icons/favicon-32.png',
