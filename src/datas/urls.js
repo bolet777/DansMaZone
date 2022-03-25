@@ -118,11 +118,17 @@ export const urls = [
   },
 
   // CA //////////////////
+  // CA //////////////////
   {
-    lang: ['en-ca', 'fr-ca'],
+    lang: ['en-ca'],
     name: 'Local Canadian bookstores',
     featured: true,
     url: 'https://www.penguinrandomhouse.ca/canadian-independent-bookstores-delivery',
+  },
+  {
+    lang: ['fr-ca'],
+    name: 'Librairies Locales Québécoises',
+    url: 'https://www.leslibraires.ca/recherche/?i==##ISBN##',
   },
 
   // ES //////////////////

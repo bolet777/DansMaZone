@@ -23,7 +23,7 @@ function start() {
     const randomUrl = urlsLang[parseInt(urlsLang.length * Math.random())];
     const url = formatUrl(randomUrl.url);
     const text = browser.i18n.getMessage('buttonText');
-    const icon = browser.runtime.getURL('images/icon-store.png');
+    const icon = browser.runtime.getURL('images/icon-libraires.png');
 
     let buttons = `
       <a href="${url}" target="_blank" style="display:block; line-height:30px">
@@ -55,7 +55,7 @@ function start() {
 
     const url = 'https://www.lepanierbleu.ca/produits?keyword=' + product;
     const text = 'Acheter sur Panier Bleu';
-    const icon = browser.runtime.getURL('images/icon-store.png');
+    const icon = browser.runtime.getURL('images/icon-panierbleu.png');
 
     const buttons = `
       <a href="${url}" target="_blank" style="display:block; line-height:30px">
