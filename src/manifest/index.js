@@ -1,14 +1,50 @@
-const pkg = require('../../package.json');
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-let csp = "script-src 'self'; object-src 'self'";
-if (process.env.NODE_ENV === 'development') csp = "script-src 'self' 'unsafe-eval'; object-src 'self'";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Lire package.json
+const pkg = JSON.parse(readFileSync(path.join(__dirname, '../../package.json')));
+
+// CSP est géré différemment dans V3
+const developmentCSP = {
+  extension_pages: "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
+};
+
+const productionCSP = {
+  extension_pages: "script-src 'self'; object-src 'self'",
+};
 
 const manifestInput = {
-  manifest_version: 2,
+  manifest_version: 3,
   name: '__MSG_extensionName__',
   version: pkg.version,
   default_locale: 'fr',
-  web_accessible_resources: ['icons/*', 'images/*'],
+
+  // Web Accessible Resources nécessite une structure différente en V3
+  web_accessible_resources: [
+    {
+      resources: ['icons/*', 'images/*'],
+      matches: [
+        '*://*.amazon.fr/*',
+        '*://*.amazon.com/*',
+        '*://*.amazon.co.uk/*',
+        '*://*.amazon.com.mx/*',
+        '*://*.amazon.co.jp/*',
+        '*://*.amazon.it/*',
+        '*://*.amazon.in/*',
+        '*://*.amazon.es/*',
+        '*://*.amazon.cn/*',
+        '*://*.amazon.ca/*',
+        '*://*.amazon.com.br/*',
+        '*://*.amazon.de/*',
+        '*://*.amazon.com.au/*',
+      ],
+    },
+  ],
+
   icons: {
     32: 'icons/favicon-48.png',
     48: 'icons/favicon-48.png',
@@ -20,48 +56,47 @@ const manifestInput = {
   homepage_url: 'https://github.com/bolet777/MaZoneLocale',
   short_name: 'mazonelocale',
 
-  // permissions: ['storage', 'tabs', 'webNavigation', 'webRequest', 'webRequestBlocking', '<all_urls>'],
-  content_security_policy: csp,
+  // Permissions séparées en V3
+  permissions: ['storage', 'scripting'],
 
-  '__chrome|firefox__author': 'bolet',
-  __opera__developer: {
-    name: 'bolet',
+  // Host permissions doivent être déclarées séparément
+  host_permissions: [
+    '*://*.amazon.fr/*',
+    '*://*.amazon.com/*',
+    '*://*.amazon.co.uk/*',
+    '*://*.amazon.com.mx/*',
+    '*://*.amazon.co.jp/*',
+    '*://*.amazon.it/*',
+    '*://*.amazon.in/*',
+    '*://*.amazon.es/*',
+    '*://*.amazon.cn/*',
+    '*://*.amazon.ca/*',
+    '*://*.amazon.com.br/*',
+    '*://*.amazon.de/*',
+    '*://*.amazon.com.au/*',
+  ],
+
+  // Content Security Policy V3
+  content_security_policy: process.env.NODE_ENV === 'development' ? developmentCSP : productionCSP,
+
+  // Action remplace browser_action en V3
+  action: {
+    default_title: 'MaZoneLocale',
+    default_icon: {
+      32: 'icons/favicon-32.png',
+      48: 'icons/favicon-48.png',
+      96: 'icons/favicon-96.png',
+      128: 'icons/favicon-128.png',
+    },
   },
 
-  __firefox__applications: {
-    gecko: { id: 'ccosenza.dlab@gmail.com' },
-  },
-
-  __chrome__minimum_chrome_version: '49',
-  __opera__minimum_opera_version: '36',
-
-  // browser_action: {
-  //   browser_style: true,
-  //   default_title: 'MaZoneLocale',
-  //   default_popup: 'popup/popup.html',
-  //   default_icon: {
-  //     32: 'icons/favicon-32.png',
-  //     48: 'icons/favicon-48.png',
-  //     96: 'icons/favicon-96.png',
-  //     128: 'icons/favicon-128.png',
-  //   },
-  //   '__chrome|opera__chrome_style': false,
-  //   __firefox__browser_style: false,
-  // },
-
-  // '__chrome|opera__options_page': 'options/options.html',
-
-  // options_ui: {
-  //   page: 'options/options.html',
-  //   open_in_tab: true,
-  //   __chrome__chrome_style: true,
-  // },
-
+  // Background en V3 utilise service_worker
   background: {
-    scripts: ['background.js'],
-    '__chrome|opera__persistent': true,
+    service_worker: 'background.js',
+    type: 'module',
   },
 
+  // Content scripts restent similaires
   content_scripts: [
     {
       matches: [
@@ -85,6 +120,26 @@ const manifestInput = {
       all_frames: false,
     },
   ],
+
+  // Déclaration conditionnelle des propriétés spécifiques aux navigateurs
+  ...(process.env.TARGET === 'firefox' && {
+    browser_specific_settings: {
+      gecko: {
+        id: 'ccosenza.dlab@gmail.com',
+      },
+    },
+  }),
+
+  ...(process.env.TARGET === 'chrome' && {
+    minimum_chrome_version: '88',
+  }),
+
+  ...(process.env.TARGET === 'opera' && {
+    minimum_opera_version: '74',
+    developer: {
+      name: 'bolet',
+    },
+  }),
 };
 
-module.exports = manifestInput;
+export default manifestInput;

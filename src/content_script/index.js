@@ -1,26 +1,28 @@
-/* eslint-disable import/first, indent */
-global.browser = require('webextension-polyfill');
-
+import browser from 'webextension-polyfill';
 import '../styles/content_script.scss';
 import { getSupportedLanguages, urls } from '../datas/urls.js';
 
-let ISBN, language, product;
+let ISBN;
+let language;
+let product;
+
 const supportedLanguages = getSupportedLanguages();
 
 function start() {
-  // const productTitle = document.getElementById('productTitle').innerHTML;
   ISBN = getISBN();
   language = getLanguage();
-  product = getProductType();
-  console.log('language', language);
-  console.log('ISBN', ISBN);
-  console.log('Product', product);
+  const productDetails = getProductDetails(); // Nouvelle fonction que vous avez ajoutée
+  console.info('language', language);
+  console.info('ISBN', ISBN);
+  console.info('Product Details', productDetails);
+
   if (ISBN && language) {
+    // Code existant pour les livres reste inchangé
     const buttonEl = document.createElement('div');
     buttonEl.classList.add('a-button-stack', 'a-button-stack-local');
 
     const urlsLang = getUrls();
-    const randomUrl = urlsLang[parseInt(urlsLang.length * Math.random())];
+    const randomUrl = urlsLang[Number.parseInt(urlsLang.length * Math.random())];
     const url = formatUrl(randomUrl.url);
     const text = browser.i18n.getMessage('buttonText');
     const icon = browser.runtime.getURL('images/icon-libraires.png');
@@ -36,25 +38,22 @@ function start() {
       </a>
     `;
 
-    console.log(urlsLang);
+    console.info(urlsLang);
     for (let i = 0, lg = urlsLang.length; i < lg; i++) {
       const link = urlsLang[i];
       buttons += getLink(link);
     }
 
     buttonEl.innerHTML = buttons;
-
-    // const container = document.querySelector('#buybox .a-box-inner');
     const container = document.querySelector('#rightCol .a-button-stack').parentNode;
-    // const container = document.querySelector('#bbopAndCartBox');
-    // container.innerHTML = '';
     container.append(buttonEl);
-  } else if (product) {
+  } else if (productDetails) { // Remplacer product par productDetails
     const buttonEl = document.createElement('div');
     buttonEl.classList.add('a-button-stack', 'a-button-stack-local');
 
-    const url = 'https://www.lepanierbleu.ca/produits?keyword=' + product;
-    const text = 'Acheter sur Panier Bleu';
+    // Nouvelle URL pour Canadian Tire
+    const url = `https://www.canadiantire.ca/fr/resultats-de-recherche.html?q=${encodeURIComponent(productDetails)}`;
+    const text = 'Acheter sur Canadian Tire';
     const icon = browser.runtime.getURL('images/icon-panierbleu.png');
 
     const buttons = `
@@ -68,24 +67,15 @@ function start() {
       </a>
     `;
 
-    // const urlName = 'Panier·Bleu';
-    // const link = `<a href="${url}">${urlName}</a><br>`;
-    // console.log('Link', link);
-    // buttons += link;
-
     buttonEl.innerHTML = buttons;
-
-    // const container = document.querySelector('#buybox .a-box-inner');
     const container = document.querySelector('#rightCol .a-button-stack').parentNode;
-    // const container = document.querySelector('#bbopAndCartBox');
-    // container.innerHTML = '';
     container.append(buttonEl);
   }
 }
 
 function getLanguage() {
   const hrefLang = document.documentElement.lang;
-  console.log(hrefLang);
+  console.info(hrefLang);
 
   for (let i = 0, lg = supportedLanguages.length; i < lg; i++) {
     if (hrefLang.indexOf(supportedLanguages[i]) !== -1) {
@@ -97,45 +87,102 @@ function getLanguage() {
 }
 
 function getISBN() {
-  const bulletSpans = document.querySelectorAll('#detailBullets_feature_div li span.a-list-item');
-  for (let i = 0; i < bulletSpans.length; ++i) {
-    if (bulletSpans[i].innerText && bulletSpans[i].innerText.indexOf('ISBN-13') !== -1) {
-      return bulletSpans[i].querySelector('span:last-child').innerText.replace('-', '');
+  const detailBullets = document.getElementById('detailBullets_feature_div');
+  if (detailBullets) {
+    const listItems = detailBullets.querySelectorAll('li span.a-list-item');
+    for (const item of listItems) {
+      const boldText = item.querySelector('span.a-text-bold');
+      if (boldText && boldText.textContent.includes('ISBN-13')) {
+        const isbnSpan = item.querySelector('span:not(.a-text-bold)');
+        if (isbnSpan) {
+          return isbnSpan.textContent.trim().replace(/-/g, '');
+        }
+      }
     }
   }
+  return null;
 }
 
 function getProductType() {
-  var value = ' ';
-  // Get the breadCrumbs value
-  const breadCrumbs = document.querySelectorAll('#wayfinding-breadcrumbs_feature_div li span.a-list-item');
-  console.log('breadCrumbs', breadCrumbs);
+  let value = ' ';
+  const breadCrumbs = document.querySelectorAll(
+    '#wayfinding-breadcrumbs_feature_div li span.a-list-item',
+  );
+
   if (breadCrumbs.length >= 3) {
-    value = breadCrumbs[breadCrumbs.length - 1].innerText + ' ';
+    value = `${breadCrumbs[breadCrumbs.length - 1].innerText} `;
   }
-  // Get the Product title value
+
   const title = document.querySelector('#productTitle').innerText;
-  console.log('Title', title);
-  var titles = title.split(' ');
+  const titles = title.split(' ');
+
   if (titles.length >= 4) {
-    value += titles[0] + ' ' + titles[1] + ' ' + titles[2] + ' ' + titles[3];
+    value += `${titles[0]} ${titles[1]} ${titles[2]} ${titles[3]}`;
   } else {
     value += title.substring(0, 20);
   }
-  // return bulletSpans[bulletSpans.length - 1].innerText;
+
   return value;
+}
+
+function getProductDetails() {
+  const detailBullets = document.getElementById('detailBullets_feature_div');
+  const details = {
+    manufacturer: null,
+    modelNumber: null,
+    productName: null
+  };
+
+  // Récupérer le nom du produit
+  const titleElement = document.getElementById('productTitle');
+  if (titleElement) {
+    details.productName = titleElement.textContent.trim();
+  }
+
+  if (detailBullets) {
+    const listItems = detailBullets.querySelectorAll('li span.a-list-item');
+    for (const item of listItems) {
+      const label = item.querySelector('span.a-text-bold');
+      const value = item.querySelector('span:not(.a-text-bold)');
+      
+      if (label && value) {
+        const labelText = label.textContent.trim();
+        const valueText = value.textContent.trim();
+
+        if (labelText.includes('Fabricant')) {
+          details.manufacturer = valueText;
+        }
+        if (labelText.includes('Numéro de modèle')) {
+          details.modelNumber = valueText;
+        }
+      }
+    }
+  }
+
+  // Construire une description de recherche
+  let searchQuery = '';
+  if (details.manufacturer) {
+    searchQuery += details.manufacturer + ' ';
+  }
+  if (details.productName) {
+    // Prendre les 4-5 premiers mots significatifs
+    const words = details.productName.split(' ').slice(0, 5);
+    searchQuery += words.join(' ');
+  }
+
+  return searchQuery.trim();
 }
 
 function getUrls() {
   const urlsLang = [];
   for (let i = 0, lg = urls.length; i < lg; i++) {
-    // console.log(urls[i].lang, urls[i].lang.indexOf(language));
+    // console.info(urls[i].lang, urls[i].lang.indexOf(language));
     if (urls[i].lang.indexOf(language) !== -1) {
-      // console.log(urls[i]);
+      // console.info(urls[i]);
       urlsLang.push(urls[i]);
     }
   }
-  // console.log(urlsLang);
+  // console.info(urlsLang);
   return urlsLang;
 }
 

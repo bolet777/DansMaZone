@@ -9,7 +9,7 @@ export function getSupportedLanguages() {
     supportedLanguages = supportedLanguages.concat(urls[i].lang);
   }
   supportedLanguages = arrayUnique(supportedLanguages);
-  console.log(supportedLanguages);
+  console.info(supportedLanguages); // ou supprimer si c'est juste du debug
   return supportedLanguages;
 }
 
@@ -128,7 +128,7 @@ export const urls = [
   {
     lang: ['fr-ca'],
     name: 'Librairies Locales Québécoises',
-    url: 'https://www.leslibraires.ca/recherche/?i==##ISBN##',
+    url: 'https://www.leslibraires.ca/recherche/?s=##ISBN##',
   },
 
   // ES //////////////////
@@ -157,9 +157,12 @@ export const urls = [
 ];
 
 function arrayUnique(array) {
-  var a = array.concat();
-  for (var i = 0; i < a.length; ++i) {
-    for (var j = i + 1; j < a.length; ++j) {
+  let i;
+  let j;
+  const a = array.concat();
+
+  for (i = 0; i < a.length; ++i) {
+    for (j = i + 1; j < a.length; ++j) {
       if (a[i] === a[j]) a.splice(j--, 1);
     }
   }

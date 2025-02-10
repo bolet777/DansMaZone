@@ -1,17 +1,42 @@
-const webpack = require('webpack');
-const ejs = require('ejs');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtensionReloader = require('webpack-extension-reloader');
-const { version } = require('./package.json');
-const path = require('path');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const wextManifest = require('wext-manifest');
-const WriteWebpackPlugin = require('write-webpack-plugin');
-const manifestInput = require('./src/manifest');
+import webpack from 'webpack';
+import ejs from 'ejs';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import ExtReloader from 'webpack-ext-reloader';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import WriteWebpackPlugin from 'write-webpack-plugin';
+import manifestInput from './src/manifest/index.js';
+import * as sass from 'sass';
 
-const targetBrowser = process.env.TARGET_BROWSER;
-const manifest = wextManifest[targetBrowser](manifestInput);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const targetBrowser = process.env.TARGET || 'chrome';
+
+function processManifest(manifest, browser) {
+  const processed = { ...manifest };
+  
+  if (browser === 'firefox') {
+    processed.browser_specific_settings = {
+      gecko: { id: 'ccosenza.dlab@gmail.com' }
+    };
+  }
+  
+  if (browser === 'chrome') {
+    processed.minimum_chrome_version = '88';
+  }
+  
+  if (browser === 'opera') {
+    processed.minimum_opera_version = '74';
+    processed.developer = { name: 'bolet' };
+  }
+  
+  return processed;
+}
+
+const finalManifest = processManifest(manifestInput, targetBrowser);
 
 const config = {
   mode: process.env.NODE_ENV,
@@ -19,15 +44,25 @@ const config = {
   entry: {
     'background': './background_script/index.js',
     'content_script': './content_script/index.js',
-    // 'popup/popup': './popup/popup.js',
-    // 'options/options': './options/options.js',
   },
   output: {
     path: path.join(__dirname, 'dist', targetBrowser),
     filename: '[name].js',
-
-    // path: __dirname + '/dist',
-    // filename: '[name].js',
+  },
+  optimization: {
+    moduleIds: 'deterministic',
+  },
+  stats: {
+    warnings: false,
+  },
+  performance: {
+    hints: false,
+  },
+  infrastructureLogging: {
+    level: 'error', // Réduit les logs
+  },
+  experiments: {
+    topLevelAwait: true,
   },
   resolve: {
     extensions: ['.js'],
@@ -37,11 +72,12 @@ const config = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'eslint-loader',
-        options: {
-          configFile: '.eslintrc.js',
-          // eslint options (if necessary)
-        },
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
       },
       {
         test: /\.css$/,
@@ -49,7 +85,19 @@ const config = {
       },
       {
         test: /\.scss$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: sass,
+              sassOptions: {
+                outputStyle: 'compressed',
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.sass$/,
@@ -61,29 +109,31 @@ const config = {
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg|ico)$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          outputPath: '/images/',
-          emitFile: false,
-        },
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]'
+        }
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          outputPath: '/fonts/',
-          emitFile: false,
-        },
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]'
+        }
       },
     ],
   },
   plugins: [
+    new webpack.ids.HashedModuleIdsPlugin(),
     new webpack.DefinePlugin({
       global: 'window',
     }),
-    new WriteWebpackPlugin([{ name: manifest.name, data: Buffer.from(manifest.content) }]),
+    new WriteWebpackPlugin([
+      {
+        name: 'manifest.json',
+        data: Buffer.from(JSON.stringify(finalManifest, null, 2))
+      }
+    ]),
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
@@ -114,8 +164,14 @@ if (config.mode === 'production') {
 
 if (process.env.HMR === 'true') {
   config.plugins = (config.plugins || []).concat([
-    new ExtensionReloader({
-      manifest: `${__dirname}/dist/${process.env.TARGET_BROWSER}/manifest.json`,
+    new ExtReloader({
+      manifest: path.resolve(__dirname, `dist/${targetBrowser}/manifest.json`),
+      port: 9090,
+      reloadPage: true,
+      entries: {
+        background: 'background',
+        contentScript: 'content_script'
+      }
     }),
   ]);
 }
@@ -126,4 +182,4 @@ function transformHtml(content) {
   });
 }
 
-module.exports = config;
+export default config;

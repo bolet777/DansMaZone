@@ -15,7 +15,7 @@
 //   //       .then(checkStatus)
 //   //       .then(parseTXT)
 //   //       .then((data) => setAsset(data, asset))
-//   //       .catch((error) => console.log('There was a problem!', error))
+//   //       .catch((error) => console.info('There was a problem!', error))
 //   //   )
 //   // )
 //   //   .then(() => installedPage(details))
