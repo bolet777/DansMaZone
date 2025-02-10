@@ -1,90 +1,6 @@
 import browser from 'webextension-polyfill';
 import '../styles/content_script.scss';
-import { getSupportedLanguages, urls } from '../datas/urls.js';
-
-let ISBN;
-let language;
-let product;
-
-const supportedLanguages = getSupportedLanguages();
-
-function start() {
-  ISBN = getISBN();
-  language = getLanguage();
-  const productDetails = getProductDetails(); // Nouvelle fonction que vous avez ajoutée
-  console.info('language', language);
-  console.info('ISBN', ISBN);
-  console.info('Product Details', productDetails);
-
-  if (ISBN && language) {
-    // Code existant pour les livres reste inchangé
-    const buttonEl = document.createElement('div');
-    buttonEl.classList.add('a-button-stack', 'a-button-stack-local');
-
-    const urlsLang = getUrls();
-    const randomUrl = urlsLang[Number.parseInt(urlsLang.length * Math.random())];
-    const url = formatUrl(randomUrl.url);
-    const text = browser.i18n.getMessage('buttonText');
-    const icon = browser.runtime.getURL('images/icon-libraires.png');
-
-    let buttons = `
-      <a href="${url}" target="_blank" style="display:block; line-height:30px">
-        <span class="a-button a-spacing-small a-button-primary a-button-icon">
-          <span class="a-button-inner">
-            <i class="a-icon a-icon-local"><img src="${icon}" /></i>
-            ${text}
-          </span>
-        </span>
-      </a>
-    `;
-
-    console.info(urlsLang);
-    for (let i = 0, lg = urlsLang.length; i < lg; i++) {
-      const link = urlsLang[i];
-      buttons += getLink(link);
-    }
-
-    buttonEl.innerHTML = buttons;
-    const container = document.querySelector('#rightCol .a-button-stack').parentNode;
-    container.append(buttonEl);
-  } else if (productDetails) { // Remplacer product par productDetails
-    const buttonEl = document.createElement('div');
-    buttonEl.classList.add('a-button-stack', 'a-button-stack-local');
-
-    // Nouvelle URL pour Canadian Tire
-    const url = `https://www.canadiantire.ca/fr/resultats-de-recherche.html?q=${encodeURIComponent(productDetails)}`;
-    const text = 'Acheter sur Canadian Tire';
-    const icon = browser.runtime.getURL('images/icon-panierbleu.png');
-
-    const buttons = `
-      <a href="${url}" target="_blank" style="display:block; line-height:30px">
-        <span class="a-button a-spacing-small a-button-primary a-button-icon">
-          <span class="a-button-inner">
-            <i class="a-icon a-icon-local"><img src="${icon}" /></i>
-            ${text}
-          </span>
-        </span>
-      </a>
-    `;
-
-    buttonEl.innerHTML = buttons;
-    const container = document.querySelector('#rightCol .a-button-stack').parentNode;
-    container.append(buttonEl);
-  }
-}
-
-function getLanguage() {
-  const hrefLang = document.documentElement.lang;
-  console.info(hrefLang);
-
-  for (let i = 0, lg = supportedLanguages.length; i < lg; i++) {
-    if (hrefLang.indexOf(supportedLanguages[i]) !== -1) {
-      return supportedLanguages[i];
-    }
-  }
-
-  return null;
-}
+import { categorySites } from '../datas/category-sites.js';
 
 function getISBN() {
   const detailBullets = document.getElementById('detailBullets_feature_div');
@@ -103,33 +19,35 @@ function getISBN() {
   return null;
 }
 
-function getProductType() {
-  let value = ' ';
-  const breadCrumbs = document.querySelectorAll(
-    '#wayfinding-breadcrumbs_feature_div li span.a-list-item',
-  );
-
-  if (breadCrumbs.length >= 3) {
-    value = `${breadCrumbs[breadCrumbs.length - 1].innerText} `;
+function getProductCategory() {
+  // Via le fil d'Ariane
+  const breadcrumbs = document.querySelectorAll('#wayfinding-breadcrumbs_feature_div li span.a-list-item');
+  if (breadcrumbs.length > 0) {
+    const categories = Array.from(breadcrumbs)
+      .map(item => item.textContent.trim())
+      .filter(text => 
+        text && 
+        text !== '›' && 
+        !text.includes('retour') &&
+        !text.includes('Retour')
+      )
+      .slice(0, 2);
+    
+    if (categories.length > 0) {
+      return categories
+        .join('/')
+        .replace(/\s+/g, ' ')
+        .replace(/[›\\/]+/g, '/')
+        .replace(/^\W+|\W+$/g, '')
+        .trim();
+    }
   }
-
-  const title = document.querySelector('#productTitle').innerText;
-  const titles = title.split(' ');
-
-  if (titles.length >= 4) {
-    value += `${titles[0]} ${titles[1]} ${titles[2]} ${titles[3]}`;
-  } else {
-    value += title.substring(0, 20);
-  }
-
-  return value;
+  return 'Unknown';
 }
 
 function getProductDetails() {
-  const detailBullets = document.getElementById('detailBullets_feature_div');
   const details = {
     manufacturer: null,
-    modelNumber: null,
     productName: null
   };
 
@@ -139,6 +57,8 @@ function getProductDetails() {
     details.productName = titleElement.textContent.trim();
   }
 
+  // Récupérer le fabricant
+  const detailBullets = document.getElementById('detailBullets_feature_div');
   if (detailBullets) {
     const listItems = detailBullets.querySelectorAll('li span.a-list-item');
     for (const item of listItems) {
@@ -147,13 +67,8 @@ function getProductDetails() {
       
       if (label && value) {
         const labelText = label.textContent.trim();
-        const valueText = value.textContent.trim();
-
         if (labelText.includes('Fabricant')) {
-          details.manufacturer = valueText;
-        }
-        if (labelText.includes('Numéro de modèle')) {
-          details.modelNumber = valueText;
+          details.manufacturer = value.textContent.trim();
         }
       }
     }
@@ -165,7 +80,6 @@ function getProductDetails() {
     searchQuery += details.manufacturer + ' ';
   }
   if (details.productName) {
-    // Prendre les 4-5 premiers mots significatifs
     const words = details.productName.split(' ').slice(0, 5);
     searchQuery += words.join(' ');
   }
@@ -173,25 +87,86 @@ function getProductDetails() {
   return searchQuery.trim();
 }
 
-function getUrls() {
-  const urlsLang = [];
-  for (let i = 0, lg = urls.length; i < lg; i++) {
-    // console.info(urls[i].lang, urls[i].lang.indexOf(language));
-    if (urls[i].lang.indexOf(language) !== -1) {
-      // console.info(urls[i]);
-      urlsLang.push(urls[i]);
+// Dans la fonction addLinkButtons
+function addLinkButtons(sites, searchTerm, container) {
+  const buttonEl = document.createElement('div');
+  buttonEl.classList.add('a-button-stack', 'a-button-stack-local');
+
+  // Premier site comme bouton principal
+  const mainSite = sites[0];
+  const mainUrl = mainSite.url
+    .replace('##QUERY##', encodeURIComponent(searchTerm))
+    .replace('##ISBN##', searchTerm);
+  
+  let buttons = `
+    <a href="${mainUrl}" target="_blank" style="display:block; line-height:30px">
+      <span class="a-button a-spacing-small a-button-primary a-button-icon">
+        <span class="a-button-inner">
+          <i class="a-icon a-icon-local"><img src="${browser.runtime.getURL(`images/${mainSite.icon}`)}" /></i>
+          Chercher sur ${mainSite.name}
+        </span>
+      </span>
+    </a>
+  `;
+
+  // Autres sites en plus petit
+  if (sites.length > 1) {
+    buttons += '<div class="a-section a-spacing-small">Autres boutiques locales :</div>';
+    for (let i = 1; i < sites.length; i++) {
+      const site = sites[i];
+      const url = site.url
+        .replace('##QUERY##', encodeURIComponent(searchTerm))
+        .replace('##ISBN##', searchTerm);
+      
+      buttons += `
+        <a href="${url}" target="_blank" style="display:block; margin:5px 0;">
+          <span class="a-button a-spacing-small a-button-secondary">
+            <span class="a-button-inner">
+              <i class="a-icon a-icon-local"><img src="${browser.runtime.getURL(`images/${site.icon}`)}" /></i>
+              ${site.name}
+            </span>
+          </span>
+        </a>
+      `;
     }
   }
-  // console.info(urlsLang);
-  return urlsLang;
+
+  buttonEl.innerHTML = buttons;
+  container.append(buttonEl);
 }
 
-function getLink(link) {
-  return `<a href="${formatUrl(link.url)}">${link.name}</a><br>`;
+function findSitesForCategory(detectedCategory) {
+  // Diviser la catégorie détectée en parties
+  const categoryParts = detectedCategory.split('/').map(part => part.trim());
+  
+  // Chercher une correspondance dans les clés de categorySites
+  for (const part of categoryParts) {
+    if (categorySites[part]) {
+      console.info('Found sites for category:', part);
+      return categorySites[part];
+    }
+  }
+
+  console.info('No specific sites found, using default');
+  return categorySites['default'];
 }
 
-function formatUrl(url) {
-  return url.replace('##ISBN##', ISBN);
+function start() {
+  const container = document.querySelector('#rightCol .a-button-stack').parentNode;
+  
+  const isbn = getISBN();
+  if (isbn) {
+    addLinkButtons(categorySites['Livres'], isbn, container);
+  } else {
+    const category = getProductCategory();
+    console.info('Category detected:', category);
+    
+    const searchQuery = getProductDetails();
+    if (searchQuery) {
+      const sites = findSitesForCategory(category);  // Utiliser la nouvelle fonction
+      addLinkButtons(sites, searchQuery, container);
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => start());
