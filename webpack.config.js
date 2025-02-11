@@ -42,7 +42,6 @@ const config = {
   mode: process.env.NODE_ENV,
   context: `${__dirname}/src`,
   entry: {
-    'background': './background_script/index.js',
     'content_script': './content_script/index.js',
   },
   output: {
@@ -169,7 +168,6 @@ if (process.env.HMR === 'true') {
       port: 9090,
       reloadPage: true,
       entries: {
-        background: 'background',
         contentScript: 'content_script'
       }
     }),

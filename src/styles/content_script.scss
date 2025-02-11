@@ -1,18 +1,17 @@
-#buybox{
-  // > *{
-  //   display:none;
-  // }
-  .a-button-stack-local{
-    display: block!important;
+// Styles pour nos boutons personnalisés
+#buybox {
+  .a-button-stack-local {
+    display: block !important;
   }
+  
   .a-icon-local {
     top: 2px;
     left: 2px;
-    background: transparent!important;
+    background: transparent !important;
   }
-} 
+}
 
-// TODO add more content
+// Cache les éléments Amazon non nécessaires
 #moreBuyingChoices_feature_div,
 #amazonClubSuggestionWidget_feature_div,
 #deliveryBlock_feature_div,
@@ -23,6 +22,6 @@
 #tell-a-friend-byline,
 #availability,
 #selectQuantity,
-#fast-track{
+#fast-track {
   display: none !important;
 }

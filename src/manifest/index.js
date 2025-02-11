@@ -90,12 +90,6 @@ const manifestInput = {
     },
   },
 
-  // Background en V3 utilise service_worker
-  background: {
-    service_worker: 'background.js',
-    type: 'module',
-  },
-
   // Content scripts restent similaires
   content_scripts: [
     {

@@ -1,6 +1,8 @@
 import browser from 'webextension-polyfill';
 import '../styles/content_script.scss';
 import { categorySites } from '../datas/category-sites.js';
+import { classifyPage } from '../datas/category-classifier.js';
+
 
 function getISBN() {
   const detailBullets = document.getElementById('detailBullets_feature_div');
@@ -92,43 +94,24 @@ function addLinkButtons(sites, searchTerm, container) {
   const buttonEl = document.createElement('div');
   buttonEl.classList.add('a-button-stack', 'a-button-stack-local');
 
-  // Premier site comme bouton principal
-  const mainSite = sites[0];
-  const mainUrl = mainSite.url
-    .replace('##QUERY##', encodeURIComponent(searchTerm))
-    .replace('##ISBN##', searchTerm);
+  let buttons = '';
   
-  let buttons = `
-    <a href="${mainUrl}" target="_blank" style="display:block; line-height:30px">
-      <span class="a-button a-spacing-small a-button-primary a-button-icon">
-        <span class="a-button-inner">
-          <i class="a-icon a-icon-local"><img src="${browser.runtime.getURL(`images/${mainSite.icon}`)}" /></i>
-          Chercher sur ${mainSite.name}
-        </span>
-      </span>
-    </a>
-  `;
-
-  // Autres sites en plus petit
-  if (sites.length > 1) {
-    buttons += '<div class="a-section a-spacing-small">Autres boutiques locales :</div>';
-    for (let i = 1; i < sites.length; i++) {
-      const site = sites[i];
-      const url = site.url
-        .replace('##QUERY##', encodeURIComponent(searchTerm))
-        .replace('##ISBN##', searchTerm);
-      
-      buttons += `
-        <a href="${url}" target="_blank" style="display:block; margin:5px 0;">
-          <span class="a-button a-spacing-small a-button-secondary">
-            <span class="a-button-inner">
-              <i class="a-icon a-icon-local"><img src="${browser.runtime.getURL(`images/${site.icon}`)}" /></i>
-              ${site.name}
-            </span>
+  // Tous les sites avec le même style
+  for (const site of sites) {
+    const url = site.url
+      .replace('##QUERY##', encodeURIComponent(searchTerm))
+      .replace('##ISBN##', searchTerm);
+    
+    buttons += `
+      <a href="${url}" target="_blank" style="display:block; line-height:30px; margin:5px 0;">
+        <span class="a-button a-spacing-small a-button-primary a-button-icon">
+          <span class="a-button-inner">
+            <i class="a-icon a-icon-local"><img src="${browser.runtime.getURL(`images/${site.icon}`)}" /></i>
+            Chercher sur ${site.name}
           </span>
-        </a>
-      `;
-    }
+        </span>
+      </a>
+    `;
   }
 
   buttonEl.innerHTML = buttons;
@@ -158,12 +141,12 @@ function start() {
   if (isbn) {
     addLinkButtons(categorySites['Livres'], isbn, container);
   } else {
-    const category = getProductCategory();
+    const category = classifyPage();  // Utiliser directement la fonction
     console.info('Category detected:', category);
     
     const searchQuery = getProductDetails();
     if (searchQuery) {
-      const sites = findSitesForCategory(category);  // Utiliser la nouvelle fonction
+      const sites = categorySites[category] || categorySites['default'];
       addLinkButtons(sites, searchQuery, container);
     }
   }
