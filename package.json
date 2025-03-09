@@ -12,6 +12,7 @@
     "format:fix": "biome format ./src --write",
     "check": "biome check ./src",
     "check:fix": "biome check ./src --apply",
+    "clean": "rimraf dist",
     "dev": "npm run dev:chrome",
     "dev:chrome": "cross-env NODE_ENV=development TARGET=chrome webpack --watch",
     "dev:firefox": "cross-env NODE_ENV=development TARGET=firefox webpack --watch",

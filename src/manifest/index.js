@@ -28,19 +28,7 @@ const manifestInput = {
     {
       resources: ['icons/*', 'images/*'],
       matches: [
-        '*://*.amazon.fr/*',
-        '*://*.amazon.com/*',
-        '*://*.amazon.co.uk/*',
-        '*://*.amazon.com.mx/*',
-        '*://*.amazon.co.jp/*',
-        '*://*.amazon.it/*',
-        '*://*.amazon.in/*',
-        '*://*.amazon.es/*',
-        '*://*.amazon.cn/*',
-        '*://*.amazon.ca/*',
-        '*://*.amazon.com.br/*',
-        '*://*.amazon.de/*',
-        '*://*.amazon.com.au/*',
+        '*://*.amazon.ca/*'
       ],
     },
   ],
@@ -61,19 +49,7 @@ const manifestInput = {
 
   // Host permissions doivent être déclarées séparément
   host_permissions: [
-    '*://*.amazon.fr/*',
-    '*://*.amazon.com/*',
-    '*://*.amazon.co.uk/*',
-    '*://*.amazon.com.mx/*',
-    '*://*.amazon.co.jp/*',
-    '*://*.amazon.it/*',
-    '*://*.amazon.in/*',
-    '*://*.amazon.es/*',
-    '*://*.amazon.cn/*',
-    '*://*.amazon.ca/*',
-    '*://*.amazon.com.br/*',
-    '*://*.amazon.de/*',
-    '*://*.amazon.com.au/*',
+    '*://*.amazon.ca/*'
   ],
 
   // Content Security Policy V3
@@ -94,19 +70,7 @@ const manifestInput = {
   content_scripts: [
     {
       matches: [
-        '*://*.amazon.fr/*',
-        '*://*.amazon.com/*',
-        '*://*.amazon.co.uk/*',
-        '*://*.amazon.com.mx/*',
-        '*://*.amazon.co.jp/*',
-        '*://*.amazon.it/*',
-        '*://*.amazon.in/*',
-        '*://*.amazon.es/*',
-        '*://*.amazon.cn/*',
-        '*://*.amazon.ca/*',
-        '*://*.amazon.com.br/*',
-        '*://*.amazon.de/*',
-        '*://*.amazon.com.au/*',
+        '*://*.amazon.ca/*'
       ],
       js: ['content_script.js'],
       css: ['content_script.css'],

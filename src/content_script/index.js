@@ -47,6 +47,96 @@ function getProductCategory() {
   return 'Unknown';
 }
 
+function getProductDetails_OLD() {
+  const details = {
+    manufacturer: null,
+    productName: null
+  };
+
+  // Récupérer le nom du produit - méthode principale
+  const titleElement = document.getElementById('productTitle');
+  if (titleElement) {
+    details.productName = titleElement.textContent.trim();
+  }
+  
+  // Méthode alternative pour le titre si productTitle n'est pas trouvé
+  if (!details.productName) {
+    const titleSection = document.getElementById('title');
+    if (titleSection) {
+      details.productName = titleSection.textContent.trim();
+    }
+  }
+
+  // Récupérer le fabricant depuis différentes sources possibles
+  
+  // 1. D'abord chercher dans les infos de détail (comme avant)
+  const detailBullets = document.getElementById('detailBullets_feature_div');
+  if (detailBullets) {
+    const listItems = detailBullets.querySelectorAll('li span.a-list-item');
+    for (const item of listItems) {
+      const label = item.querySelector('span.a-text-bold');
+      const value = item.querySelector('span:not(.a-text-bold)');
+      
+      if (label && value) {
+        const labelText = label.textContent.trim();
+        if (labelText.includes('Fabricant') || labelText.includes('Marque')) {
+          details.manufacturer = value.textContent.trim();
+        }
+      }
+    }
+  }
+
+  // 2. Chercher dans le bylineInfo (souvent utilisé pour la marque)
+  if (!details.manufacturer) {
+    const bylineInfo = document.getElementById('bylineInfo');
+    if (bylineInfo) {
+      // Extraire le nom de la marque (généralement après "Visitez la boutique" ou "Visit the")
+      const bylineText = bylineInfo.textContent.trim();
+      const brandMatch = bylineText.match(/(?:Visitez la boutique|Visit the)\s+(.+?)(?:\s|$)/i);
+      
+      if (brandMatch && brandMatch[1]) {
+        details.manufacturer = brandMatch[1].trim();
+      } else {
+        // Si le pattern ne correspond pas, prendre tout le texte (hors "Visitez" ou "Visit")
+        details.manufacturer = bylineText
+          .replace(/Visitez la boutique|Visit the/i, '')
+          .trim();
+      }
+    }
+  }
+
+  // 3. Chercher dans la section de la marque si elle existe
+  if (!details.manufacturer) {
+    const brandElement = document.querySelector('.po-brand .a-span9');
+    if (brandElement) {
+      details.manufacturer = brandElement.textContent.trim();
+    }
+  }
+
+  // Construire une description de recherche
+  let searchQuery = '';
+  if (details.manufacturer) {
+    searchQuery += details.manufacturer + ' ';
+  }
+  
+  if (details.productName) {
+    // Limiter les mots-clés aux 5 premiers mots significatifs (au moins 3 caractères)
+    const significantWords = details.productName
+      .split(' ')
+      .filter(word => word.length >= 3 && !/^\d+$/.test(word)) // Éviter les mots courts et les nombres seuls
+      .slice(0, 5);
+    
+    searchQuery += significantWords.join(' ');
+  }
+
+  // Si nous n'avons pas assez de mots dans la requête, utiliser plus de mots du titre
+  if (searchQuery.split(' ').filter(word => word.trim().length > 0).length < 3 && details.productName) {
+    searchQuery = details.productName.split(' ').slice(0, 8).join(' ');
+  }
+
+  return searchQuery.trim();
+}
+
 function getProductDetails() {
   const details = {
     manufacturer: null,
@@ -76,18 +166,33 @@ function getProductDetails() {
     }
   }
 
-  // Construire une description de recherche
+  // Construire une description de recherche sans duplication
   let searchQuery = '';
-  if (details.manufacturer) {
-    searchQuery += details.manufacturer + ' ';
-  }
-  if (details.productName) {
+  
+  if (details.manufacturer && details.productName) {
+    // Vérifier si le nom du fabricant est déjà dans le nom du produit
+    const manufacturerRegex = new RegExp(`\\b${details.manufacturer}\\b`, 'i');
+    if (manufacturerRegex.test(details.productName)) {
+      // Le fabricant est déjà mentionné dans le nom du produit
+      const words = details.productName.split(' ').slice(0, 5);
+      searchQuery = words.join(' ');
+    } else {
+      // Le fabricant n'est pas dans le nom du produit, l'ajouter
+      searchQuery = details.manufacturer + ' ' + details.productName.split(' ').slice(0, 5).join(' ');
+    }
+  } else if (details.productName) {
+    // Pas de fabricant, utiliser seulement le nom du produit
     const words = details.productName.split(' ').slice(0, 5);
-    searchQuery += words.join(' ');
+    searchQuery = words.join(' ');
+  } else if (details.manufacturer) {
+    // Pas de nom de produit, utiliser seulement le fabricant
+    searchQuery = details.manufacturer;
   }
 
   return searchQuery.trim();
 }
+
+
 
 // Dans la fonction addLinkButtons
 function addLinkButtons(sites, searchTerm, container) {
@@ -107,7 +212,7 @@ function addLinkButtons(sites, searchTerm, container) {
         <span class="a-button a-spacing-small a-button-primary a-button-icon">
           <span class="a-button-inner">
             <i class="a-icon a-icon-local"><img src="${browser.runtime.getURL(`images/${site.icon}`)}" /></i>
-            Chercher sur ${site.name}
+            ${site.name}
           </span>
         </span>
       </a>
@@ -145,6 +250,7 @@ function start() {
     console.info('Category detected:', category);
     
     const searchQuery = getProductDetails();
+    console.info('Search query:', searchQuery);
     if (searchQuery) {
       const sites = categorySites[category] || categorySites['default'];
       addLinkButtons(sites, searchQuery, container);
