@@ -5,12 +5,17 @@
   },
 
   "extensionDescription": {
-    "message": "Extension Chrome et Firefox pour chercher un produit sur Amazon et l'acheter localement.",
+    "message": "Extension Chrome et Firefox pour chercher un produit sur Amazon et l'acheter au Canada.",
     "description": "Description of the extension."
   },
 
   "buttonText": {
     "message": "Acheter en librairie",
     "description": "Button text (on yellow / orange background)"
+  },
+
+  "searchOn": {
+    "message": "Chercher au Canada",
+    "description": "Text before the store name"
   }
 }

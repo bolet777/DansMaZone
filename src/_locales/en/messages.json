@@ -1,16 +1,21 @@
 {
   "extensionName": {
-    "message": "Ma Zone Locale",
+    "message": "My Local Zone",
     "description": "Name of the extension."
   },
 
   "extensionDescription": {
-    "message": "Chrome and Firefox extension to search for a product on Amazon and buy it locally.",
+    "message": "Chrome and Firefox extension to search for a product on Amazon and buy it in Canada.",
     "description": "Description of the extension."
   },
 
   "buttonText": {
-    "message": "Buy in bookstores",
+    "message": "Buy in Canada",
     "description": "Button text (on yellow / orange background)"
+  },
+
+  "searchOn": {
+    "message": "Search on",
+    "description": "Text before the store name"
   }
 }
