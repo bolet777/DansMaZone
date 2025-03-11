@@ -43,6 +43,7 @@ const config = {
   context: `${__dirname}/src`,
   entry: {
     'content_script': './content_script/index.js',
+    'options': './options/options.js', 
   },
   output: {
     path: path.join(__dirname, 'dist', targetBrowser),
@@ -135,6 +136,13 @@ const config = {
     ]),
     new MiniCssExtractPlugin({
       filename: '[name].css',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        // Copier options.html et options.css vers la racine du dossier dist
+        { from: 'options/options.html', to: 'options.html' },
+        { from: 'options/options.css', to: 'options.css' },
+      ]
     }),
     new CopyWebpackPlugin({
       patterns: [

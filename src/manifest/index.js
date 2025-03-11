@@ -66,6 +66,13 @@ const manifestInput = {
     },
   },
 
+  options_ui: {
+    page: 'options/options.html', 
+    // OU
+    page: 'options.html', 
+    open_in_tab: true // Définissez à false si vous préférez une fenêtre d'options plus petite
+  },
+
   // Content scripts restent similaires
   content_scripts: [
     {

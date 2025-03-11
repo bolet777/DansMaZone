@@ -3,6 +3,45 @@ import '../styles/content_script.scss';
 import { categorySites } from '../datas/category-sites.js';
 import { classifyPage, categoryMapping } from '../datas/category-classifier.js';
 
+// Stockage pour les sites combinés (par défaut + personnalisés)
+let combinedSites = {};
+
+// Fonction pour fusionner les sites par défaut et personnalisés
+async function initSites() {
+  // Copier les sites par défaut
+  combinedSites = structuredClone(categorySites);
+  
+  try {
+    // Récupérer les sites personnalisés depuis le stockage local
+    const result = await browser.storage.local.get('userSites');
+    const userSites = result.userSites || {};
+    
+    // Fusionner avec les sites par défaut
+    Object.keys(userSites).forEach(category => {
+      if (!combinedSites[category]) {
+        combinedSites[category] = [];
+      }
+      
+      // Ajouter les sites personnalisés
+      userSites[category].forEach(site => {
+        // Vérifier si le site n'existe pas déjà dans les sites par défaut
+        const siteExists = combinedSites[category].some(defaultSite => 
+          defaultSite.name === site.name
+        );
+        
+        if (!siteExists) {
+          combinedSites[category].push(site);
+        }
+      });
+    });
+    
+    console.log('MaZoneLocale: Sites combinés chargés', combinedSites);
+  } catch (error) {
+    console.error('MaZoneLocale: Erreur lors du chargement des sites personnalisés', error);
+    // En cas d'erreur, on utilise seulement les sites par défaut
+  }
+}
+
 function getISBN() {
   const detailBullets = document.getElementById('detailBullets_feature_div');
   if (detailBullets) {
@@ -174,19 +213,22 @@ function findSitesForCategory(detectedCategory) {
   // Diviser la catégorie détectée en parties
   const categoryParts = detectedCategory.split('/').map(part => part.trim());
   
-  // Chercher une correspondance dans les clés de categorySites
+  // Chercher une correspondance dans les clés de combinedSites
   for (const part of categoryParts) {
-    if (categorySites[part]) {
+    if (combinedSites[part]) {
       console.info('Found sites for category:', part);
-      return categorySites[part];
+      return combinedSites[part];
     }
   }
 
   console.info('No specific sites found, using default');
-  return categorySites['default'];
+  return combinedSites['default'];
 }
 
-function start() {
+async function start() {
+  // Initialiser les sites en combinant ceux par défaut et personnalisés
+  await initSites();
+  
   // Vérifier si nous sommes sur une page produit Amazon
   const isProductPage = window.location.href.includes('/dp/') || 
                         window.location.href.includes('/gp/product/');
@@ -201,7 +243,7 @@ function start() {
   const isbn = getISBN();
   if (isbn) {
     console.log('MaZoneLocale: ISBN found:', isbn);
-    addLinkButtons(categorySites['Livres'], isbn);
+    addLinkButtons(combinedSites['Livres'], isbn);
   } else {
     // Détecte la catégorie (en français ou anglais selon la langue de la page)
     const detectedCategory = classifyPage();
@@ -210,8 +252,8 @@ function start() {
     // Si la catégorie est en anglais, la convertir en français pour l'utiliser comme clé
     let frenchCategory = detectedCategory;
     
-    // Si la catégorie n'est pas dans categorySites, il s'agit probablement d'une catégorie en anglais
-    if (!categorySites[detectedCategory]) {
+    // Si la catégorie n'est pas dans combinedSites, il s'agit probablement d'une catégorie en anglais
+    if (!combinedSites[detectedCategory]) {
       // Chercher la clé française qui correspond à cette catégorie anglaise
       const frenchCategoryEntry = Object.entries(categoryMapping)
         .find(([fr, en]) => en === detectedCategory);
@@ -225,7 +267,7 @@ function start() {
     const searchQuery = getProductDetails();
     console.info('Search query:', searchQuery);
     if (searchQuery) {
-      const sites = categorySites[frenchCategory] || categorySites['default'];
+      const sites = combinedSites[frenchCategory] || combinedSites['default'];
       addLinkButtons(sites, searchQuery);
     }
   }
