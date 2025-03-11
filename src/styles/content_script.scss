@@ -1,13 +1,111 @@
-// Styles pour nos boutons personnalisés
-#buybox {
-  .a-button-stack-local {
-    display: block !important;
+// Styles pour le bandeau vertical modernisé
+.mlz-sidebar {
+  position: fixed;
+  top: 200px;
+  right: 0;
+  width: 60px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-right: none;
+  border-radius: 20px 0 0 8px;
+  box-shadow: -3px 3px 10px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.3s ease;
+  
+  // Effet de déplacement au survol
+  &:hover {
+    width: 220px; // Légèrement plus large pour assurer que le texte est visible
+    
+    .mlz-sidebar-header span {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .mlz-sidebar-content {
+      max-height: 500px; // Se déploie au survol
+      opacity: 1;
+    }
   }
   
-  .a-icon-local {
-    top: 2px;
-    left: 2px;
-    background: transparent !important;
+  // En-tête avec seulement l'icône visible initialement
+  .mlz-sidebar-header {
+    padding: 12px;
+    // background-color: #ff1100;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    min-height: 40px;
+    
+    img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: white;
+      padding: 3px;
+      flex-shrink: 0; // Empêche l'image de rétrécir
+    }
+    
+    span {
+      white-space: nowrap;
+      // font-weight: bold;
+      // font-size: 14px;
+      font-size: 1rem;
+      margin-left: 10px;
+      color: rgb(229, 11, 10);
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      overflow: hidden;
+    }
+  }
+  
+  // Conteneur pour les boutons
+  .mlz-sidebar-content {
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+  }
+  
+  // Style des boutons
+  .mlz-sidebar-button {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+    background-color: white;
+    
+    &:hover {
+      background-color: #f8f8f8;
+    }
+    
+    img {
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      flex-shrink: 0; // Empêche l'image de rétrécir
+    }
+    
+    span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; // Ajoute des points de suspension si le texte est trop long
+      font-size: 13px;
+    }
+    
+    &:last-child {
+      border-bottom: none;
+    }
   }
 }
 

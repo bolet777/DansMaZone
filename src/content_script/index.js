@@ -101,33 +101,73 @@ function getProductDetails() {
   return searchQuery.trim();
 }
 
-// Dans la fonction addLinkButtons
-function addLinkButtons(sites, searchTerm, container) {
-  const buttonEl = document.createElement('div');
-  buttonEl.classList.add('a-button-stack', 'a-button-stack-local');
-
-  let buttons = '';
+// Dans la fonction addLinkButtons - plus besoin du paramètre container
+function addLinkButtons(sites, searchTerm) {
+  // Vérifier si un bandeau existe déjà et le supprimer
+  const existingSidebar = document.querySelector('.mlz-sidebar');
+  if (existingSidebar) {
+    existingSidebar.remove();
+  }
   
-  // Tous les sites avec le même style
+  // Créer un bandeau vertical
+  const sidebarEl = document.createElement('div');
+  sidebarEl.classList.add('mlz-sidebar');
+  
+  // En-tête du bandeau
+  const header = document.createElement('div');
+  header.classList.add('mlz-sidebar-header');
+  
+  const icon = document.createElement('img');
+  // icon.src = browser.runtime.getURL('icons/favicon-48.png');
+  icon.src = browser.runtime.getURL('images/canada_flag.png');
+  icon.alt = "DansMaZone";
+  
+  const title = document.createElement('span');
+  title.textContent = "Dans ma zone";
+  
+  header.appendChild(icon);
+  header.appendChild(title);
+  sidebarEl.appendChild(header);
+  
+  // Conteneur pour les boutons des sites
+  const contentContainer = document.createElement('div');
+  contentContainer.classList.add('mlz-sidebar-content');
+  
+  // Créer les boutons des sites
   for (const site of sites) {
     const url = site.url
       .replace('##QUERY##', encodeURIComponent(searchTerm))
       .replace('##ISBN##', searchTerm);
     
-    buttons += `
-      <a href="${url}" target="_blank" style="display:block; line-height:30px; margin:5px 0;">
-        <span class="a-button a-spacing-small a-button-primary a-button-icon">
-          <span class="a-button-inner">
-            <i class="a-icon a-icon-local"><img src="${browser.runtime.getURL(`images/${site.icon}`)}" /></i>
-            ${site.name}
-          </span>
-        </span>
-      </a>
-    `;
+    const button = document.createElement('a');
+    button.href = url;
+    button.target = "_blank";
+    button.classList.add('mlz-sidebar-button');
+    
+    // const siteIcon = document.createElement('img');
+    // siteIcon.src = browser.runtime.getURL(`images/${site.icon}`);
+    // siteIcon.alt = site.name;
+    
+    const siteName = document.createElement('span');
+    siteName.textContent = site.name;
+    
+    // button.appendChild(siteIcon);
+    button.appendChild(siteName);
+    contentContainer.appendChild(button);
   }
-
-  buttonEl.innerHTML = buttons;
-  container.append(buttonEl);
+  
+  sidebarEl.appendChild(contentContainer);
+  
+  // Ajouter à la page (directement au body pour un positionnement absolu)
+  document.body.appendChild(sidebarEl);
+  
+  // Log pour débogage
+  console.log('MaZoneLocale: Sidebar added to the page with', sites.length, 'sites');
+  
+  // Ajouter un event listener pour déboguer
+  sidebarEl.addEventListener('mouseenter', () => {
+    console.log('MaZoneLocale: Sidebar hovered, content should be visible');
+  });
 }
 
 function findSitesForCategory(detectedCategory) {
@@ -147,11 +187,21 @@ function findSitesForCategory(detectedCategory) {
 }
 
 function start() {
-  const container = document.querySelector('#rightCol .a-button-stack').parentNode;
+  // Vérifier si nous sommes sur une page produit Amazon
+  const isProductPage = window.location.href.includes('/dp/') || 
+                        window.location.href.includes('/gp/product/');
+  
+  if (!isProductPage) {
+    console.log('MaZoneLocale: Not a product page, extension not active');
+    return;
+  }
+  
+  console.log('MaZoneLocale: Starting on product page');
   
   const isbn = getISBN();
   if (isbn) {
-    addLinkButtons(categorySites['Livres'], isbn, container);
+    console.log('MaZoneLocale: ISBN found:', isbn);
+    addLinkButtons(categorySites['Livres'], isbn);
   } else {
     // Détecte la catégorie (en français ou anglais selon la langue de la page)
     const detectedCategory = classifyPage();
@@ -176,9 +226,42 @@ function start() {
     console.info('Search query:', searchQuery);
     if (searchQuery) {
       const sites = categorySites[frenchCategory] || categorySites['default'];
-      addLinkButtons(sites, searchQuery, container);
+      addLinkButtons(sites, searchQuery);
     }
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => start());
+// Fonction pour s'assurer que l'extension s'exécute après que le contenu soit chargé
+function initializeExtension() {
+  // Utilisez MutationObserver pour détecter quand le titre du produit est chargé
+  const observer = new MutationObserver((mutations, obs) => {
+    const productTitle = document.getElementById('productTitle');
+    if (productTitle) {
+      console.log('MaZoneLocale: Product title found, initializing extension');
+      start();
+      obs.disconnect(); // Arrêter d'observer une fois le titre trouvé
+    }
+  });
+  
+  // Commencer l'observation si le document est chargé
+  if (document.body) {
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    // Timeout de sécurité pour s'assurer que l'extension démarre même si le titre n'est jamais trouvé
+    setTimeout(() => {
+      if (!document.getElementById('productTitle')) {
+        console.log('MaZoneLocale: Timeout reached, starting anyway');
+        start();
+        observer.disconnect();
+      }
+    }, 5000); // 5 secondes de timeout
+  } else {
+    // Si le document n'est pas encore prêt, attendre le DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+  }
+}
+
+// Initialiser l'extension
+initializeExtension();

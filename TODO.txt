@@ -1,12 +1,11 @@
 
 GLOBAL
 - Renommer le projet : DansMaZone
-- Faire un bel icône
 - Vérifier la normalisation pour google 
 - Ajouter un menu pour que le user puisse ajouter ces magasins : nom, url et catégorie
 
 
-
+-------------
 
 
 Based on the files provided, I'm analyzing a browser extension called "MaZoneLocale" that helps users find products from local Quebec businesses as an alternative to Amazon purchases. Let me break down what it does and suggest improvements.
