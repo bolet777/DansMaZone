@@ -510,7 +510,7 @@ async function deleteUserSite(category, name) {
     // Créer un lien pour télécharger le fichier
     const a = document.createElement('a');
     a.href = url;
-    a.download = forContribution ? 'mazonelocale-contribution.json' : 'mazonelocale-sites.json';
+    a.download = forContribution ? 'dansmazone-contribution.json' : 'dansmazone-sites.json';
     
     // Cliquer sur le lien pour télécharger
     document.body.appendChild(a);

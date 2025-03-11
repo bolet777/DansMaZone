@@ -41,8 +41,8 @@ const manifestInput = {
   },
 
   description: '__MSG_extensionDescription__',
-  homepage_url: 'https://github.com/bolet777/MaZoneLocale',
-  short_name: 'mazonelocale',
+  homepage_url: 'https://github.com/bolet777/DansMaZone',
+  short_name: 'dansmazone',
 
   // Permissions séparées en V3
   permissions: ['storage', 'scripting'],
@@ -57,7 +57,7 @@ const manifestInput = {
 
   // Action remplace browser_action en V3
   action: {
-    default_title: 'MaZoneLocale',
+    default_title: 'DansMaZone',
     default_icon: {
       32: 'icons/favicon-32.png',
       48: 'icons/favicon-48.png',

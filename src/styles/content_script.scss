@@ -1,5 +1,5 @@
 // Styles pour le bandeau vertical modernisé
-.mlz-sidebar {
+.dmz-sidebar {
   position: fixed;
   top: 200px;
   right: 0;
@@ -19,19 +19,19 @@
   &:hover {
     width: 220px; // Légèrement plus large pour assurer que le texte est visible
     
-    .mlz-sidebar-header span {
+    .dmz-sidebar-header span {
       opacity: 1;
       transform: translateX(0);
     }
     
-    .mlz-sidebar-content {
+    .dmz-sidebar-content {
       max-height: 500px; // Se déploie au survol
       opacity: 1;
     }
   }
   
   // En-tête avec seulement l'icône visible initialement
-  .mlz-sidebar-header {
+  .dmz-sidebar-header {
     padding: 12px;
     // background-color: #ff1100;
     background-color: #ffffff;
@@ -65,7 +65,7 @@
   }
   
   // Conteneur pour les boutons
-  .mlz-sidebar-content {
+  .dmz-sidebar-content {
     display: flex;
     flex-direction: column;
     opacity: 0;
@@ -75,7 +75,7 @@
   }
   
   // Style des boutons
-  .mlz-sidebar-button {
+  .dmz-sidebar-button {
     display: flex;
     align-items: center;
     padding: 12px;

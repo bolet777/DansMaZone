@@ -35,9 +35,9 @@ async function initSites() {
       });
     });
     
-    console.log('MaZoneLocale: Sites combinés chargés', combinedSites);
+    console.log('DansMaZone: Sites combinés chargés', combinedSites);
   } catch (error) {
-    console.error('MaZoneLocale: Erreur lors du chargement des sites personnalisés', error);
+    console.error('DansMaZone: Erreur lors du chargement des sites personnalisés', error);
     // En cas d'erreur, on utilise seulement les sites par défaut
   }
 }
@@ -143,18 +143,18 @@ function getProductDetails() {
 // Dans la fonction addLinkButtons - plus besoin du paramètre container
 function addLinkButtons(sites, searchTerm) {
   // Vérifier si un bandeau existe déjà et le supprimer
-  const existingSidebar = document.querySelector('.mlz-sidebar');
+  const existingSidebar = document.querySelector('.dmz-sidebar');
   if (existingSidebar) {
     existingSidebar.remove();
   }
   
   // Créer un bandeau vertical
   const sidebarEl = document.createElement('div');
-  sidebarEl.classList.add('mlz-sidebar');
+  sidebarEl.classList.add('dmz-sidebar');
   
   // En-tête du bandeau
   const header = document.createElement('div');
-  header.classList.add('mlz-sidebar-header');
+  header.classList.add('dmz-sidebar-header');
   
   const icon = document.createElement('img');
   // icon.src = browser.runtime.getURL('icons/favicon-48.png');
@@ -170,7 +170,7 @@ function addLinkButtons(sites, searchTerm) {
   
   // Conteneur pour les boutons des sites
   const contentContainer = document.createElement('div');
-  contentContainer.classList.add('mlz-sidebar-content');
+  contentContainer.classList.add('dmz-sidebar-content');
   
   // Créer les boutons des sites
   for (const site of sites) {
@@ -181,7 +181,7 @@ function addLinkButtons(sites, searchTerm) {
     const button = document.createElement('a');
     button.href = url;
     button.target = "_blank";
-    button.classList.add('mlz-sidebar-button');
+    button.classList.add('dmz-sidebar-button');
     
     // const siteIcon = document.createElement('img');
     // siteIcon.src = browser.runtime.getURL(`images/${site.icon}`);
@@ -201,11 +201,11 @@ function addLinkButtons(sites, searchTerm) {
   document.body.appendChild(sidebarEl);
   
   // Log pour débogage
-  console.log('MaZoneLocale: Sidebar added to the page with', sites.length, 'sites');
+  console.log('DansMaZone: Sidebar added to the page with', sites.length, 'sites');
   
   // Ajouter un event listener pour déboguer
   sidebarEl.addEventListener('mouseenter', () => {
-    console.log('MaZoneLocale: Sidebar hovered, content should be visible');
+    console.log('DansMaZone: Sidebar hovered, content should be visible');
   });
 }
 
@@ -234,15 +234,15 @@ async function start() {
                         window.location.href.includes('/gp/product/');
   
   if (!isProductPage) {
-    console.log('MaZoneLocale: Not a product page, extension not active');
+    console.log('DansMaZone: Not a product page, extension not active');
     return;
   }
   
-  console.log('MaZoneLocale: Starting on product page');
+  console.log('DansMaZone: Starting on product page');
   
   const isbn = getISBN();
   if (isbn) {
-    console.log('MaZoneLocale: ISBN found:', isbn);
+    console.log('DansMaZone: ISBN found:', isbn);
     addLinkButtons(combinedSites['Livres'], isbn);
   } else {
     // Détecte la catégorie (en français ou anglais selon la langue de la page)
@@ -279,7 +279,7 @@ function initializeExtension() {
   const observer = new MutationObserver((mutations, obs) => {
     const productTitle = document.getElementById('productTitle');
     if (productTitle) {
-      console.log('MaZoneLocale: Product title found, initializing extension');
+      console.log('DansMaZone: Product title found, initializing extension');
       start();
       obs.disconnect(); // Arrêter d'observer une fois le titre trouvé
     }
@@ -292,7 +292,7 @@ function initializeExtension() {
     // Timeout de sécurité pour s'assurer que l'extension démarre même si le titre n'est jamais trouvé
     setTimeout(() => {
       if (!document.getElementById('productTitle')) {
-        console.log('MaZoneLocale: Timeout reached, starting anyway');
+        console.log('DansMaZone: Timeout reached, starting anyway');
         start();
         observer.disconnect();
       }

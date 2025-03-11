@@ -1,10 +1,9 @@
 MaZoneLocale from Amazon-Killer
 =======================================
 
-Extension Chrome pour trouver à partir d'une recherche dans Amazon des livres ou des produits chez des marchands locaux au Québec.
-Cette extension est basée sur Amazon Killer mais a été adaptée pour le Québec.
+Extension Chrome pour trouver un article à partir d'une recherche dans Amazon.
 
-Elle inclut en l'occurence une direction vers le site Les libraires et Panier Bleu.
+Cette extension a ét fortement inspiré par Amazon Killer.
 
 Pour installer l'extension :
   - sur chrome : https://chrome.google.com/webstore/detail/ma-zone-locale/fpcpekagfnicnnmichpafmbihcpmbibg
