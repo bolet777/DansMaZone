@@ -118,13 +118,24 @@ async function saveUserSites() {
     }
   }
 
+  // Fonction améliorée pour le tri des catégories avec prise en compte des accents
+function sortCategories(categories) {
+    return categories.sort((a, b) => {
+      // Utiliser localeCompare avec les options pour les caractères français
+      return a.localeCompare(b, 'fr', { sensitivity: 'base' });
+    });
+  }
+
 // Remplir les listes déroulantes de catégories
 function populateCategoryDropdowns() {
   // Obtenir toutes les catégories (par défaut + personnalisées)
-  const categories = [...new Set([
+  const allCategories = [...new Set([
     ...Object.keys(defaultSites),
     ...Object.keys(userSites)
-  ])].sort();
+  ])];
+  
+  // Trier les catégories avec notre nouvelle fonction
+  const categories = sortCategories(allCategories);
   
   // Filtre de catégorie
   categories.forEach(category => {
@@ -153,24 +164,27 @@ function populateCategoryDropdowns() {
 
 // Afficher tous les sites (par défaut + personnalisés)
 function renderSites() {
-  // Vider le conteneur
-  elements.sitesContainer.innerHTML = '';
-  
-  // Obtenir le filtre de catégorie
-  const categoryFilter = elements.categoryFilter.value;
-  // Obtenir le terme de recherche
-  const searchTerm = elements.siteSearch.value.toLowerCase();
-  
-  // Obtenir toutes les catégories (par défaut + personnalisées)
-  let categories = [...new Set([
-    ...Object.keys(defaultSites),
-    ...Object.keys(userSites)
-  ])].sort();
-  
-  // Filtrer les catégories si nécessaire
-  if (categoryFilter !== 'all') {
-    categories = categories.filter(category => category === categoryFilter);
-  }
+    // Vider le conteneur
+    elements.sitesContainer.innerHTML = '';
+    
+    // Obtenir le filtre de catégorie
+    const categoryFilter = elements.categoryFilter.value;
+    // Obtenir le terme de recherche
+    const searchTerm = elements.siteSearch.value.toLowerCase();
+    
+    // Obtenir toutes les catégories (par défaut + personnalisées)
+    let allCategories = [...new Set([
+      ...Object.keys(defaultSites),
+      ...Object.keys(userSites)
+    ])];
+    
+    // Trier les catégories
+    let categories = sortCategories(allCategories);
+    
+    // Filtrer les catégories si nécessaire
+    if (categoryFilter !== 'all') {
+      categories = categories.filter(category => category === categoryFilter);
+    }
   
   // Afficher chaque catégorie
   categories.forEach(category => {
