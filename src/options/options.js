@@ -46,6 +46,8 @@ async function initOptions() {
   
   // Afficher les sites
   renderSites();
+
+  setupBugReporting();
   
   // Ajouter les écouteurs d'événements
   attachEventListeners();
@@ -71,34 +73,50 @@ function initTabs() {
 
 // Charger les sites personnalisés depuis le stockage
 async function loadUserSites() {
-  try {
-    const result = await browser.storage.local.get('userSites');
-    userSites = result.userSites || {};
-    
-    // S'assurer que toutes les catégories sont initialisées
-    Object.keys(defaultSites).forEach(category => {
-      if (!userSites[category]) {
+    try {
+      const result = await browser.storage.local.get('userSites');
+      userSites = result.userSites || {};
+      
+      // S'assurer que toutes les catégories sont initialisées
+      Object.keys(defaultSites).forEach(category => {
+        if (!userSites[category]) {
+          userSites[category] = [];
+        }
+      });
+      
+      return true;
+    } catch (error) {
+      handleError(error, 'chargement des sites personnalisés', true, true);
+      
+      // En cas d'erreur critique, initialiser avec un objet vide mais fonctionnel
+      userSites = {};
+      Object.keys(defaultSites).forEach(category => {
         userSites[category] = [];
-      }
-    });
-  } catch (error) {
-    console.error('Erreur lors du chargement des sites personnalisés:', error);
-    showNotification('Erreur lors du chargement des sites personnalisés.', 'error');
-    userSites = {};
+      });
+      
+      return false;
+    }
   }
-}
 
 // Sauvegarder les sites personnalisés dans le stockage
 async function saveUserSites() {
-  try {
-    await browser.storage.local.set({ userSites });
-    return true;
-  } catch (error) {
-    console.error('Erreur lors de la sauvegarde des sites personnalisés:', error);
-    showNotification('Erreur lors de la sauvegarde des sites personnalisés.', 'error');
-    return false;
+    try {
+      await browser.storage.local.set({ userSites });
+      return true;
+    } catch (error) {
+      handleError(error, 'sauvegarde des sites personnalisés', true, false);
+      
+      // Proposer une solution de contournement
+      if (error.message && error.message.includes('QUOTA_EXCEEDED')) {
+        showNotification(
+          'Espace de stockage insuffisant. Essayez de supprimer certains sites personnalisés.',
+          'error'
+        );
+      }
+      
+      return false;
+    }
   }
-}
 
 // Remplir les listes déroulantes de catégories
 function populateCategoryDropdowns() {
@@ -200,31 +218,62 @@ function renderSites() {
     // Contenu de la catégorie
     const categoryContent = document.createElement('div');
     categoryContent.className = 'category-content';
-    
+
     // Afficher chaque site
     allSites.forEach(site => {
-      const siteItem = document.createElement('div');
-      siteItem.className = 'site-item';
-      
-      siteItem.innerHTML = `
-        <div class="site-info">
-          <div class="site-name">${site.name}</div>
-          <div class="site-url">${site.url}</div>
-        </div>
-        <div class="site-actions">
-          <button class="test-site-btn" title="Tester">🔍</button>
-          ${!site.isDefault ? `<button class="edit-site-btn" title="Modifier">✏️</button>` : ''}
-          ${!site.isDefault ? `<button class="delete-site-btn" title="Supprimer">🗑️</button>` : ''}
-        </div>
-      `;
-      
-      // Ajouter les données du site à l'élément
-      siteItem.dataset.category = category;
-      siteItem.dataset.name = site.name;
-      siteItem.dataset.url = site.url;
-      siteItem.dataset.isDefault = site.isDefault;
-      
-      categoryContent.appendChild(siteItem);
+        const siteItem = document.createElement('div');
+        siteItem.className = 'site-item';
+        
+        // Créer les éléments de manière sécurisée
+        const siteInfo = document.createElement('div');
+        siteInfo.className = 'site-info';
+        
+        const siteName = document.createElement('div');
+        siteName.className = 'site-name';
+        siteName.textContent = site.name;
+        
+        const siteUrl = document.createElement('div');
+        siteUrl.className = 'site-url';
+        siteUrl.textContent = site.url;
+        
+        siteInfo.appendChild(siteName);
+        siteInfo.appendChild(siteUrl);
+        
+        const siteActions = document.createElement('div');
+        siteActions.className = 'site-actions';
+        
+        // Bouton de test
+        const testBtn = document.createElement('button');
+        testBtn.className = 'test-site-btn';
+        testBtn.title = 'Tester';
+        testBtn.textContent = '🔍';
+        siteActions.appendChild(testBtn);
+        
+        // Boutons d'édition et de suppression pour les sites non par défaut
+        if (!site.isDefault) {
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-site-btn';
+        editBtn.title = 'Modifier';
+        editBtn.textContent = '✏️';
+        siteActions.appendChild(editBtn);
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-site-btn';
+        deleteBtn.title = 'Supprimer';
+        deleteBtn.textContent = '🗑️';
+        siteActions.appendChild(deleteBtn);
+        }
+        
+        siteItem.appendChild(siteInfo);
+        siteItem.appendChild(siteActions);
+        
+        // Ajouter les données du site à l'élément de manière sécurisée
+        siteItem.dataset.category = category;
+        siteItem.dataset.name = site.name;
+        siteItem.dataset.url = site.url;
+        siteItem.dataset.isDefault = site.isDefault.toString(); // Conversion explicite en chaîne
+        
+        categoryContent.appendChild(siteItem);
     });
     
     categorySection.appendChild(categoryContent);
@@ -614,6 +663,64 @@ async function deleteUserSite(category, name) {
         document.body.removeChild(notification);
       }, 300);
     }, 3000);
+  }
+
+/**
+ * Gère les erreurs de manière uniforme dans toute l'extension
+ * @param {Error} error - L'erreur à gérer
+ * @param {string} context - Le contexte dans lequel l'erreur s'est produite
+ * @param {boolean} notify - Si true, montre une notification à l'utilisateur
+ * @param {boolean} critical - Si true, considère l'erreur comme critique
+ */
+function handleError(error, context, notify = true, critical = false) {
+    // Log l'erreur dans la console avec son contexte
+    console.error(`DansMaZone - Erreur ${critical ? 'critique' : ''} dans ${context}:`, error);
+    
+    // Notification à l'utilisateur si demandé
+    if (notify) {
+      const message = critical 
+        ? `Erreur critique: ${error.message || 'Erreur inconnue'}. Veuillez réessayer ou réinstaller l'extension.`
+        : `Erreur: ${error.message || 'Une erreur est survenue'}`;
+      showNotification(message, 'error');
+    }
+    
+    // Pour les erreurs critiques, on peut envisager d'autres actions
+    if (critical) {
+      // Par exemple, désactiver certaines fonctionnalités
+      // ou tenter une récupération automatique
+    }
+    
+    // Renvoie l'erreur pour permettre un traitement supplémentaire si nécessaire
+    return error;
+  }
+
+  function setupBugReporting() {
+    const bugReportBtn = document.createElement('button');
+    bugReportBtn.textContent = 'Signaler un problème';
+    bugReportBtn.className = 'bug-report-btn';
+    bugReportBtn.onclick = () => {
+      const diagnosticInfo = {
+        version: browser.runtime.getManifest().version,
+        browser: navigator.userAgent,
+        storageSize: Object.keys(userSites).length,
+        errors: [] // Liste des erreurs récentes
+      };
+      
+      // Créer un corps de mail encodé
+      const subject = encodeURIComponent('DansMaZone - Rapport de bug');
+      const body = encodeURIComponent(
+        `Merci de décrire le problème rencontré :\n\n\n` +
+        `-------- Informations de diagnostic --------\n` +
+        `Version: ${diagnosticInfo.version}\n` +
+        `Navigateur: ${diagnosticInfo.browser}\n` +
+        `Sites personnalisés: ${diagnosticInfo.storageSize} catégories`
+      );
+      
+      // Ouvrir le client mail par défaut
+      window.open(`mailto:ccosenza.dlab@gmail.com?subject=${subject}&body=${body}`);
+    };
+    
+    document.querySelector('footer').appendChild(bugReportBtn);
   }
   
   // Initialiser la page
