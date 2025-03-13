@@ -1,8 +1,10 @@
 
 GLOBAL
-- Renommer le projet : DansMaZone
-- Vérifier la normalisation pour google 
-- Ajouter un menu pour que le user puisse ajouter ces magasins : nom, url et catégorie
+- Vérifier la normalisation pour google store
+- Selon la marque ajouter une recherche directement sur le site (exemple : https://epson.ca/search/?text=EcoTank+ET-2850&keyword=EcoTank+ET-2850)
+- UI de options
+
+
 
 
 -------------

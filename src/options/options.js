@@ -309,15 +309,13 @@ async function addUserSite(category, name, url) {
     // Mettre à jour le site existant
     userSites[category][existingIndex] = {
       name,
-      url,
-      icon: 'icon-dansmazone.png' // Icône par défaut
+      url
     };
   } else {
     // Ajouter un nouveau site
     userSites[category].push({
       name,
-      url,
-      icon: 'icon-dansmazone.png' // Icône par défaut
+      url
     });
   }
   

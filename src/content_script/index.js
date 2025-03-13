@@ -157,8 +157,7 @@ function addLinkButtons(sites, searchTerm) {
   header.classList.add('dmz-sidebar-header');
   
   const icon = document.createElement('img');
-  // icon.src = browser.runtime.getURL('icons/favicon-48.png');
-  icon.src = browser.runtime.getURL('images/canada_flag.png');
+  icon.src = browser.runtime.getURL('icons/icon-48.png');
   icon.alt = "DansMaZone";
   
   const title = document.createElement('span');
@@ -183,14 +182,9 @@ function addLinkButtons(sites, searchTerm) {
     button.target = "_blank";
     button.classList.add('dmz-sidebar-button');
     
-    // const siteIcon = document.createElement('img');
-    // siteIcon.src = browser.runtime.getURL(`images/${site.icon}`);
-    // siteIcon.alt = site.name;
-    
     const siteName = document.createElement('span');
     siteName.textContent = site.name;
     
-    // button.appendChild(siteIcon);
     button.appendChild(siteName);
     contentContainer.appendChild(button);
   }

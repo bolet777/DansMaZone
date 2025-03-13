@@ -26,7 +26,7 @@ const manifestInput = {
   // Web Accessible Resources nécessite une structure différente en V3
   web_accessible_resources: [
     {
-      resources: ['icons/*', 'images/*'],
+      resources: ['icons/*'],
       matches: [
         '*://*.amazon.ca/*'
       ],
@@ -34,10 +34,11 @@ const manifestInput = {
   ],
 
   icons: {
-    32: 'icons/favicon-48.png',
-    48: 'icons/favicon-48.png',
-    96: 'icons/favicon-96.png',
-    128: 'icons/favicon-128.png',
+    16: 'icons/icon-16.png',
+    32: 'icons/icon-32.png',
+    48: 'icons/icon-48.png',
+    96: 'icons/icon-96.png',
+    128: 'icons/icon-128.png',
   },
 
   description: '__MSG_extensionDescription__',
@@ -59,10 +60,11 @@ const manifestInput = {
   action: {
     default_title: 'DansMaZone',
     default_icon: {
-      32: 'icons/favicon-32.png',
-      48: 'icons/favicon-48.png',
-      96: 'icons/favicon-96.png',
-      128: 'icons/favicon-128.png',
+      16: 'icons/icon-16.png',
+      32: 'icons/icon-32.png',
+      48: 'icons/icon-48.png',
+      96: 'icons/icon-96.png',
+      128: 'icons/icon-128.png',
     },
   },
 

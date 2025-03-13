@@ -148,7 +148,6 @@ const config = {
       patterns: [
         { from: '_locales', to: '_locales' },
         { from: 'icons', to: 'icons', globOptions: { ignore: ['icon.xcf', '.DS_Store'] } },
-        { from: 'images', to: 'images', globOptions: { ignore: ['.DS_Store'] } },
       ],
     }),
   ],
