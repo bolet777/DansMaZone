@@ -2,6 +2,34 @@ import browser from 'webextension-polyfill';
 import { categorySites } from '../datas/category-sites.js';
 import { categoryKeywords, categoryMapping } from '../datas/category-classifier.js';
 
+// Fonction pour obtenir les traductions
+function getI18nMessages() {
+  // Liste des clés de traduction nécessaires pour la page d'options
+  const keys = [
+    'extensionName', 'optionsTitle', 'mySitesTab', 'keywordsTab', 'contributeTab', 
+    'searchSite', 'category', 'allCategories', 'addSite', 'siteName', 
+    'siteNamePlaceholder', 'searchUrl', 'searchUrlPlaceholder', 'searchUrlInfo',
+    'testTerm', 'testUrl', 'addButton', 'myCustomSites', 'importExport',
+    'exportSites', 'importSites', 'keywordsManagement', 'addKeywords',
+    'keywordsPlaceholder', 'language', 'frenchKeywords', 'englishKeywords',
+    'contributeTitle', 'contributeDescription', 'shareSites', 'exportSitesStep1',
+    'exportSitesStep2', 'exportSitesStep3', 'exportForContribution', 'improveCode',
+    'improveCodeStep1', 'improveCodeStep2', 'improveCodeStep3', 'viewOnGitHub',
+    'newCategory', 'reportBug', 'enterSearchTerm', 'confirmDelete', 'fillAllFields',
+    'newCategoryPrompt', 'siteAddedSuccess', 'siteDeletedSuccess', 'enterTestTerm',
+    'exportSuccess', 'importSuccess', 'enterValidKeyword', 'keywordsAddedSuccess',
+    'keywordDeletedSuccess'
+  ];
+  
+  // Récupérer toutes les traductions demandées
+  const translations = {};
+  for (const key of keys) {
+    translations[key] = browser.i18n.getMessage(key) || '';
+  }
+  
+  return translations;
+}
+
 // Stocker les références aux éléments du DOM
 const elements = {
   tabs: document.querySelectorAll('.tab-btn'),
@@ -18,21 +46,187 @@ const elements = {
   exportBtn: document.getElementById('export-btn'),
   exportContribBtn: document.getElementById('export-contrib-btn'),
   importFile: document.getElementById('import-file'),
-  versionElement: document.getElementById('version')
+  versionElement: document.getElementById('version'),
+  versionFooterElement: document.getElementById('version-footer'),
+  optionsTitleElement: document.getElementById('options-title'),
+  mySitesTabElement: document.querySelector('[data-tab="user-sites"]'),
+  keywordsTabElement: document.querySelector('[data-tab="keywords"]'),
+  contributeTabElement: document.querySelector('[data-tab="contribute"]'),
+  searchSiteElement: document.getElementById('site-search'),
+  categoryFilterLabel: document.querySelector('label[for="category-filter"]'),
+  addSiteTitle: document.querySelector('.add-site-form h3'),
+  siteCategoryLabel: document.querySelector('label[for="site-category"]'),
+  siteNameLabel: document.querySelector('label[for="site-name"]'),
+  searchUrlLabel: document.querySelector('label[for="site-url"]'),
+  searchUrlInfo: document.querySelector('.url-info'),
+  myCustomSitesTitle: document.querySelector('.sites-container').previousElementSibling,
+  importExportTitle: document.querySelector('.import-export h3'),
+  importSitesLabel: document.querySelector('.import-label')
 };
 
 // Structure de données pour stocker les sites personnalisés
 let userSites = {};
 // Stockage des sites par défaut de l'extension
 let defaultSites = {};
+// Objet pour stocker les traductions
+let i18n = {};
+
+// Fonction pour appliquer les traductions à l'interface utilisateur
+function localizeUI() {
+  // Charger les traductions
+  i18n = getI18nMessages();
+  
+  // Titre de la page
+  document.title = i18n.optionsTitle || "Options DansMaZone";
+  elements.optionsTitleElement.textContent = i18n.optionsTitle || "Options DansMaZone";
+  
+  // Onglets
+  elements.mySitesTabElement.textContent = i18n.mySitesTab || "Mes sites";
+  elements.keywordsTabElement.textContent = i18n.keywordsTab || "Mots-clés";
+  elements.contributeTabElement.textContent = i18n.contributeTab || "Contribuer";
+  
+  // Recherche et filtre
+  elements.searchSiteElement.placeholder = i18n.searchSite || "Rechercher un site...";
+  elements.categoryFilterLabel.textContent = i18n.category || "Catégorie:";
+  
+  // Formulaire d'ajout de site
+  elements.addSiteTitle.textContent = i18n.addSite || "Ajouter un site";
+  elements.siteCategoryLabel.textContent = i18n.category || "Catégorie:";
+  elements.siteNameLabel.textContent = i18n.siteName || "Nom du site:";
+  elements.siteName.placeholder = i18n.siteNamePlaceholder || "Ex: Ma Librairie Locale";
+  elements.searchUrlLabel.textContent = i18n.searchUrl || "URL de recherche:";
+  elements.siteUrl.placeholder = i18n.searchUrlPlaceholder || "Ex: https://example.com/search?q=##QUERY##";
+  elements.searchUrlInfo.innerHTML = i18n.searchUrlInfo || 'Utilisez <code>##QUERY##</code> pour indiquer où le terme de recherche sera inséré, ou <code>##ISBN##</code> pour les livres.';
+  elements.siteUrlTest.placeholder = i18n.testTerm || "Terme de test (pour essayer l'URL)";
+  elements.testUrlBtn.textContent = i18n.testUrl || "Tester l'URL";
+  elements.addSiteBtn.textContent = i18n.addButton || "Ajouter le site";
+  
+  // Liste des sites personnalisés
+  elements.myCustomSitesTitle.textContent = i18n.myCustomSites || "Mes sites personnalisés";
+  
+  // Import/Export
+  elements.importExportTitle.textContent = i18n.importExport || "Importer / Exporter";
+  elements.exportBtn.textContent = i18n.exportSites || "Exporter mes sites";
+  elements.importSitesLabel.textContent = i18n.importSites || "Importer des sites";
+  
+  // Option "Toutes les catégories"
+  const allCategoriesOption = elements.categoryFilter.querySelector('option[value="all"]');
+  if (allCategoriesOption) {
+    allCategoriesOption.textContent = i18n.allCategories || "Toutes les catégories";
+  }
+  
+  // Section des mots-clés
+  const keywordsMgmtTitle = document.getElementById('keywords-management-title');
+  if (keywordsMgmtTitle) {
+    keywordsMgmtTitle.textContent = i18n.keywordsManagement || "Gestion des mots-clés";
+  }
+  
+  const keywordsInputLabel = document.getElementById('keywords-input-label');
+  if (keywordsInputLabel) {
+    keywordsInputLabel.textContent = i18n.addKeywords || "Ajouter des mots-clés (séparés par virgule):";
+  }
+  
+  const keywordInput = document.getElementById('keyword-input');
+  if (keywordInput) {
+    keywordInput.placeholder = i18n.keywordsPlaceholder || "Ex: ordinateur, écran, clavier";
+  }
+  
+  const keywordsLanguageLabel = document.getElementById('keywords-language-label');
+  if (keywordsLanguageLabel) {
+    keywordsLanguageLabel.textContent = i18n.language || "Langue:";
+  }
+  
+  const addKeywordsBtn = document.getElementById('add-keywords-btn');
+  if (addKeywordsBtn) {
+    addKeywordsBtn.textContent = i18n.addButton || "Ajouter";
+  }
+  
+  const frKeywordsTitle = document.getElementById('fr-keywords-title');
+  if (frKeywordsTitle) {
+    frKeywordsTitle.textContent = i18n.frenchKeywords || "Mots-clés français";
+  }
+  
+  const enKeywordsTitle = document.getElementById('en-keywords-title');
+  if (enKeywordsTitle) {
+    enKeywordsTitle.textContent = i18n.englishKeywords || "Mots-clés anglais";
+  }
+  
+  // Section Contribuer
+  const contributeTitle = document.getElementById('contribute-title');
+  if (contributeTitle) {
+    contributeTitle.textContent = i18n.contributeTitle || "Contribuer à DansMaZone";
+  }
+  
+  const contributeDescription = document.getElementById('contribute-description');
+  if (contributeDescription) {
+    contributeDescription.textContent = i18n.contributeDescription || "Aidez à améliorer DansMaZone en partageant vos sites ou en signalant des bugs.";
+  }
+  
+  const shareSitesTitle = document.getElementById('share-sites-title');
+  if (shareSitesTitle) {
+    shareSitesTitle.textContent = i18n.shareSites || "Partager vos sites";
+  }
+  
+  const exportStep1 = document.getElementById('export-step-1');
+  if (exportStep1) {
+    exportStep1.textContent = i18n.exportSitesStep1 || "Exportez vos sites personnalisés";
+  }
+  
+  const exportStep2 = document.getElementById('export-step-2');
+  if (exportStep2) {
+    exportStep2.textContent = i18n.exportSitesStep2 || "Envoyez le fichier JSON généré par email";
+  }
+  
+  const exportStep3 = document.getElementById('export-step-3');
+  if (exportStep3) {
+    exportStep3.textContent = i18n.exportSitesStep3 || "Vos sites pourront être intégrés dans une future version";
+  }
+  
+  const exportContribBtn = document.getElementById('export-contrib-btn');
+  if (exportContribBtn) {
+    exportContribBtn.textContent = i18n.exportForContribution || "Exporter pour contribution";
+  }
+  
+  const improveCodeTitle = document.getElementById('improve-code-title');
+  if (improveCodeTitle) {
+    improveCodeTitle.textContent = i18n.improveCode || "Améliorer le code";
+  }
+  
+  const improveStep1 = document.getElementById('improve-step-1');
+  if (improveStep1) {
+    improveStep1.textContent = i18n.improveCodeStep1 || "Le code est disponible sur GitHub";
+  }
+  
+  const improveStep2 = document.getElementById('improve-step-2');
+  if (improveStep2) {
+    improveStep2.textContent = i18n.improveCodeStep2 || "Vous pouvez proposer des améliorations via des Pull Requests";
+  }
+  
+  const improveStep3 = document.getElementById('improve-step-3');
+  if (improveStep3) {
+    improveStep3.textContent = i18n.improveCodeStep3 || "Ou signaler des bugs via des Issues";
+  }
+  
+  const githubLink = document.getElementById('github-link');
+  if (githubLink) {
+    githubLink.textContent = i18n.viewOnGitHub || "Voir sur GitHub";
+  }
+}
 
 // Initialisation de la page
 async function initOptions() {
+  try {
     // Afficher la version de l'extension
     const manifestData = browser.runtime.getManifest();
     elements.versionElement.textContent = manifestData.version;
-    document.getElementById('version-footer').textContent = manifestData.version;
-  
+    
+    if (elements.versionFooterElement) {
+      elements.versionFooterElement.textContent = manifestData.version;
+    }
+    
+    // Localiser l'interface
+    localizeUI();
+    
     // Initialiser les onglets
     initTabs();
     
@@ -42,7 +236,7 @@ async function initOptions() {
     // Charger les sites personnalisés depuis le stockage
     await loadUserSites();
     
-    // Charger les mots-clés par défaut - Cette ligne est importante!
+    // Charger les mots-clés par défaut
     loadDefaultKeywords();
     
     // Remplir les listes déroulantes de catégories
@@ -56,14 +250,17 @@ async function initOptions() {
     renderSites();
     
     // Si un onglet des mots-clés est actif, afficher les mots-clés
-    if (elements.keywordCategory.value) {
-        renderKeywords(elements.keywordCategory.value);
+    if (elements.keywordCategory && elements.keywordCategory.value) {
+      renderKeywords(elements.keywordCategory.value);
     }
-  
+    
     setupBugReporting();
     
     // Ajouter les écouteurs d'événements
     attachEventListeners();
+  } catch (error) {
+    handleError(error, "initialisation des options", true, true);
+  }
 }
 
 // Initialiser les onglets
@@ -141,6 +338,10 @@ function sortCategories(categories) {
 
 // Remplir les listes déroulantes de catégories
 function populateCategoryDropdowns() {
+  // Vider d'abord les listes déroulantes
+  elements.categoryFilter.innerHTML = '<option value="all">' + (i18n.allCategories || "Toutes les catégories") + '</option>';
+  elements.siteCategory.innerHTML = '';
+  
   // Obtenir toutes les catégories (par défaut + personnalisées)
   const allCategories = [...new Set([
     ...Object.keys(defaultSites),
@@ -171,7 +372,7 @@ function populateCategoryDropdowns() {
   // Ajouter une option pour créer une nouvelle catégorie
   const newCategoryOption = document.createElement('option');
   newCategoryOption.value = 'new';
-  newCategoryOption.textContent = '+ Nouvelle catégorie';
+  newCategoryOption.textContent = i18n.newCategory || '+ Nouvelle catégorie';
   elements.siteCategory.appendChild(newCategoryOption);
 }
 
@@ -455,7 +656,7 @@ function attachEventListeners() {
       const testTerm = elements.siteUrlTest.value;
       
       if (!testTerm) {
-        showNotification('Veuillez entrer un terme de test.', 'error');
+        showNotification(i18n.enterTestTerm || 'Veuillez entrer un terme de test.', 'error');
         return;
       }
       
@@ -470,14 +671,14 @@ function attachEventListeners() {
       
       // Validation de base
       if (!name || !url) {
-        showNotification('Veuillez remplir tous les champs.', 'error');
+        showNotification(i18n.fillAllFields || 'Veuillez remplir tous les champs.', 'error');
         return;
       }
       
       // Si nouvelle catégorie, demander le nom
       let finalCategory = category;
       if (category === 'new') {
-        const newCategory = prompt('Nom de la nouvelle catégorie:');
+        const newCategory = prompt(i18n.newCategoryPrompt || 'Nom de la nouvelle catégorie:');
         if (!newCategory) {
           return;
         }
@@ -491,7 +692,7 @@ function attachEventListeners() {
         elements.siteUrl.value = '';
         elements.siteUrlTest.value = '';
         
-        showNotification('Site ajouté avec succès!', 'success');
+        showNotification(i18n.siteAddedSuccess || 'Site ajouté avec succès!', 'success');
         
         // Si nouvelle catégorie, actualiser les listes déroulantes
         if (category === 'new') {
@@ -525,7 +726,7 @@ function attachEventListeners() {
       
       // Test du site
       if (button.classList.contains('test-site-btn')) {
-        const testTerm = prompt('Entrez un terme de recherche pour tester ce site:');
+        const testTerm = prompt(i18n.enterSearchTerm || 'Entrez un terme de recherche pour tester ce site:');
         if (testTerm) {
           testSearchUrl(url, testTerm);
         }
@@ -544,10 +745,12 @@ function attachEventListeners() {
       
       // Suppression du site
       else if (button.classList.contains('delete-site-btn')) {
-        if (confirm(`Êtes-vous sûr de vouloir supprimer le site "${name}"?`)) {
+        const confirmMessage = (i18n.confirmDelete || 'Êtes-vous sûr de vouloir supprimer le site "$1"?')
+          .replace('$1', name);
+        if (confirm(confirmMessage)) {
           const deleted = await deleteUserSite(category, name);
           if (deleted) {
-            showNotification('Site supprimé avec succès!', 'success');
+            showNotification(i18n.siteDeletedSuccess || 'Site supprimé avec succès!', 'success');
           }
         }
       }
@@ -606,7 +809,7 @@ function exportUserSites(forContribution = false) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    showNotification('Export réussi!', 'success');
+    showNotification(i18n.exportSuccess || 'Export réussi!', 'success');
 }
   
 // Fonction modifiée pour importer à la fois les sites et les mots-clés
@@ -740,7 +943,7 @@ async function importUserSites(file) {
             renderKeywords(elements.keywordCategory.value);
           }
           
-          showNotification('Import réussi!', 'success');
+          showNotification(i18n.importSuccess || 'Import réussi!', 'success');
         }
       } catch (error) {
         console.error('Erreur lors de l\'import:', error);
@@ -808,7 +1011,7 @@ function handleError(error, context, notify = true, critical = false) {
 
 function setupBugReporting() {
     const bugReportBtn = document.createElement('button');
-    bugReportBtn.textContent = 'Signaler un problème';
+    bugReportBtn.textContent = i18n.reportBug || 'Signaler un problème';
     bugReportBtn.className = 'bug-report-btn';
     bugReportBtn.onclick = () => {
       const diagnosticInfo = {
@@ -1025,7 +1228,7 @@ async function addKeywords(category, keywordsText, language) {
         .filter(k => k.length > 0);
 
     if (keywords.length === 0) {
-        showNotification('Veuillez entrer au moins un mot-clé valide.', 'error');
+        showNotification(i18n.enterValidKeyword || 'Veuillez entrer au moins un mot-clé valide.', 'error');
         return false;
     }
 
@@ -1111,7 +1314,7 @@ function attachKeywordEventListeners() {
         if (added) {
         // Réinitialiser l'input
         elements.keywordInput.value = '';
-        showNotification('Mots-clés ajoutés avec succès!', 'success');
+        showNotification(i18n.keywordsAddedSuccess || 'Mots-clés ajoutés avec succès!', 'success');
         }
     });
 
@@ -1126,7 +1329,7 @@ function attachKeywordEventListeners() {
             
             const removed = await removeKeyword(category, keyword, language);
             if (removed) {
-                showNotification('Mot-clé supprimé avec succès!', 'success');
+                showNotification(i18n.keywordDeletedSuccess || 'Mot-clé supprimé avec succès!', 'success');
             }
             });
         });

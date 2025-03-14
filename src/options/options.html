@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
   <div class="container">
     <header>
       <img src="icons/icon-48.png" alt="DansMaZone">
-      <h1>Options DansMaZone <span id="version"></span></h1>
+      <h1 id="options-title">Options DansMaZone <span id="version"></span></h1>
     </header>
 
     <div class="tab-container">
@@ -88,12 +88,12 @@
         </div>
 
         <div class="keywords-form">
-          <h3>Gestion des mots-clés</h3>
+          <h3 id="keywords-management-title">Gestion des mots-clés</h3>
           <div class="form-row">
-            <label for="keyword-input">Ajouter des mots-clés (séparés par virgule):</label>
+            <label for="keyword-input" id="keywords-input-label">Ajouter des mots-clés (séparés par virgule):</label>
             <input type="text" id="keyword-input" placeholder="Ex: ordinateur, écran, clavier">
             <div class="language-selector">
-              <label for="keyword-language">Langue:</label>
+              <label for="keyword-language" id="keywords-language-label">Langue:</label>
               <select id="keyword-language">
                 <option value="fr">Français</option>
                 <option value="en">Anglais</option>
@@ -107,13 +107,13 @@
 
         <div class="keywords-container">
           <div class="keyword-section">
-            <h3>Mots-clés français</h3>
+            <h3 id="fr-keywords-title">Mots-clés français</h3>
             <div class="keyword-list fr-keywords">
               <!-- Liste des mots-clés en français générée dynamiquement -->
             </div>
           </div>
           <div class="keyword-section">
-            <h3>Mots-clés anglais</h3>
+            <h3 id="en-keywords-title">Mots-clés anglais</h3>
             <div class="keyword-list en-keywords">
               <!-- Liste des mots-clés en anglais générée dynamiquement -->
             </div>
@@ -123,28 +123,28 @@
 
       <!-- Onglet Contribuer -->
       <div id="contribute" class="tab-content">
-        <h2>Contribuer à DansMaZone</h2>
-        <p>Aidez à améliorer DansMaZone en partageant vos sites ou en signalant des bugs.</p>
+        <h2 id="contribute-title">Contribuer à DansMaZone</h2>
+        <p id="contribute-description">Aidez à améliorer DansMaZone en partageant vos sites ou en signalant des bugs.</p>
 
         <div class="contribution-methods">
           <div class="contribution-card">
-            <h3>Partager vos sites</h3>
+            <h3 id="share-sites-title">Partager vos sites</h3>
             <ol>
-              <li>Exportez vos sites personnalisés</li>
-              <li>Envoyez le fichier JSON généré par email</li>
-              <li>Vos sites pourront être intégrés dans une future version</li>
+              <li id="export-step-1">Exportez vos sites personnalisés</li>
+              <li id="export-step-2">Envoyez le fichier JSON généré par email</li>
+              <li id="export-step-3">Vos sites pourront être intégrés dans une future version</li>
             </ol>
             <button id="export-contrib-btn" class="action-button">Exporter pour contribution</button>
           </div>
 
           <div class="contribution-card">
-            <h3>Améliorer le code</h3>
+            <h3 id="improve-code-title">Améliorer le code</h3>
             <ol>
-              <li>Le code est disponible sur GitHub</li>
-              <li>Vous pouvez proposer des améliorations via des Pull Requests</li>
-              <li>Ou signaler des bugs via des Issues</li>
+              <li id="improve-step-1">Le code est disponible sur GitHub</li>
+              <li id="improve-step-2">Vous pouvez proposer des améliorations via des Pull Requests</li>
+              <li id="improve-step-3">Ou signaler des bugs via des Issues</li>
             </ol>
-            <a href="https://github.com/bolet777/DansMaZone" target="_blank" class="action-button">Voir sur GitHub</a>
+            <a href="https://github.com/bolet777/DansMaZone" target="_blank" class="action-button" id="github-link">Voir sur GitHub</a>
           </div>
         </div>
       </div>
