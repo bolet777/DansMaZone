@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { categorySites } from '../datas/category-sites.js';
-import { categoryMapping } from '../datas/category-classifier.js';
+import { categoryKeywords, categoryMapping } from '../datas/category-classifier.js';
 
 // Stocker les références aux éléments du DOM
 const elements = {
@@ -28,29 +28,42 @@ let defaultSites = {};
 
 // Initialisation de la page
 async function initOptions() {
-  // Afficher la version de l'extension
-  const manifestData = browser.runtime.getManifest();
-  elements.versionElement.textContent = manifestData.version;
-
-  // Initialiser les onglets
-  initTabs();
+    // Afficher la version de l'extension
+    const manifestData = browser.runtime.getManifest();
+    elements.versionElement.textContent = manifestData.version;
+    document.getElementById('version-footer').textContent = manifestData.version;
   
-  // Cloner les sites par défaut
-  defaultSites = structuredClone(categorySites);
+    // Initialiser les onglets
+    initTabs();
+    
+    // Cloner les sites par défaut
+    defaultSites = structuredClone(categorySites);
+    
+    // Charger les sites personnalisés depuis le stockage
+    await loadUserSites();
+    
+    // Charger les mots-clés par défaut - Cette ligne est importante!
+    loadDefaultKeywords();
+    
+    // Remplir les listes déroulantes de catégories
+    populateCategoryDropdowns();
+    populateKeywordCategoryDropdown();
+    
+    // Initialiser la fonctionnalité de mots-clés
+    await initKeywordsFeature();
+    
+    // Afficher les sites
+    renderSites();
+    
+    // Si un onglet des mots-clés est actif, afficher les mots-clés
+    if (elements.keywordCategory.value) {
+        renderKeywords(elements.keywordCategory.value);
+    }
   
-  // Charger les sites personnalisés depuis le stockage
-  await loadUserSites();
-  
-  // Remplir les listes déroulantes de catégories
-  populateCategoryDropdowns();
-  
-  // Afficher les sites
-  renderSites();
-
-  setupBugReporting();
-  
-  // Ajouter les écouteurs d'événements
-  attachEventListeners();
+    setupBugReporting();
+    
+    // Ajouter les écouteurs d'événements
+    attachEventListeners();
 }
 
 // Initialiser les onglets
@@ -118,13 +131,13 @@ async function saveUserSites() {
     }
   }
 
-  // Fonction améliorée pour le tri des catégories avec prise en compte des accents
+// Fonction améliorée pour le tri des catégories avec prise en compte des accents
 function sortCategories(categories) {
     return categories.sort((a, b) => {
       // Utiliser localeCompare avec les options pour les caractères français
       return a.localeCompare(b, 'fr', { sensitivity: 'base' });
     });
-  }
+}
 
 // Remplir les listes déroulantes de catégories
 function populateCategoryDropdowns() {
@@ -422,10 +435,10 @@ async function deleteUserSite(category, name) {
     }
     
     return false;
-  }
+}
   
-  // Fonction pour attacher tous les écouteurs d'événements
-  function attachEventListeners() {
+// Fonction pour attacher tous les écouteurs d'événements
+function attachEventListeners() {
     // Écouteur pour la recherche de sites
     elements.siteSearch.addEventListener('input', () => {
       renderSites();
@@ -539,24 +552,36 @@ async function deleteUserSite(category, name) {
         }
       }
     });
-  }
+}
   
-  // Fonction pour exporter les sites personnalisés
-  function exportUserSites(forContribution = false) {
+// Fonction pour exporter les sites et les mots-clés personnalisés
+function exportUserSites(forContribution = false) {
     // Préparer les données à exporter
     let dataToExport;
     
     if (forContribution) {
       // Pour contribution: format spécial pour faciliter l'intégration
-      dataToExport = Object.entries(userSites).reduce((result, [category, sites]) => {
-        if (sites.length > 0) {
-          result[category] = sites;
-        }
-        return result;
-      }, {});
+      dataToExport = {
+        sites: Object.entries(userSites).reduce((result, [category, sites]) => {
+          if (sites.length > 0) {
+            result[category] = sites;
+          }
+          return result;
+        }, {}),
+        keywords: Object.entries(userCategoryKeywords).reduce((result, [category, keywords]) => {
+          // N'inclure que les catégories avec des mots-clés personnalisés
+          if ((keywords.fr && keywords.fr.length > 0) || (keywords.en && keywords.en.length > 0)) {
+            result[category] = keywords;
+          }
+          return result;
+        }, {})
+      };
     } else {
-      // Export normal: tous les sites personnalisés
-      dataToExport = userSites;
+      // Export normal: tous les sites et mots-clés personnalisés
+      dataToExport = {
+        sites: userSites,
+        keywords: userCategoryKeywords
+      };
     }
     
     // Convertir en JSON
@@ -582,10 +607,10 @@ async function deleteUserSite(category, name) {
     URL.revokeObjectURL(url);
     
     showNotification('Export réussi!', 'success');
-  }
+}
   
-  // Fonction pour importer des sites personnalisés
-  async function importUserSites(file) {
+// Fonction modifiée pour importer à la fois les sites et les mots-clés
+async function importUserSites(file) {
     if (!file) {
       return;
     }
@@ -602,45 +627,118 @@ async function deleteUserSite(category, name) {
           throw new Error('Format de fichier invalide.');
         }
         
-        // Fusionner avec les sites existants
-        Object.entries(importedData).forEach(([category, sites]) => {
-          if (!Array.isArray(sites)) {
-            return;
-          }
-          
-          // Créer la catégorie si elle n'existe pas
-          if (!userSites[category]) {
-            userSites[category] = [];
-          }
-          
-          // Ajouter chaque site, en vérifiant les doublons
-          sites.forEach(site => {
-            // Vérifier la structure du site
-            if (!site.name || !site.url) {
+        // Si le format est celui de la nouvelle version (avec sites et keywords)
+        if (importedData.sites && typeof importedData.sites === 'object') {
+          // Traiter les sites
+          Object.entries(importedData.sites).forEach(([category, sites]) => {
+            if (!Array.isArray(sites)) {
               return;
             }
             
-            // Vérifier si le site existe déjà
-            const existingIndex = userSites[category].findIndex(s => s.name === site.name);
-            
-            if (existingIndex !== -1) {
-              // Mettre à jour le site existant
-              userSites[category][existingIndex] = site;
-            } else {
-              // Ajouter un nouveau site
-              userSites[category].push(site);
+            // Créer la catégorie si elle n'existe pas
+            if (!userSites[category]) {
+              userSites[category] = [];
             }
+            
+            // Ajouter chaque site
+            sites.forEach(site => {
+              // Vérifier la structure du site
+              if (!site.name || !site.url) {
+                return;
+              }
+              
+              // Vérifier si le site existe déjà
+              const existingIndex = userSites[category].findIndex(s => s.name === site.name);
+              
+              if (existingIndex !== -1) {
+                // Mettre à jour le site existant
+                userSites[category][existingIndex] = site;
+              } else {
+                // Ajouter un nouveau site
+                userSites[category].push(site);
+              }
+            });
           });
-        });
+          
+          // Traiter les mots-clés si présents
+          if (importedData.keywords && typeof importedData.keywords === 'object') {
+            Object.entries(importedData.keywords).forEach(([category, keywords]) => {
+              // Créer la catégorie si elle n'existe pas
+              if (!userCategoryKeywords[category]) {
+                userCategoryKeywords[category] = {
+                  fr: [],
+                  en: []
+                };
+              }
+              
+              // Fusionner les mots-clés français
+              if (keywords.fr && Array.isArray(keywords.fr)) {
+                keywords.fr.forEach(keyword => {
+                  if (!userCategoryKeywords[category].fr.includes(keyword)) {
+                    userCategoryKeywords[category].fr.push(keyword);
+                  }
+                });
+              }
+              
+              // Fusionner les mots-clés anglais
+              if (keywords.en && Array.isArray(keywords.en)) {
+                keywords.en.forEach(keyword => {
+                  if (!userCategoryKeywords[category].en.includes(keyword)) {
+                    userCategoryKeywords[category].en.push(keyword);
+                  }
+                });
+              }
+            });
+          }
+        } else {
+          // Format ancien (juste des sites)
+          Object.entries(importedData).forEach(([category, sites]) => {
+            if (!Array.isArray(sites)) {
+              return;
+            }
+            
+            // Créer la catégorie si elle n'existe pas
+            if (!userSites[category]) {
+              userSites[category] = [];
+            }
+            
+            // Ajouter chaque site
+            sites.forEach(site => {
+              // Vérifier la structure du site
+              if (!site.name || !site.url) {
+                return;
+              }
+              
+              // Vérifier si le site existe déjà
+              const existingIndex = userSites[category].findIndex(s => s.name === site.name);
+              
+              if (existingIndex !== -1) {
+                // Mettre à jour le site existant
+                userSites[category][existingIndex] = site;
+              } else {
+                // Ajouter un nouveau site
+                userSites[category].push(site);
+              }
+            });
+          });
+        }
         
-        // Sauvegarder et rafraîchir l'affichage
-        const saved = await saveUserSites();
-        if (saved) {
+        // Sauvegarder les sites et les mots-clés
+        const sitesSaved = await saveUserSites();
+        const keywordsSaved = await saveUserKeywords();
+        
+        if (sitesSaved && keywordsSaved) {
           // Actualiser les listes déroulantes de catégories
           populateCategoryDropdowns();
+          populateKeywordCategoryDropdown();
           
           // Actualiser l'affichage des sites
           renderSites();
+          
+          // Actualiser l'affichage des mots-clés si l'onglet est actif
+          if (elements.keywordCategory.value) {
+            renderKeywords(elements.keywordCategory.value);
+          }
           
           showNotification('Import réussi!', 'success');
         }
@@ -651,10 +749,10 @@ async function deleteUserSite(category, name) {
     };
     
     reader.readAsText(file);
-  }
+}
   
-  // Fonction pour afficher une notification
-  function showNotification(message, type = 'success') {
+// Fonction pour afficher une notification
+function showNotification(message, type = 'success') {
     // Créer l'élément de notification
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
@@ -677,7 +775,7 @@ async function deleteUserSite(category, name) {
         document.body.removeChild(notification);
       }, 300);
     }, 3000);
-  }
+}
 
 /**
  * Gère les erreurs de manière uniforme dans toute l'extension
@@ -706,9 +804,9 @@ function handleError(error, context, notify = true, critical = false) {
     
     // Renvoie l'erreur pour permettre un traitement supplémentaire si nécessaire
     return error;
-  }
+}
 
-  function setupBugReporting() {
+function setupBugReporting() {
     const bugReportBtn = document.createElement('button');
     bugReportBtn.textContent = 'Signaler un problème';
     bugReportBtn.className = 'bug-report-btn';
@@ -735,7 +833,304 @@ function handleError(error, context, notify = true, critical = false) {
     };
     
     document.querySelector('footer').appendChild(bugReportBtn);
-  }
-  
-  // Initialiser la page
-  document.addEventListener('DOMContentLoaded', initOptions);
+}
+
+// Ajouter les références DOM pour les éléments des mots-clés
+elements.keywordCategory = document.getElementById('keyword-category');
+elements.keywordInput = document.getElementById('keyword-input');
+elements.keywordLanguage = document.getElementById('keyword-language');
+elements.addKeywordsBtn = document.getElementById('add-keywords-btn');
+elements.frKeywordsList = document.querySelector('.fr-keywords');
+elements.enKeywordsList = document.querySelector('.en-keywords');
+
+// Structure pour stocker les mots-clés personnalisés
+let userCategoryKeywords = {};
+
+// Structure pour stocker les mots-clés par défaut
+let defaultCategoryKeywords = {};
+
+// Chargement des mots-clés par défaut
+function loadDefaultKeywords() {
+    // Copier les mots-clés par défaut depuis category-classifier.js
+    defaultCategoryKeywords = structuredClone(categoryKeywords);
+}
+
+// Chargement des mots-clés personnalisés
+async function loadUserKeywords() {
+    try {
+        const result = await browser.storage.local.get('userCategoryKeywords');
+        userCategoryKeywords = result.userCategoryKeywords || {};
+        
+        // S'assurer que toutes les catégories sont initialisées
+        Object.keys(defaultCategoryKeywords).forEach(category => {
+        if (!userCategoryKeywords[category]) {
+            userCategoryKeywords[category] = {
+            fr: [],
+            en: []
+            };
+        }
+        });
+        
+        // Aussi initialiser les catégories personnalisées
+        Object.keys(userSites).forEach(category => {
+        if (!userCategoryKeywords[category]) {
+            userCategoryKeywords[category] = {
+            fr: [],
+            en: []
+            };
+        }
+        });
+        
+        return true;
+    } catch (error) {
+        handleError(error, 'chargement des mots-clés personnalisés', true, false);
+        
+        // En cas d'erreur, initialiser avec un objet vide
+        userCategoryKeywords = {};
+        Object.keys(defaultCategoryKeywords).forEach(category => {
+        userCategoryKeywords[category] = { fr: [], en: [] };
+        });
+        Object.keys(userSites).forEach(category => {
+        userCategoryKeywords[category] = { fr: [], en: [] };
+        });
+        
+        return false;
+    }
+}
+
+// Sauvegarder les mots-clés personnalisés
+async function saveUserKeywords() {
+    try {
+        await browser.storage.local.set({ userCategoryKeywords });
+        return true;
+    } catch (error) {
+        handleError(error, 'sauvegarde des mots-clés personnalisés', true, false);
+        return false;
+    }
+}
+
+// Remplir la liste déroulante des catégories pour les mots-clés
+function populateKeywordCategoryDropdown() {
+    // Vider d'abord la liste
+    elements.keywordCategory.innerHTML = '';
+
+    // Obtenir toutes les catégories (par défaut + personnalisées)
+    const categories = sortCategories([
+        ...new Set([
+        ...Object.keys(defaultCategoryKeywords),
+        ...Object.keys(userSites)
+        ])
+    ]);
+
+    // Ajouter chaque catégorie
+    categories.forEach(category => {
+        if (category !== 'default') {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        elements.keywordCategory.appendChild(option);
+        }
+    });
+}
+
+// Afficher les mots-clés pour une catégorie
+function renderKeywords(category) {
+    // Vider les listes
+    elements.frKeywordsList.innerHTML = '';
+    elements.enKeywordsList.innerHTML = '';
+    
+    // Obtenir les mots-clés par défaut
+    const defaultFrKeywords = [];
+    const defaultEnKeywords = [];
+    
+    if (defaultCategoryKeywords[category]) {
+        // Dans le format actuel, les mots-clés français et anglais sont mélangés
+        // avec des commentaires pour les séparer. Pour simplifier, nous supposons:
+        // - Les premiers mots sont en français (jusqu'à la moitié)
+        // - Les seconds sont en anglais
+        const allKeywords = defaultCategoryKeywords[category];
+        const midPoint = Math.floor(allKeywords.length / 2);
+        
+        for (let i = 0; i < allKeywords.length; i++) {
+        if (i < midPoint) {
+            defaultFrKeywords.push(allKeywords[i]);
+        } else {
+            defaultEnKeywords.push(allKeywords[i]);
+        }
+        }
+    }
+    
+    // Obtenir les mots-clés personnalisés
+    const userFrKeywords = userCategoryKeywords[category]?.fr || [];
+    const userEnKeywords = userCategoryKeywords[category]?.en || [];
+    
+    // Afficher les mots-clés français
+    [...defaultFrKeywords, ...userFrKeywords].forEach(keyword => {
+        const tag = document.createElement('div');
+        tag.className = 'keyword-tag';
+        tag.textContent = keyword;
+        
+        // Si c'est un mot-clé personnalisé, ajouter un bouton de suppression
+        if (userFrKeywords.includes(keyword)) {
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'remove-keyword';
+        removeBtn.textContent = '×';
+        removeBtn.dataset.keyword = keyword;
+        removeBtn.dataset.language = 'fr';
+        
+        tag.appendChild(removeBtn);
+        } else {
+        tag.classList.add('default-keyword');
+        }
+        
+        elements.frKeywordsList.appendChild(tag);
+    });
+    
+    // Afficher les mots-clés anglais
+    [...defaultEnKeywords, ...userEnKeywords].forEach(keyword => {
+        const tag = document.createElement('div');
+        tag.className = 'keyword-tag';
+        tag.textContent = keyword;
+        
+        // Si c'est un mot-clé personnalisé, ajouter un bouton de suppression
+        if (userEnKeywords.includes(keyword)) {
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'remove-keyword';
+        removeBtn.textContent = '×';
+        removeBtn.dataset.keyword = keyword;
+        removeBtn.dataset.language = 'en';
+        
+        tag.appendChild(removeBtn);
+        } else {
+        tag.classList.add('default-keyword');
+        }
+        
+        elements.enKeywordsList.appendChild(tag);
+    });
+}
+
+// Ajouter des mots-clés à une catégorie
+async function addKeywords(category, keywordsText, language) {
+    // S'assurer que la catégorie existe
+    if (!userCategoryKeywords[category]) {
+        userCategoryKeywords[category] = {
+        fr: [],
+        en: []
+        };
+    }
+
+    // Séparer les mots-clés par virgule et nettoyer
+    const keywords = keywordsText.split(',')
+        .map(k => k.trim())
+        .filter(k => k.length > 0);
+
+    if (keywords.length === 0) {
+        showNotification('Veuillez entrer au moins un mot-clé valide.', 'error');
+        return false;
+    }
+
+    // Ajouter chaque mot-clé s'il n'existe pas déjà
+    let added = 0;
+    keywords.forEach(keyword => {
+        if (!userCategoryKeywords[category][language].includes(keyword)) {
+        userCategoryKeywords[category][language].push(keyword);
+        added++;
+        }
+    });
+
+    // Sauvegarder et rafraîchir l'affichage
+    const saved = await saveUserKeywords();
+    if (saved) {
+        renderKeywords(category);
+        return true;
+    }
+
+    return false;
+}
+
+// Supprimer un mot-clé
+async function removeKeyword(category, keyword, language) {
+    // Vérifier si la catégorie existe
+    if (!userCategoryKeywords[category]) {
+        return false;
+    }
+
+    // Trouver l'index du mot-clé
+    const keywordIndex = userCategoryKeywords[category][language].indexOf(keyword);
+    if (keywordIndex === -1) {
+        return false;
+    }
+
+    // Supprimer le mot-clé
+    userCategoryKeywords[category][language].splice(keywordIndex, 1);
+
+    // Sauvegarder et rafraîchir l'affichage
+    const saved = await saveUserKeywords();
+    if (saved) {
+        renderKeywords(category);
+        return true;
+    }
+
+    return false;
+}
+
+// Initialiser la fonctionnalité de mots-clés
+async function initKeywordsFeature() {
+    // Charger les mots-clés par défaut
+    loadDefaultKeywords();
+
+    // Charger les mots-clés personnalisés
+    await loadUserKeywords();
+
+    // Remplir la liste déroulante des catégories
+    populateKeywordCategoryDropdown();
+
+    // Afficher les mots-clés pour la première catégorie
+    if (elements.keywordCategory.options.length > 0) {
+        renderKeywords(elements.keywordCategory.value);
+    }
+
+    // Ajouter les écouteurs d'événements
+    attachKeywordEventListeners();
+}
+
+// Attacher les écouteurs d'événements pour les mots-clés
+function attachKeywordEventListeners() {
+    // Changement de catégorie
+    elements.keywordCategory.addEventListener('change', () => {
+        renderKeywords(elements.keywordCategory.value);
+    });
+
+    // Ajout de mots-clés
+    elements.addKeywordsBtn.addEventListener('click', async () => {
+        const category = elements.keywordCategory.value;
+        const keywordsText = elements.keywordInput.value;
+        const language = elements.keywordLanguage.value;
+        
+        const added = await addKeywords(category, keywordsText, language);
+        if (added) {
+        // Réinitialiser l'input
+        elements.keywordInput.value = '';
+        showNotification('Mots-clés ajoutés avec succès!', 'success');
+        }
+    });
+
+    // Suppression de mots-clés (délégation d'événements)
+    document.querySelectorAll('.keyword-list').forEach(list => {
+        list.addEventListener('click', async (event) => {
+            const removeBtn = event.target.closest('.remove-keyword');
+            if (!removeBtn) return;
+            
+            const { keyword, language } = removeBtn.dataset;
+            const category = elements.keywordCategory.value;
+            
+            const removed = await removeKeyword(category, keyword, language);
+            if (removed) {
+                showNotification('Mot-clé supprimé avec succès!', 'success');
+            }
+            });
+        });
+}
+ 
+// Initialiser la page
+document.addEventListener('DOMContentLoaded', initOptions);

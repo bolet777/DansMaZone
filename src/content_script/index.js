@@ -1,17 +1,55 @@
 import browser from 'webextension-polyfill';
 import '../styles/content_script.scss';
 import { categorySites } from '../datas/category-sites.js';
-import { classifyPage, categoryMapping } from '../datas/category-classifier.js';
+import { classifyPage, categoryMapping, detectLanguage } from '../datas/category-classifier.js';
 
 // Stockage pour les sites combinés (par défaut + personnalisés)
 let combinedSites = {};
+// Stockage pour les chaînes de traduction
+let i18nStrings = {};
+
+// Charger les chaînes de traduction
+async function loadI18nStrings() {
+  try {
+    // Liste des clés de traduction nécessaires pour le content script
+    const keys = [
+      'sidebarTitle',
+      'optionsText'
+    ];
+    
+    // Récupérer toutes les traductions demandées
+    const translations = {};
+    for (const key of keys) {
+      translations[key] = browser.i18n.getMessage(key);
+    }
+    
+    // Si les traductions sont vides, utiliser les valeurs par défaut
+    i18nStrings = {
+      sidebarTitle: translations.sidebarTitle || 'Dans ma zone',
+      optionsText: translations.optionsText || 'Options'
+    };
+    
+    console.log('DansMaZone: Traductions chargées', i18nStrings);
+    return true;
+  } catch (error) {
+    console.error('DansMaZone: Erreur lors du chargement des traductions', error);
+    
+    // Valeurs par défaut en cas d'erreur
+    i18nStrings = {
+      sidebarTitle: 'Dans ma zone',
+      optionsText: 'Options'
+    };
+    
+    return false;
+  }
+}
 
 // Fonction pour fusionner les sites par défaut et personnalisés
 async function initSites() {
-  // Copier les sites par défaut
-  combinedSites = structuredClone(categorySites);
-  
   try {
+    // Copier les sites par défaut
+    combinedSites = structuredClone(categorySites);
+    
     // Récupérer les sites personnalisés depuis le stockage local
     const result = await browser.storage.local.get('userSites');
     const userSites = result.userSites || {};
@@ -36,9 +74,13 @@ async function initSites() {
     });
     
     console.log('DansMaZone: Sites combinés chargés', combinedSites);
+    return true;
   } catch (error) {
     // Gestion améliorée des erreurs
     console.error('DansMaZone: Erreur lors du chargement des sites personnalisés', error);
+    
+    // S'assurer que combinedSites est initialisé correctement même en cas d'erreur
+    combinedSites = structuredClone(categorySites);
     
     // Notification discrète en cas d'erreur
     const errorElement = document.createElement('div');
@@ -64,6 +106,8 @@ async function initSites() {
       errorElement.style.transition = 'opacity 0.5s ease';
       setTimeout(() => errorElement.remove(), 500);
     }, 5000);
+    
+    return false;
   }
 }
 
@@ -167,10 +211,28 @@ function getProductDetails() {
 
 // Dans la fonction addLinkButtons - plus besoin du paramètre container
 function addLinkButtons(sites, searchTerm) {
+  // Vérifier si sites est bien un tableau
+  if (!Array.isArray(sites)) {
+    console.error('DansMaZone: sites n\'est pas un tableau valide', sites);
+    sites = []; // Initialiser comme tableau vide pour éviter les erreurs
+  }
+  
+  // Si aucun terme de recherche, ne rien afficher
+  if (!searchTerm) {
+    console.error('DansMaZone: Aucun terme de recherche fourni');
+    return;
+  }
+  
   // Vérifier si un bandeau existe déjà et le supprimer
   const existingSidebar = document.querySelector('.dmz-sidebar');
   if (existingSidebar) {
     existingSidebar.remove();
+  }
+  
+  // Ne pas créer de bandeau s'il n'y a pas de sites
+  if (sites.length === 0) {
+    console.warn('DansMaZone: Aucun site à afficher');
+    return;
   }
   
   // Créer un bandeau vertical
@@ -181,70 +243,107 @@ function addLinkButtons(sites, searchTerm) {
   const header = document.createElement('div');
   header.classList.add('dmz-sidebar-header');
   
-  const icon = document.createElement('img');
-  icon.src = browser.runtime.getURL('icons/icon-48.png');
-  icon.alt = "DansMaZone";
-  
-  const title = document.createElement('span');
-  title.textContent = "Dans ma zone";
-  
-  header.appendChild(icon);
-  header.appendChild(title);
-  sidebarEl.appendChild(header);
-  
-  // Conteneur pour les boutons des sites
-  const contentContainer = document.createElement('div');
-  contentContainer.classList.add('dmz-sidebar-content');
-  
-  // Créer les boutons des sites
-  for (const site of sites) {
-    const url = site.url
-      .replace('##QUERY##', encodeURIComponent(searchTerm))
-      .replace('##ISBN##', searchTerm);
+  try {
+    const icon = document.createElement('img');
+    icon.src = browser.runtime.getURL('icons/icon-48.png');
+    icon.alt = browser.i18n.getMessage('extensionName') || "DansMaZone";
     
-    const button = document.createElement('a');
-    button.href = url;
-    button.target = "_blank";
-    button.classList.add('dmz-sidebar-button');
+    const title = document.createElement('span');
+    title.textContent = i18nStrings.sidebarTitle;
     
-    const siteName = document.createElement('span');
-    siteName.textContent = site.name;
+    header.appendChild(icon);
+    header.appendChild(title);
+    sidebarEl.appendChild(header);
     
-    button.appendChild(siteName);
-    contentContainer.appendChild(button);
+    // Conteneur pour les boutons des sites
+    const contentContainer = document.createElement('div');
+    contentContainer.classList.add('dmz-sidebar-content');
+    
+    // Créer les boutons des sites
+    for (const site of sites) {
+      if (!site || !site.url || !site.name) {
+        console.warn('DansMaZone: Site invalide ignoré', site);
+        continue;
+      }
+      
+      const url = site.url
+        .replace('##QUERY##', encodeURIComponent(searchTerm))
+        .replace('##ISBN##', searchTerm);
+      
+      const button = document.createElement('a');
+      button.href = url;
+      button.target = "_blank";
+      button.classList.add('dmz-sidebar-button');
+      
+      const siteName = document.createElement('span');
+      siteName.textContent = site.name;
+      
+      button.appendChild(siteName);
+      contentContainer.appendChild(button);
+    }
+    
+    // Ajouter le bouton d'options après tous les sites
+    const optionsButton = document.createElement('a');
+    optionsButton.classList.add('dmz-sidebar-button', 'dmz-options-button');
+    optionsButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        browser.runtime.sendMessage({ action: 'openOptions' })
+          .catch(error => {
+            console.error('DansMaZone: Erreur lors de l\'envoi du message:', error);
+            browser.runtime.openOptionsPage();
+          });
+      } catch (error) {
+        console.error('DansMaZone: Erreur lors de l\'ouverture des options:', error);
+      }
+    });
+
+    const optionsText = document.createElement('span');
+    optionsText.textContent = i18nStrings.optionsText;
+    optionsButton.appendChild(optionsText);
+    contentContainer.appendChild(optionsButton);
+    
+    
+    sidebarEl.appendChild(contentContainer);
+    // Ajouter à la page (directement au body pour un positionnement absolu)
+    if (document.body) {
+      document.body.appendChild(sidebarEl);
+      console.log('DansMaZone: Sidebar added to the page with', sites.length, 'sites');
+    } else {
+      console.error('DansMaZone: document.body not found, cannot add sidebar');
+    }
+  } catch (error) {
+    console.error('DansMaZone: Error adding link buttons', error);
   }
-  
-  sidebarEl.appendChild(contentContainer);
-  
-  // Ajouter à la page (directement au body pour un positionnement absolu)
-  document.body.appendChild(sidebarEl);
-  
-  // Log pour débogage
-  console.log('DansMaZone: Sidebar added to the page with', sites.length, 'sites');
-  
-  // Ajouter un event listener pour déboguer
-  sidebarEl.addEventListener('mouseenter', () => {
-    console.log('DansMaZone: Sidebar hovered, content should be visible');
-  });
 }
 
 function findSitesForCategory(detectedCategory) {
+  if (!detectedCategory || typeof detectedCategory !== 'string') {
+    console.warn('DansMaZone: Catégorie non valide, utilisation de la catégorie par défaut');
+    return combinedSites['default'] || [];
+  }
+
   // Diviser la catégorie détectée en parties
   const categoryParts = detectedCategory.split('/').map(part => part.trim());
   
   // Chercher une correspondance dans les clés de combinedSites
   for (const part of categoryParts) {
-    if (combinedSites[part]) {
-      console.info('Found sites for category:', part);
+    if (part && combinedSites[part]) {
+      console.info('DansMaZone: Found sites for category:', part);
       return combinedSites[part];
     }
   }
 
-  console.info('No specific sites found, using default');
-  return combinedSites['default'];
+  console.info('DansMaZone: No specific sites found, using default');
+  return combinedSites['default'] || [];
 }
 
 async function start() {
+  console.log('DansMaZone: Starting extension initialization');
+  
+  // Charger les traductions
+  await loadI18nStrings();
+  
   // Initialiser les sites en combinant ceux par défaut et personnalisés
   await initSites();
   
@@ -257,39 +356,50 @@ async function start() {
     return;
   }
   
-  console.log('DansMaZone: Starting on product page');
+  console.log('DansMaZone: Processing product page');
   
-  const isbn = getISBN();
-  if (isbn) {
-    console.log('DansMaZone: ISBN found:', isbn);
-    addLinkButtons(combinedSites['Livres'], isbn);
-  } else {
-    // Détecte la catégorie (en français ou anglais selon la langue de la page)
-    const detectedCategory = classifyPage();
-    console.info('Category detected:', detectedCategory);
+  try {
+    const isbn = getISBN();
+    if (isbn) {
+      console.log('DansMaZone: ISBN found:', isbn);
+      addLinkButtons(combinedSites['Livres'] || [], isbn);
+    } else {
+      // Détecte la catégorie (en français ou anglais selon la langue de la page)
+      const detectedCategory = await classifyPage();
+      console.info('DansMaZone: Category detected:', detectedCategory);
 
-    // Si la catégorie est en anglais, la convertir en français pour l'utiliser comme clé
-    let frenchCategory = detectedCategory;
-    
-    // Si la catégorie n'est pas dans combinedSites, il s'agit probablement d'une catégorie en anglais
-    if (!combinedSites[detectedCategory]) {
-      // Chercher la clé française qui correspond à cette catégorie anglaise
-      const frenchCategoryEntry = Object.entries(categoryMapping)
-        .find(([fr, en]) => en === detectedCategory);
+      if (!detectedCategory) {
+        console.warn('DansMaZone: Aucune catégorie détectée, utilisation de la catégorie par défaut');
+        const searchQuery = getProductDetails();
+        if (searchQuery) {
+          addLinkButtons(combinedSites['default'] || [], searchQuery);
+        }
+        return;
+      }
+
+      // Si la catégorie n'est pas dans combinedSites, il s'agit probablement d'une catégorie en anglais
+      let frenchCategory = detectedCategory;
+      if (!combinedSites[detectedCategory]) {
+        // Chercher la clé française qui correspond à cette catégorie anglaise
+        const frenchCategoryEntry = Object.entries(categoryMapping)
+          .find(([fr, en]) => en === detectedCategory);
+        
+        if (frenchCategoryEntry) {
+          frenchCategory = frenchCategoryEntry[0];
+          console.info('DansMaZone: Converted category to French:', frenchCategory);
+        }
+      }
       
-      if (frenchCategoryEntry) {
-        frenchCategory = frenchCategoryEntry[0];
-        console.info('Converted category to French:', frenchCategory);
+      const searchQuery = getProductDetails();
+      console.info('DansMaZone: Search query:', searchQuery);
+      if (searchQuery) {
+        const sites = findSitesForCategory(frenchCategory);
+        addLinkButtons(sites, searchQuery);
       }
     }
-    
-    const searchQuery = getProductDetails();
-    console.info('Search query:', searchQuery);
-    if (searchQuery) {
-      // const sites = combinedSites[frenchCategory] || combinedSites['default'];
-      const sites = findSitesForCategory(frenchCategory);
-      addLinkButtons(sites, searchQuery);
-    }
+  } catch (error) {
+    console.error('DansMaZone: Error during page processing:', error);
+    fallbackInitialization();
   }
 }
 
@@ -433,6 +543,12 @@ function fallbackInitialization() {
   try {
     // Initialiser avec seulement les sites par défaut
     combinedSites = structuredClone(categorySites);
+    
+    // Charger les traductions de secours
+    i18nStrings = {
+      sidebarTitle: browser.i18n.getMessage('sidebarTitle') || 'Dans ma zone',
+      optionsText: browser.i18n.getMessage('optionsText') || 'Options'
+    };
     
     // Récupérer un terme de recherche basique depuis le titre de la page
     let searchQuery = '';

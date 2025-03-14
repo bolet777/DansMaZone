@@ -1,21 +1,240 @@
 {
   "extensionName": {
     "message": "DansMaZone",
-    "description": "Name of the extension."
+    "description": "Nom de l'extension."
   },
-
   "extensionDescription": {
     "message": "Extension Chrome et Firefox pour chercher un produit sur Amazon et l'acheter au Canada.",
-    "description": "Description of the extension."
+    "description": "Description de l'extension."
   },
-
   "buttonText": {
     "message": "Acheter en librairie",
-    "description": "Button text (on yellow / orange background)"
+    "description": "Texte du bouton (sur fond jaune / orange)"
   },
-
   "searchOn": {
     "message": "Chercher au Canada",
-    "description": "Text before the store name"
+    "description": "Texte avant le nom du magasin"
+  },
+  "sidebarTitle": {
+    "message": "Dans ma zone",
+    "description": "Titre de la barre latérale"
+  },
+  "optionsText": {
+    "message": "Options",
+    "description": "Texte du bouton d'options"
+  },
+  "optionsTitle": {
+    "message": "Options DansMaZone",
+    "description": "Titre de la page d'options"
+  },
+  "mySitesTab": {
+    "message": "Mes sites",
+    "description": "Onglet des sites personnalisés"
+  },
+  "keywordsTab": {
+    "message": "Mots-clés",
+    "description": "Onglet des mots-clés"
+  },
+  "contributeTab": {
+    "message": "Contribuer",
+    "description": "Onglet de contribution"
+  },
+  "searchSite": {
+    "message": "Rechercher un site...",
+    "description": "Placeholder pour la recherche de site"
+  },
+  "category": {
+    "message": "Catégorie:",
+    "description": "Label pour la catégorie"
+  },
+  "allCategories": {
+    "message": "Toutes les catégories",
+    "description": "Option pour toutes les catégories"
+  },
+  "addSite": {
+    "message": "Ajouter un site",
+    "description": "Titre pour ajouter un site"
+  },
+  "siteName": {
+    "message": "Nom du site:",
+    "description": "Label pour le nom du site"
+  },
+  "siteNamePlaceholder": {
+    "message": "Ex: Ma Librairie Locale",
+    "description": "Placeholder pour le nom du site"
+  },
+  "searchUrl": {
+    "message": "URL de recherche:",
+    "description": "Label pour l'URL de recherche"
+  },
+  "searchUrlPlaceholder": {
+    "message": "Ex: https://example.com/search?q=##QUERY##",
+    "description": "Placeholder pour l'URL de recherche"
+  },
+  "searchUrlInfo": {
+    "message": "Utilisez ##QUERY## pour indiquer où le terme de recherche sera inséré, ou ##ISBN## pour les livres.",
+    "description": "Information sur l'URL de recherche"
+  },
+  "testTerm": {
+    "message": "Terme de test (pour essayer l'URL)",
+    "description": "Placeholder pour le terme de test"
+  },
+  "testUrl": {
+    "message": "Tester l'URL",
+    "description": "Bouton pour tester l'URL"
+  },
+  "addButton": {
+    "message": "Ajouter le site",
+    "description": "Bouton pour ajouter le site"
+  },
+  "myCustomSites": {
+    "message": "Mes sites personnalisés",
+    "description": "Titre pour mes sites personnalisés"
+  },
+  "importExport": {
+    "message": "Importer / Exporter",
+    "description": "Titre pour importer/exporter"
+  },
+  "exportSites": {
+    "message": "Exporter mes sites",
+    "description": "Bouton pour exporter les sites"
+  },
+  "importSites": {
+    "message": "Importer des sites",
+    "description": "Bouton pour importer des sites"
+  },
+  "keywordsManagement": {
+    "message": "Gestion des mots-clés",
+    "description": "Titre pour la gestion des mots-clés"
+  },
+  "addKeywords": {
+    "message": "Ajouter des mots-clés (séparés par virgule):",
+    "description": "Label pour ajouter des mots-clés"
+  },
+  "keywordsPlaceholder": {
+    "message": "Ex: ordinateur, écran, clavier",
+    "description": "Placeholder pour les mots-clés"
+  },
+  "language": {
+    "message": "Langue:",
+    "description": "Label pour la langue"
+  },
+  "frenchKeywords": {
+    "message": "Mots-clés français",
+    "description": "Titre pour les mots-clés français"
+  },
+  "englishKeywords": {
+    "message": "Mots-clés anglais",
+    "description": "Titre pour les mots-clés anglais"
+  },
+  "contributeTitle": {
+    "message": "Contribuer à DansMaZone",
+    "description": "Titre pour la contribution"
+  },
+  "contributeDescription": {
+    "message": "Aidez à améliorer DansMaZone en partageant vos sites ou en signalant des bugs.",
+    "description": "Description pour la contribution"
+  },
+  "shareSites": {
+    "message": "Partager vos sites",
+    "description": "Titre pour partager les sites"
+  },
+  "exportSitesStep1": {
+    "message": "Exportez vos sites personnalisés",
+    "description": "Étape 1 pour exporter les sites"
+  },
+  "exportSitesStep2": {
+    "message": "Envoyez le fichier JSON généré par email",
+    "description": "Étape 2 pour exporter les sites"
+  },
+  "exportSitesStep3": {
+    "message": "Vos sites pourront être intégrés dans une future version",
+    "description": "Étape 3 pour exporter les sites"
+  },
+  "exportForContribution": {
+    "message": "Exporter pour contribution",
+    "description": "Bouton pour exporter pour contribution"
+  },
+  "improveCode": {
+    "message": "Améliorer le code",
+    "description": "Titre pour améliorer le code"
+  },
+  "improveCodeStep1": {
+    "message": "Le code est disponible sur GitHub",
+    "description": "Étape 1 pour améliorer le code"
+  },
+  "improveCodeStep2": {
+    "message": "Vous pouvez proposer des améliorations via des Pull Requests",
+    "description": "Étape 2 pour améliorer le code"
+  },
+  "improveCodeStep3": {
+    "message": "Ou signaler des bugs via des Issues",
+    "description": "Étape 3 pour améliorer le code"
+  },
+  "viewOnGitHub": {
+    "message": "Voir sur GitHub",
+    "description": "Bouton pour voir sur GitHub"
+  },
+  "newCategory": {
+    "message": "+ Nouvelle catégorie",
+    "description": "Option pour nouvelle catégorie"
+  },
+  "reportBug": {
+    "message": "Signaler un problème",
+    "description": "Bouton pour signaler un bug"
+  },
+  "enterSearchTerm": {
+    "message": "Entrez un terme de recherche pour tester ce site:",
+    "description": "Prompt pour terme de recherche"
+  },
+  "confirmDelete": {
+    "message": "Êtes-vous sûr de vouloir supprimer le site \"$siteName$\"?",
+    "description": "Confirmation de suppression d'un site",
+    "placeholders": {
+      "siteName": {
+        "content": "$1",
+        "example": "Ma Librairie Locale"
+      }
+    }
+  },
+  "fillAllFields": {
+    "message": "Veuillez remplir tous les champs.",
+    "description": "Message d'erreur pour champs vides"
+  },
+  "newCategoryPrompt": {
+    "message": "Nom de la nouvelle catégorie:",
+    "description": "Prompt pour le nom de la nouvelle catégorie"
+  },
+  "siteAddedSuccess": {
+    "message": "Site ajouté avec succès!",
+    "description": "Message de succès pour l'ajout d'un site"
+  },
+  "siteDeletedSuccess": {
+    "message": "Site supprimé avec succès!",
+    "description": "Message de succès pour la suppression d'un site"
+  },
+  "enterTestTerm": {
+    "message": "Veuillez entrer un terme de test.",
+    "description": "Message d'erreur pour terme de test vide"
+  },
+  "exportSuccess": {
+    "message": "Export réussi!",
+    "description": "Message de succès pour l'export"
+  },
+  "importSuccess": {
+    "message": "Import réussi!",
+    "description": "Message de succès pour l'import"
+  },
+  "enterValidKeyword": {
+    "message": "Veuillez entrer au moins un mot-clé valide.",
+    "description": "Message d'erreur pour mot-clé invalide"
+  },
+  "keywordsAddedSuccess": {
+    "message": "Mots-clés ajoutés avec succès!",
+    "description": "Message de succès pour l'ajout de mots-clés"
+  },
+  "keywordDeletedSuccess": {
+    "message": "Mot-clé supprimé avec succès!",
+    "description": "Message de succès pour la suppression d'un mot-clé"
   }
 }

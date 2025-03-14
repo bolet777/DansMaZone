@@ -1,5 +1,7 @@
+import browser from 'webextension-polyfill';
+
 // Liste de mots-clés par catégorie - version bilingue
-const categoryKeywords = {
+export const categoryKeywords = {
   'Animalerie': [
     // Français
     'chat', 'chien', 'animal', 'animaux', 'nourriture', 'litière', 'croquettes', 'jouets', 'laisse',
@@ -296,6 +298,20 @@ const categoryKeywords = {
     'vacuum', 'broom', 'mop', 'cloth', 'product', 'dishwashing', 'storage',
     'cleaner', 'deodorizer', 'duster', 'brush', 'sponge', 'window', 'floor'
   ],
+  'Photographie': [
+    // Français 
+    "appareil photo", "objectif", "boitier", "trépied", "capteur", "flash", "numérique", 
+    "argentique", "hybride", "téléobjectif", "grandangle", "macro", "photographie", 
+    "compact", "pellicule", "focale", "mise au point", "viseur", "exposition", 
+    "obturateur", "diaphragme", "ouverture", "sac photo", "réflecteur", "filtre",
+    
+    // Anglais
+    "camera", "dslr", "lens", "mirrorless", "telephoto", "stabilizer", 
+    "photography", "fisheye", "viewfinder", "shutter", "aperture", 
+    "iso", "camera bag", "lightroom", "photoshop", "monopod", "bracketing", 
+    "hdr", "panorama", "timelapse", "megapixels", "lens hood", "prime lens", 
+    "landscape", "portrait"
+  ],
   'Quincaillerie': [
     // Français
     'outil', 'bricolage', 'vis', 'clou', 'perceuse', 'tournevis', 'marteau',
@@ -449,49 +465,92 @@ function extractPageContent() {
   }, '');
 }
 
-export function classifyPage() {
-  const pageContent = cleanText(extractPageContent());
-  
-  // Obtenir le nom du produit
-  const productNameElement = document.getElementById('productTitle');
-  const productName = productNameElement ? cleanText(productNameElement.textContent) : '';
-  
-  // Calculer un score pour chaque catégorie
-  const scores = Object.entries(categoryKeywords).map(([category, keywords]) => {
-    let score = 0;
+// Nouvelle version de classifyPage qui utilise les mots-clés combinés
+export async function classifyPage() {
+  try {
+    // Obtenir les mots-clés combinés (par défaut + personnalisés)
+    const combinedKeywords = await getCombinedKeywords();
     
-    // Parcourir tous les mots-clés
-    for (const keyword of keywords) {
-      const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+    const pageContent = cleanText(extractPageContent());
+    
+    // Obtenir le nom du produit
+    const productNameElement = document.getElementById('productTitle');
+    const productName = productNameElement ? cleanText(productNameElement.textContent) : '';
+    
+    // Calculer un score pour chaque catégorie
+    const scores = Object.entries(combinedKeywords).map(([category, keywords]) => {
+      let score = 0;
       
-      // Chercher dans le contenu total
-      const pageMatches = (pageContent.match(regex) || []).length;
+      // Parcourir tous les mots-clés
+      for (const keyword of keywords) {
+        if (!keyword) continue; // Ignorer les mots-clés vides
+        
+        const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+        
+        // Chercher dans le contenu total
+        const pageMatches = (pageContent.match(regex) || []).length;
+        
+        // Chercher dans le nom du produit (poids multiplié par 3)
+        const productNameMatches = productName ? (productName.match(regex) || []).length * 3 : 0;
+        
+        score += pageMatches + productNameMatches;
+      }
       
-      // Chercher dans le nom du produit (poids multiplié par 3)
-      const productNameMatches = productName ? (productName.match(regex) || []).length * 3 : 0;
-      
-      score += pageMatches + productNameMatches;
+      return { category, score };
+    });
+
+    // Trier par score et prendre la meilleure correspondance
+    const bestMatch = scores.reduce((max, curr) => 
+      curr.score > max.score ? curr : max,
+      { category: 'default', score: 0 }
+    );
+
+    console.log('DansMaZone: Category scores:', scores);
+    
+    // Détecter la langue et renvoyer la catégorie appropriée
+    const lang = detectLanguage();
+    if (lang === 'en' && bestMatch.score > 0) {
+      // Convertir en anglais si nécessaire
+      return categoryMapping[bestMatch.category] || bestMatch.category;
     }
     
-    return { category, score };
-  });
-
-  // Trier par score et prendre la meilleure correspondance
-  const bestMatch = scores.reduce((max, curr) => 
-    curr.score > max.score ? curr : max,
-    { category: 'default', score: 0 }
-  );
-
-  console.log('Category scores:', scores);
-  
-  // Détecter la langue et renvoyer la catégorie appropriée
-  const lang = detectLanguage();
-  if (lang === 'en' && bestMatch.score > 0) {
-    // Convertir en anglais si nécessaire
-    return categoryMapping[bestMatch.category] || bestMatch.category;
+    return bestMatch.score > 0 ? bestMatch.category : 'default';
+  } catch (error) {
+    console.error('DansMaZone: Error in classifyPage:', error);
+    return 'default'; // Retourner la catégorie par défaut en cas d'erreur
   }
-  
-  return bestMatch.score > 0 ? bestMatch.category : 'default';
+}
+
+// Fonction pour récupérer les mots-clés combinés avec gestion d'erreur améliorée
+async function getCombinedKeywords() {
+  try {
+    // Récupérer les mots-clés personnalisés depuis le stockage
+    const result = await browser.storage.local.get('userCategoryKeywords');
+    const userKeywords = result.userCategoryKeywords || {};
+    
+    // Créer une copie des mots-clés par défaut
+    const combinedKeywords = structuredClone(categoryKeywords);
+    
+    // Fusionner avec les mots-clés personnalisés
+    Object.entries(userKeywords).forEach(([category, keywords]) => {
+      if (!combinedKeywords[category]) {
+        combinedKeywords[category] = [];
+      }
+      
+      // Ajouter les mots-clés français et anglais
+      if (keywords.fr && Array.isArray(keywords.fr)) {
+        combinedKeywords[category] = [...combinedKeywords[category], ...keywords.fr];
+      }
+      if (keywords.en && Array.isArray(keywords.en)) {
+        combinedKeywords[category] = [...combinedKeywords[category], ...keywords.en];
+      }
+    });
+    
+    return combinedKeywords;
+  } catch (error) {
+    console.error('DansMaZone: Erreur lors du chargement des mots-clés personnalisés', error);
+    return categoryKeywords; // Fallback aux mots-clés par défaut
+  }
 }
 
 // Obtenir la catégorie dans la langue demandée

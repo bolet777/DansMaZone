@@ -1,10 +1,4 @@
 export const categorySites = {
-  'Livres': [
-    {
-      name: 'Librairies Locales Québécoises',
-      url: 'https://www.leslibraires.ca/catalogue?s=##ISBN##'
-    }
-  ],
   'Animalerie': [
     {
       name: 'Mondou',
@@ -122,24 +116,30 @@ export const categorySites = {
     }
   ],
   'Décoration': [
-      {
-          name: 'La Baie',
-          url: 'https://www.thebay.com/search?q=##QUERY##',
-          icon: 'icon-dansmazone.png'
-      },
-      {
-          name: 'Simons',
-          url: 'https://www.simons.ca/fr/recherche?q=##QUERY##',
-          icon: 'icon-dansmazone.png'
-      },
-      {
+    {
+      name: 'La Baie',
+      url: 'https://www.thebay.com/search?q=##QUERY##',
+      icon: 'icon-dansmazone.png'
+    },
+    {
+      name: 'Simons',
+      url: 'https://www.simons.ca/fr/recherche?q=##QUERY##',
+      icon: 'icon-dansmazone.png'
+    },
+    {
       name: 'nüspace',
       url: 'https://www.nuspace.ca/search?q=##QUERY##'
-      },
-      {
+    },
+    {
       name: 'Bouclair',
       url: 'https://www.bouclair.com/fr/recherche?q=##QUERY##'
-      }
+    }
+  ],
+  'default': [
+    {
+      name: 'Canadian Tire',
+      url: 'https://www.canadiantire.ca/fr/resultats-de-recherche.html?q=##QUERY##'
+    }
   ],
   'Électroménager': [
     {
@@ -285,6 +285,12 @@ export const categorySites = {
       url: 'https://www.brunelli.ca/recherche-produits?qs=##QUERY##'
     }
   ],
+  'Livres': [
+    {
+      name: 'Librairies Locales Québécoises',
+      url: 'https://www.leslibraires.ca/catalogue?s=##ISBN##'
+    }
+  ],
   'Logiciels': [
     {
       name: 'Bureau en Gros',
@@ -383,40 +389,66 @@ export const categorySites = {
       url: 'https://www.homedepot.ca/fr/recherche.html?q=##QUERY##'
     }
   ],
+  'Photographie': [
+    {
+      name: "Gosselin Photo",
+      url: "https://gosselinphoto.ca/fr/search?query=##QUERY##"
+    },
+    {
+      name: "Camtec Photo",
+      url: "https://www.camtecphoto.com/fr/search?search=##QUERY##"
+    },
+    {
+      name: "Photo Service",
+      url: "https://photoservice.ca/magasin?query=##QUERY##"
+    },
+    {
+      name: "Royal Photo",
+      url: "https://royalphoto.com/magasin?query=##QUERY##"
+    },
+    {
+      name: "Excellent Photo",
+      url: "https://excellentphoto.ca/fr/pages/search-results-page?q=##QUERY##"
+    },
+    {
+      name: "Studio Argentique",
+      url: "https://studioargentique.ca/fr/search?q=##QUERY##"
+    }
+  ],
   'Produits Ménagers': [
-      {
-          name: 'Attitude Living',
-          url: 'https://ca.attitudeliving.com/collections/all-products?productType=##QUERY##',
-          icon: 'icon-dansmazone.png'
-      },
-      {
-          name: 'Planette',
-          url: 'https://planette.ca/search?type=product&q=##QUERY##',
-          icon: 'icon-dansmazone.png'
-      }
+    {
+      name: 'Attitude Living',
+      url: 'https://ca.attitudeliving.com/collections/all-products?productType=##QUERY##',
+      icon: 'icon-dansmazone.png'
+    },
+    {
+      name: 'Planette',
+      url: 'https://planette.ca/search?type=product&q=##QUERY##',
+      icon: 'icon-dansmazone.png'
+    }
   ],
   'Quincaillerie': [
-      {
-          name: 'RONA',
-          url: 'https://www.rona.ca/fr/recherche?query=##QUERY##',
-          icon: 'icon-dansmazone.png'
-      },
-      {
+    {
+      name: 'RONA',
+      url: 'https://www.rona.ca/fr/recherche?query=##QUERY##',
+      icon: 'icon-dansmazone.png'
+    },
+    {
       name: 'BMR',
       url: 'https://www.bmr.ca/fr/catalogsearch/result/?q=##QUERY##'
-      },
-      {
+    },
+    {
       name: 'Canac',
       url: 'https://www.canac.ca/fr/catalogsearch/result/?q=##QUERY##'
-      },
-      {
+    },
+    {
       name: 'Gagnon et Fils',
       url: 'https://gagnonlgq.com/search?type=product%2Cpage%2Carticle&q=##QUERY##'
-      },
-      {
+    },
+    {
       name: 'Patrick Morin',
       url: 'https://www.patrickmorin.com/fr/catalogsearch/result/?q=##QUERY##'
-      },
+    }
   ],
   'Salle de bain': [
     {
@@ -501,11 +533,5 @@ export const categorySites = {
       name: 'La Canadienne',
       url: 'https://www.lacanadienne.com/search?q=##QUERY##'
     }
-  ],
-  'default': [
-    {
-      name: 'Canadian Tire',
-      url: 'https://www.canadiantire.ca/fr/resultats-de-recherche.html?q=##QUERY##'
-    }
   ]
- };
+};

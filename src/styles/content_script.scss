@@ -107,6 +107,28 @@
       border-bottom: none;
     }
   }
+  
+  // Styles spécifiques pour le bouton d'options
+  .dmz-options-button {
+    margin-top: auto; // Pousse le bouton vers le bas
+    background-color: #f8f8f8;
+    border-top: 1px solid #e0e0e0;
+    
+    &:hover {
+      background-color: #e8e8e8;
+    }
+    
+    span {
+      display: flex;
+      align-items: center;
+    }
+    
+    span:before {
+      content: "⚙️";
+      font-size: 16px;
+      margin-right: 10px;
+    }
+  }
 }
 
 // Cache les éléments Amazon non nécessaires

@@ -44,6 +44,7 @@ const config = {
   entry: {
     'content_script': './content_script/index.js',
     'options': './options/options.js', 
+    'background': './background/background.js',
   },
   output: {
     path: path.join(__dirname, 'dist', targetBrowser),

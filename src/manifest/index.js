@@ -53,6 +53,10 @@ const manifestInput = {
     '*://*.amazon.ca/*'
   ],
 
+  background: {
+    service_worker: 'background.js'
+  },
+
   // Content Security Policy V3
   content_security_policy: process.env.NODE_ENV === 'development' ? developmentCSP : productionCSP,
 

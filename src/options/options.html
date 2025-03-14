@@ -3,28 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DansMaZone - Préférences</title>
+  <title>Options DansMaZone</title>
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <img src="icons/icon-96.png" alt="DansMaZone">
-      <h1>DansMaZone - Préférences</h1>
+      <img src="icons/icon-48.png" alt="DansMaZone">
+      <h1>Options DansMaZone <span id="version"></span></h1>
     </header>
 
     <div class="tab-container">
       <div class="tabs">
         <button class="tab-btn active" data-tab="user-sites">Mes sites</button>
+        <button class="tab-btn" data-tab="keywords">Mots-clés</button>
         <button class="tab-btn" data-tab="contribute">Contribuer</button>
       </div>
-      
+
+      <!-- Onglet des sites personnalisés -->
       <div id="user-sites" class="tab-content active">
         <div class="options-controls">
           <div class="search-box">
-            <input type="text" id="site-search" placeholder="Rechercher une catégorie ou un site...">
+            <input type="text" id="site-search" placeholder="Rechercher un site...">
           </div>
           <div class="category-selector">
+            <label for="category-filter">Catégorie:</label>
             <select id="category-filter">
               <option value="all">Toutes les catégories</option>
               <!-- Catégories chargées dynamiquement -->
@@ -32,42 +35,39 @@
           </div>
         </div>
 
-        <div class="sites-container">
-          <!-- Sites chargés dynamiquement -->
-        </div>
-
         <div class="add-site-form">
-          <h3>Ajouter un nouveau site</h3>
+          <h3>Ajouter un site</h3>
           <div class="form-row">
             <label for="site-category">Catégorie:</label>
-            <select id="site-category" required>
+            <select id="site-category">
               <!-- Catégories chargées dynamiquement -->
             </select>
           </div>
           <div class="form-row">
             <label for="site-name">Nom du site:</label>
-            <input type="text" id="site-name" placeholder="Ex: Archambault" required>
+            <input type="text" id="site-name" placeholder="Ex: Ma Librairie Locale">
           </div>
           <div class="form-row">
             <label for="site-url">URL de recherche:</label>
-            <input type="url" id="site-url" placeholder="Ex: https://www.archambault.ca/search?q=##QUERY##" required>
-            <div class="url-info">
-              <p>Utilisez <code>##QUERY##</code> pour indiquer où le terme de recherche sera inséré.</p>
-              <p>Pour les livres, utilisez <code>##ISBN##</code> pour les recherches par ISBN.</p>
-            </div>
+            <input type="text" id="site-url" placeholder="Ex: https://example.com/search?q=##QUERY##">
+            <p class="url-info">Utilisez <code>##QUERY##</code> pour indiquer où le terme de recherche sera inséré, ou <code>##ISBN##</code> pour les livres.</p>
           </div>
           <div class="form-row">
-            <label for="site-url-test">Tester l'URL:</label>
-            <input type="text" id="site-url-test" placeholder="Entrez un terme de test">
-            <button id="test-url-btn">Tester</button>
+            <input type="text" id="site-url-test" placeholder="Terme de test (pour essayer l'URL)">
+            <button id="test-url-btn">Tester l'URL</button>
           </div>
           <div class="form-actions">
             <button id="add-site-btn">Ajouter le site</button>
           </div>
         </div>
 
+        <h3>Mes sites personnalisés</h3>
+        <div class="sites-container">
+          <!-- Sites chargés dynamiquement -->
+        </div>
+
         <div class="import-export">
-          <h3>Importer/Exporter</h3>
+          <h3>Importer / Exporter</h3>
           <div class="import-export-controls">
             <button id="export-btn">Exporter mes sites</button>
             <label for="import-file" class="import-label">Importer des sites</label>
@@ -75,42 +75,86 @@
           </div>
         </div>
       </div>
-      
+
+      <!-- Nouvel onglet pour les mots-clés -->
+      <div id="keywords" class="tab-content">
+        <div class="options-controls">
+          <div class="category-selector">
+            <label for="keyword-category">Catégorie:</label>
+            <select id="keyword-category">
+              <!-- Catégories chargées dynamiquement -->
+            </select>
+          </div>
+        </div>
+
+        <div class="keywords-form">
+          <h3>Gestion des mots-clés</h3>
+          <div class="form-row">
+            <label for="keyword-input">Ajouter des mots-clés (séparés par virgule):</label>
+            <input type="text" id="keyword-input" placeholder="Ex: ordinateur, écran, clavier">
+            <div class="language-selector">
+              <label for="keyword-language">Langue:</label>
+              <select id="keyword-language">
+                <option value="fr">Français</option>
+                <option value="en">Anglais</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button id="add-keywords-btn">Ajouter</button>
+          </div>
+        </div>
+
+        <div class="keywords-container">
+          <div class="keyword-section">
+            <h3>Mots-clés français</h3>
+            <div class="keyword-list fr-keywords">
+              <!-- Liste des mots-clés en français générée dynamiquement -->
+            </div>
+          </div>
+          <div class="keyword-section">
+            <h3>Mots-clés anglais</h3>
+            <div class="keyword-list en-keywords">
+              <!-- Liste des mots-clés en anglais générée dynamiquement -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Onglet Contribuer -->
       <div id="contribute" class="tab-content">
         <h2>Contribuer à DansMaZone</h2>
-        <p>Vous pouvez aider à améliorer cette extension en contribuant de nouveaux sites pour toute la communauté!</p>
-        
+        <p>Aidez à améliorer DansMaZone en partageant vos sites ou en signalant des bugs.</p>
+
         <div class="contribution-methods">
           <div class="contribution-card">
-            <h3>Via GitHub</h3>
-            <p>Vous pouvez contribuer directement au code source en proposant des modifications sur GitHub:</p>
+            <h3>Partager vos sites</h3>
             <ol>
-              <li>Visitez notre <a href="https://github.com/bolet777/DansMaZone" target="_blank">dépôt GitHub</a></li>
-              <li>Modifiez le fichier <code>category-sites.js</code></li>
-              <li>Créez une pull request avec vos ajouts</li>
-            </ol>
-            <a href="https://github.com/bolet777/DansMaZone" class="action-button" target="_blank">Voir sur GitHub</a>
-          </div>
-          
-          <div class="contribution-card">
-            <h3>Par email</h3>
-            <p>Vous pouvez également nous envoyer vos suggestions par email:</p>
-            <ol>
-              <li>Exportez vos sites personnalisés (bouton "Exporter mes sites")</li>
-              <li>Envoyez le fichier à <a href="mailto:ccosenza.dlab@gmail.com">ccosenza.dlab@gmail.com</a></li>
-              <li>Nous les intégrerons dans la prochaine version</li>
+              <li>Exportez vos sites personnalisés</li>
+              <li>Envoyez le fichier JSON généré par email</li>
+              <li>Vos sites pourront être intégrés dans une future version</li>
             </ol>
             <button id="export-contrib-btn" class="action-button">Exporter pour contribution</button>
+          </div>
+
+          <div class="contribution-card">
+            <h3>Améliorer le code</h3>
+            <ol>
+              <li>Le code est disponible sur GitHub</li>
+              <li>Vous pouvez proposer des améliorations via des Pull Requests</li>
+              <li>Ou signaler des bugs via des Issues</li>
+            </ol>
+            <a href="https://github.com/bolet777/DansMaZone" target="_blank" class="action-button">Voir sur GitHub</a>
           </div>
         </div>
       </div>
     </div>
 
     <footer>
-      <p>DansMaZone v<span id="version"></span> | <a href="https://github.com/bolet777/DansMaZone" target="_blank">GitHub</a></p>
+      <p>DansMaZone v<span id="version-footer"></span> &mdash; <a href="https://github.com/bolet777/DansMaZone" target="_blank">GitHub</a></p>
     </footer>
   </div>
 
-  <script src="options.js" type="module"></script>
+  <script src="options.js"></script>
 </body>
 </html>

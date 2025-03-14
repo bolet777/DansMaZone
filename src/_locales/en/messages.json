@@ -3,19 +3,238 @@
     "message": "InMyZone",
     "description": "Name of the extension."
   },
-
   "extensionDescription": {
     "message": "Chrome and Firefox extension to search for a product on Amazon and buy it in Canada.",
     "description": "Description of the extension."
   },
-
   "buttonText": {
     "message": "Buy in Canada",
     "description": "Button text (on yellow / orange background)"
   },
-
   "searchOn": {
     "message": "Search on",
     "description": "Text before the store name"
+  },
+  "sidebarTitle": {
+    "message": "In my zone",
+    "description": "Title of the sidebar"
+  },
+  "optionsText": {
+    "message": "Options",
+    "description": "Options button text"
+  },
+  "optionsTitle": {
+    "message": "InMyZone Options",
+    "description": "Title of the options page"
+  },
+  "mySitesTab": {
+    "message": "My sites",
+    "description": "Custom sites tab"
+  },
+  "keywordsTab": {
+    "message": "Keywords",
+    "description": "Keywords tab"
+  },
+  "contributeTab": {
+    "message": "Contribute",
+    "description": "Contribute tab"
+  },
+  "searchSite": {
+    "message": "Search a site...",
+    "description": "Site search placeholder"
+  },
+  "category": {
+    "message": "Category:",
+    "description": "Category label"
+  },
+  "allCategories": {
+    "message": "All categories",
+    "description": "All categories option"
+  },
+  "addSite": {
+    "message": "Add a site",
+    "description": "Add site title"
+  },
+  "siteName": {
+    "message": "Site name:",
+    "description": "Site name label"
+  },
+  "siteNamePlaceholder": {
+    "message": "Ex: My Local Bookstore",
+    "description": "Site name placeholder"
+  },
+  "searchUrl": {
+    "message": "Search URL:",
+    "description": "Search URL label"
+  },
+  "searchUrlPlaceholder": {
+    "message": "Ex: https://example.com/search?q=##QUERY##",
+    "description": "Search URL placeholder"
+  },
+  "searchUrlInfo": {
+    "message": "Use ##QUERY## to indicate where the search term will be inserted, or ##ISBN## for books.",
+    "description": "Search URL information"
+  },
+  "testTerm": {
+    "message": "Test term (to try the URL)",
+    "description": "Test term placeholder"
+  },
+  "testUrl": {
+    "message": "Test URL",
+    "description": "Test URL button"
+  },
+  "addButton": {
+    "message": "Add site",
+    "description": "Add site button"
+  },
+  "myCustomSites": {
+    "message": "My custom sites",
+    "description": "My custom sites title"
+  },
+  "importExport": {
+    "message": "Import / Export",
+    "description": "Import/Export title"
+  },
+  "exportSites": {
+    "message": "Export my sites",
+    "description": "Export sites button"
+  },
+  "importSites": {
+    "message": "Import sites",
+    "description": "Import sites button"
+  },
+  "keywordsManagement": {
+    "message": "Keywords management",
+    "description": "Keywords management title"
+  },
+  "addKeywords": {
+    "message": "Add keywords (comma separated):",
+    "description": "Add keywords label"
+  },
+  "keywordsPlaceholder": {
+    "message": "Ex: computer, screen, keyboard",
+    "description": "Keywords placeholder"
+  },
+  "language": {
+    "message": "Language:",
+    "description": "Language label"
+  },
+  "frenchKeywords": {
+    "message": "French keywords",
+    "description": "French keywords title"
+  },
+  "englishKeywords": {
+    "message": "English keywords",
+    "description": "English keywords title"
+  },
+  "contributeTitle": {
+    "message": "Contribute to InMyZone",
+    "description": "Contribute title"
+  },
+  "contributeDescription": {
+    "message": "Help improve InMyZone by sharing your sites or reporting bugs.",
+    "description": "Contribute description"
+  },
+  "shareSites": {
+    "message": "Share your sites",
+    "description": "Share sites title"
+  },
+  "exportSitesStep1": {
+    "message": "Export your custom sites",
+    "description": "Export sites step 1"
+  },
+  "exportSitesStep2": {
+    "message": "Send the generated JSON file by email",
+    "description": "Export sites step 2"
+  },
+  "exportSitesStep3": {
+    "message": "Your sites could be integrated in a future version",
+    "description": "Export sites step 3"
+  },
+  "exportForContribution": {
+    "message": "Export for contribution",
+    "description": "Export for contribution button"
+  },
+  "improveCode": {
+    "message": "Improve the code",
+    "description": "Improve code title"
+  },
+  "improveCodeStep1": {
+    "message": "The code is available on GitHub",
+    "description": "Improve code step 1"
+  },
+  "improveCodeStep2": {
+    "message": "You can suggest improvements via Pull Requests",
+    "description": "Improve code step 2"
+  },
+  "improveCodeStep3": {
+    "message": "Or report bugs via Issues",
+    "description": "Improve code step 3"
+  },
+  "viewOnGitHub": {
+    "message": "View on GitHub",
+    "description": "View on GitHub button"
+  },
+  "newCategory": {
+    "message": "+ New category",
+    "description": "New category option"
+  },
+  "reportBug": {
+    "message": "Report an issue",
+    "description": "Report bug button"
+  },
+  "enterSearchTerm": {
+    "message": "Enter a search term to test this site:",
+    "description": "Search term prompt"
+  },
+  "confirmDelete": {
+    "message": "Are you sure you want to delete the site \"$siteName$\"?",
+    "description": "Delete site confirmation",
+    "placeholders": {
+      "siteName": {
+        "content": "$1",
+        "example": "My Local Bookstore"
+      }
+    }
+  },
+  "fillAllFields": {
+    "message": "Please fill in all fields.",
+    "description": "Fill fields error message"
+  },
+  "newCategoryPrompt": {
+    "message": "New category name:",
+    "description": "New category prompt"
+  },
+  "siteAddedSuccess": {
+    "message": "Site added successfully!",
+    "description": "Site added success message"
+  },
+  "siteDeletedSuccess": {
+    "message": "Site deleted successfully!",
+    "description": "Site deleted success message"
+  },
+  "enterTestTerm": {
+    "message": "Please enter a test term.",
+    "description": "Enter test term error message"
+  },
+  "exportSuccess": {
+    "message": "Export successful!",
+    "description": "Export success message"
+  },
+  "importSuccess": {
+    "message": "Import successful!",
+    "description": "Import success message"
+  },
+  "enterValidKeyword": {
+    "message": "Please enter at least one valid keyword.",
+    "description": "Enter valid keyword error message"
+  },
+  "keywordsAddedSuccess": {
+    "message": "Keywords added successfully!",
+    "description": "Keywords added success message"
+  },
+  "keywordDeletedSuccess": {
+    "message": "Keyword deleted successfully!",
+    "description": "Keyword deleted success message"
   }
 }
