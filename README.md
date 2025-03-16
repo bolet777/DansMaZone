@@ -90,17 +90,42 @@ Browser extension that suggests local Canadian alternatives to Amazon products b
 
 ```
 DansMaZone/
-├── _locales/             # Fichiers de traduction
-├── dist/                 # Builds compilés
-├── icons/                # Icônes de l'extension
-├── images/               # Images utilisées dans l'extension
-├── src/
-│   ├── content_script/   # Script injecté dans les pages Amazon
-│   ├── datas/           # Données des sites et catégories
-│   ├── manifest/        # Configuration du manifest.json
-│   ├── options/         # Page de préférences de l'extension
-│   └── styles/          # Feuilles de style SCSS
-└── webpack.config.js    # Configuration de build
+├── _locales/                 # Fichiers de traduction
+│   ├── en/                   # Traductions anglaises
+│   │   └── messages.json     # Messages en anglais
+│   └── fr/                   # Traductions françaises
+│       └── messages.json     # Messages en français
+│
+├── background/               # Script de fond de l'extension
+│   └── background.js         # Gestion des événements en arrière-plan
+│
+├── content_script/           # Script injecté dans les pages Amazon
+│   └── index.js              # Code principal injecté dans Amazon
+│
+├── datas/                    # Données structurées pour l'extension
+│   ├── category-classifier.js # Logique de classification et mots-clés
+│   └── category-sites.js     # Sites web par catégorie
+│
+├── icons/                    # Icônes de l'extension
+│   ├── icon-16.png           # Icône 16×16
+│   ├── icon-32.png           # Icône 32×32
+│   ├── icon-48.png           # Icône 48×48
+│   ├── icon-96.png           # Icône 96×96
+│   └── icon-128.png          # Icône 128×128
+│
+├── manifest/                 # Configuration du manifest
+│   └── index.js              # Générateur de manifest.json
+│
+├── options/                  # Page de préférences
+│   ├── options.html          # Structure HTML de la page options
+│   ├── options.css           # Styles pour la page options
+│   └── options.js            # Logique JS pour la page options
+│
+├── styles/                   # Feuilles de style
+│   └── content_script.scss   # Styles SCSS pour le contenu injecté
+│
+├── package.json              # Dépendances et scripts npm
+└── webpack.config.js         # Configuration de build
 ```
 
 ## 🤝 Contribuer
