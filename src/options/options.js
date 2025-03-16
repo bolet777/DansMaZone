@@ -1010,6 +1010,223 @@ function handleError(error, context, notify = true, critical = false) {
 }
 
 function setupBugReporting() {
+  // Créer le bouton de rapport de bug
+  const bugReportBtn = document.createElement('button');
+  bugReportBtn.textContent = i18n.reportBug || 'Signaler un problème';
+  bugReportBtn.className = 'bug-report-btn';
+  
+  // Créer la structure du modal qui sera affiché
+  const modal = document.createElement('div');
+  modal.className = 'bug-report-modal';
+  modal.style.display = 'none';
+  
+  modal.innerHTML = `
+      <div class="bug-report-modal-content">
+          <span class="close-modal">&times;</span>
+          <h3>Signaler un problème</h3>
+          <p>Pour signaler un problème avec l'extension DansMaZone, veuillez inclure les informations ci-dessous:</p>
+          <div class="bug-report-info">
+              <div id="diagnostic-info"></div>
+              <textarea id="bug-description" rows="6" placeholder="Décrivez le problème rencontré..."></textarea>
+          </div>
+          <div class="bug-report-actions">
+              <button id="copy-info-btn">Copier les informations</button>
+              <div id="copy-success" style="display: none; color: green; margin-top: 10px;">Informations copiées dans le presse-papier!</div>
+          </div>
+          <div class="contact-info">
+              <p>Veuillez envoyer ces informations à : <strong>ccosenza.dlab@gmail.com</strong></p>
+          </div>
+      </div>
+  `;
+  
+  // Ajouter les éléments au DOM
+  document.body.appendChild(modal);
+  document.querySelector('footer').appendChild(bugReportBtn);
+  
+  // Récupérer les informations de diagnostic
+  function getDiagnosticInfo() {
+      return {
+          version: browser.runtime.getManifest().version,
+          browser: navigator.userAgent,
+          storageSize: Object.keys(userSites).length
+      };
+  }
+  
+  // Fonction pour formater le texte du rapport
+  function formatReportText(description = '') {
+      const diagnosticInfo = getDiagnosticInfo();
+      return `${description.trim() ? description + '\n\n' : ''}` +
+             `-------- Informations de diagnostic --------\n` +
+             `Version: ${diagnosticInfo.version}\n` +
+             `Navigateur: ${diagnosticInfo.browser}\n` +
+             `Sites personnalisés: ${diagnosticInfo.storageSize} catégories`;
+  }
+  
+  // Afficher le modal avec les informations de diagnostic
+  bugReportBtn.onclick = () => {
+      const diagnosticInfo = getDiagnosticInfo();
+      const diagInfoEl = document.getElementById('diagnostic-info');
+      
+      diagInfoEl.innerHTML = `
+          <div><strong>Version:</strong> ${diagnosticInfo.version}</div>
+          <div><strong>Navigateur:</strong> ${diagnosticInfo.browser}</div>
+          <div><strong>Sites personnalisés:</strong> ${diagnosticInfo.storageSize} catégories</div>
+      `;
+      
+      modal.style.display = 'block';
+  };
+  
+  // Fermer le modal lorsque l'utilisateur clique sur la croix
+  document.querySelector('.close-modal').onclick = () => {
+      modal.style.display = 'none';
+      document.getElementById('bug-description').value = '';
+      document.getElementById('copy-success').style.display = 'none';
+  };
+  
+  // Fermer le modal si l'utilisateur clique en dehors
+  window.onclick = (event) => {
+      if (event.target === modal) {
+          modal.style.display = 'none';
+          document.getElementById('bug-description').value = '';
+          document.getElementById('copy-success').style.display = 'none';
+      }
+  };
+  
+  // Copier les informations dans le presse-papier
+  document.getElementById('copy-info-btn').onclick = () => {
+      const description = document.getElementById('bug-description').value;
+      const reportText = formatReportText(description);
+      
+      // Utiliser l'API Clipboard pour copier le texte
+      navigator.clipboard.writeText(reportText).then(() => {
+          const copySuccess = document.getElementById('copy-success');
+          copySuccess.style.display = 'block';
+          
+          // Masquer le message après 3 secondes
+          setTimeout(() => {
+              copySuccess.style.display = 'none';
+          }, 3000);
+      });
+  };
+  
+  // Supprimé le code pour le bouton d'email
+  
+  // Ajouter du CSS pour le modal
+  const style = document.createElement('style');
+  style.textContent = `
+      .bug-report-btn {
+          background-color: var(--secondary-color);
+          color: white;
+          border: none;
+          padding: 8px 15px;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-left: 15px;
+          transition: background-color 0.2s;
+      }
+      
+      .bug-report-btn:hover {
+          background-color: #344258;
+      }
+      
+      .bug-report-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+      }
+      
+      .bug-report-modal-content {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          width: 80%;
+          max-width: 600px;
+          position: relative;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      
+      .close-modal {
+          position: absolute;
+          top: 10px;
+          right: 15px;
+          font-size: 24px;
+          cursor: pointer;
+          color: #888;
+      }
+      
+      .close-modal:hover {
+          color: #333;
+      }
+      
+      .bug-report-info {
+          background-color: #f5f5f5;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 15px 0;
+      }
+      
+      #diagnostic-info {
+          margin-bottom: 15px;
+          border-bottom: 1px solid #ddd;
+          padding-bottom: 10px;
+      }
+      
+      #bug-description {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          resize: vertical;
+          font-family: inherit;
+          box-sizing: border-box;
+      }
+      
+      .bug-report-actions {
+          display: flex;
+          gap: 10px;
+          margin-top: 15px;
+          flex-wrap: wrap;
+      }
+      
+      .bug-report-actions button {
+          padding: 8px 15px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+      }
+      
+      #copy-info-btn {
+          background-color: var(--secondary-color);
+          color: white;
+      }
+      
+      #copy-info-btn:hover {
+          background-color: #344258;
+      }
+      
+      #email-btn {
+          background-color: var(--primary-color);
+          color: white;
+      }
+      
+      #email-btn:hover {
+          background-color: var(--primary-dark);
+      }
+  `;
+  
+  document.head.appendChild(style);
+}
+
+
+function setupBugReporting_OLD() {
     const bugReportBtn = document.createElement('button');
     bugReportBtn.textContent = i18n.reportBug || 'Signaler un problème';
     bugReportBtn.className = 'bug-report-btn';
