@@ -1,7 +1,6 @@
 # DansMaZone / InMyZone
 
-![DansMaZone Logo](./icons/favicon-128.png)
-
+![DansMaZone Logo](./promotion/Header.png)
 
 Une extension Chrome et Firefox qui vous permet de rediriger vos recherches Amazon.ca vers des librairies et commerces locaux canadiens.
 
@@ -56,10 +55,10 @@ Browser extension that suggests local Canadian alternatives to Amazon products b
 - Formatting: `npm run format` (check) or `npm run format:fix` (auto-fix)
 
 
-4. Chargez l'extension non empaquetée :
-   - Chrome : Ouvrez `chrome://extensions/`, activez le mode développeur, et cliquez sur "Charger l'extension non empaquetée". Sélectionnez le dossier `dist/chrome`.
-   - Firefox : Ouvrez `about:debugging#/runtime/this-firefox`, cliquez sur "Charger un module temporaire", puis sélectionnez le fichier `manifest.json` dans le dossier `dist/firefox`.
-   - Edge : Ouvrez `edge://extensions/`, activez le mode développeur, et cliquez sur "Charger l'extension non empaquetée". Sélectionnez le dossier `dist/edge`.
+## Chargez l'extension non empaquetée :
+- Chrome : Ouvrez `chrome://extensions/`, activez le mode développeur, et cliquez sur "Charger l'extension non empaquetée". Sélectionnez le dossier `dist/chrome`.
+- Firefox : Ouvrez `about:debugging#/runtime/this-firefox`, cliquez sur "Charger un module temporaire", puis sélectionnez le fichier `manifest.json` dans le dossier `dist/firefox`.
+- Edge : Ouvrez `edge://extensions/`, activez le mode développeur, et cliquez sur "Charger l'extension non empaquetée". Sélectionnez le dossier `dist/edge`.
 
 ## 🔧 Développement
 
@@ -124,12 +123,12 @@ Vous pouvez ajouter de nouveaux sites de deux façons :
 ```javascript
 {
   name: 'Nom du Site',
-  url: 'https://www.example.com/search?q=##QUERY##',
-  icon: 'icon-dansmazone.png'
+  url: 'https://www.example.com/search?q=##QUERY##'
 }
 ```
 
-Utilisez `##QUERY##` pour indiquer où le terme de recherche sera inséré, ou `##ISBN##` pour les recherches de livres par ISBN.
+Utilisez `##QUERY##` pour indiquer où le terme de recherche sera inséré, 
+(ou) Utilisez `##ISBN##` pour les recherches de livres par ISBN.
 
 ## 🌐 Multilingue
 
