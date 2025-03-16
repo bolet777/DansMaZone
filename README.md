@@ -128,6 +128,10 @@ DansMaZone/
 └── webpack.config.js         # Configuration de build
 ```
 
+### TODO pour mes ami.e.s développeurs !
+
+Voir le fichier [TODO](TODO.md)
+
 ## 🤝 Contribuer
 
 Nous encourageons les contributions pour améliorer DansMaZone et ajouter plus de sites canadiens !
