@@ -6,6 +6,9 @@ Une extension Chrome et Firefox qui vous permet de rediriger vos recherches Amaz
 
 Browser extension that suggests local Canadian alternatives to Amazon products by detecting categories and offering relevant local retailers.
 
+![DansMaZone Screenshot](./promotion/Addon1.png)
+
+
 ## 🌟 Caractéristiques
 
 - Ajoute une barre latérale sur les pages produit d'Amazon.ca
