@@ -164,7 +164,7 @@ L'extension est disponible en français et en anglais et adapte automatiquement 
 
 ## 📝 Licence
 
-Ce projet est sous licence [MIT](LICENSE).
+Ce projet est sous licence [MIT](LICENSE.md).
 
 ## 🙏 Remerciements
 
