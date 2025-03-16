@@ -2,7 +2,10 @@
 
 ![DansMaZone Logo](./icons/favicon-128.png)
 
+
 Une extension Chrome et Firefox qui vous permet de rediriger vos recherches Amazon.ca vers des librairies et commerces locaux canadiens.
+
+Browser extension that suggests local Canadian alternatives to Amazon products by detecting categories and offering relevant local retailers.
 
 ## 🌟 Caractéristiques
 
@@ -33,6 +36,7 @@ Une extension Chrome et Firefox qui vous permet de rediriger vos recherches Amaz
    npm install
    ```
 
+
 3. Compilez l'extension :
    ```bash
    # Pour Chrome
@@ -44,6 +48,13 @@ Une extension Chrome et Firefox qui vous permet de rediriger vos recherches Amaz
    # Pour Edge
    npm run build:edge
    ```
+
+## Build Commands
+- Build: `npm run build` (all browsers) or `npm run build:chrome|firefox|edge`
+- Development: `npm run dev` (Chrome) or `npm run dev:chrome|firefox|edge`
+- Linting: `npm run lint` (check) or `npm run lint:fix` (auto-fix)
+- Formatting: `npm run format` (check) or `npm run format:fix` (auto-fix)
+
 
 4. Chargez l'extension non empaquetée :
    - Chrome : Ouvrez `chrome://extensions/`, activez le mode développeur, et cliquez sur "Charger l'extension non empaquetée". Sélectionnez le dossier `dist/chrome`.
@@ -60,6 +71,18 @@ Une extension Chrome et Firefox qui vous permet de rediriger vos recherches Amaz
 - `npm run build` : Compile l'extension pour tous les navigateurs
 - `npm run lint` : Vérifie le style du code
 - `npm run format` : Formate le code
+
+## Code Style
+- Linter: Biome (configured in biome.json)
+- Indentation: 2 spaces
+- Line length: 100 chars max
+- Strings: Single quotes, template literals for interpolation
+- Semicolons: Required
+- Variables: Prefer `const` over `let/var`
+- Imports: External libs first, internal modules second, styles last
+- Naming: camelCase (variables, functions), PascalCase (classes)
+- Error handling: Try/catch with centralized `handleError` function
+- Internationalization: Use browser.i18n API for all user-facing text
 
 ### Structure du projet
 

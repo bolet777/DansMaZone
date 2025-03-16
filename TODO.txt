@@ -2,10 +2,7 @@
 GLOBAL
 - Vérifier la normalisation pour google store
 - Selon la marque ajouter une recherche directement sur le site (exemple : https://epson.ca/search/?text=EcoTank+ET-2850&keyword=EcoTank+ET-2850)
-- UI de options
 
-- INTERNATIONALISATION : Bien que vous ayez des fichiers de messages pour différentes langues, 
-certaines parties du code contiennent encore du texte en dur.
 - OPTIM : Au lieu d'observer tout le document, vous pourriez observer uniquement la partie qui contient probablement 
 le titre du produit pour réduire la charge sur le navigateur.
 
