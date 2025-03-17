@@ -465,60 +465,226 @@ function extractPageContent() {
   }, '');
 }
 
-// Nouvelle version de classifyPage qui utilise les mots-clés combinés
-export async function classifyPage() {
-  try {
-    // Obtenir les mots-clés combinés (par défaut + personnalisés)
-    const combinedKeywords = await getCombinedKeywords();
-    
-    const pageContent = cleanText(extractPageContent());
-    
-    // Obtenir le nom du produit
-    const productNameElement = document.getElementById('productTitle');
-    const productName = productNameElement ? cleanText(productNameElement.textContent) : '';
-    
-    // Calculer un score pour chaque catégorie
-    const scores = Object.entries(combinedKeywords).map(([category, keywords]) => {
-      let score = 0;
+
+/**
+ * Extrait la catégorie de produit de manière robuste en utilisant plusieurs méthodes
+ * @returns {string} La catégorie détectée ou 'Unknown'
+ */
+function getProductCategoryRobust() {
+  // Approche 1: Par le fil d'Ariane avec plusieurs sélecteurs
+  const breadcrumbSelectors = [
+    '#wayfinding-breadcrumbs_feature_div li span.a-list-item',
+    '.a-breadcrumb li span',
+    '[id*="breadcrumb"] li',
+    '.breadcrumb li',
+    'nav[aria-label="Breadcrumb"] li',
+    '[id*="SalesRank"] a',
+    '#prodDetails .a-section a'
+  ];
+  
+  // Tester chaque sélecteur jusqu'à ce qu'on en trouve un qui fonctionne
+  for (const selector of breadcrumbSelectors) {
+    const breadcrumbs = document.querySelectorAll(selector);
+    if (breadcrumbs.length > 0) {
+      const categories = Array.from(breadcrumbs)
+        .map(item => item.textContent.trim())
+        .filter(text => 
+          text && 
+          text !== '›' && 
+          !text.includes('retour') &&
+          !text.includes('Retour') &&
+          !text.includes('Amazon') && 
+          !text.includes('Prime')
+        )
+        .slice(0, 3); // Prendre jusqu'à 3 niveaux de catégories
       
-      // Parcourir tous les mots-clés
-      for (const keyword of keywords) {
-        if (!keyword) continue; // Ignorer les mots-clés vides
+      if (categories.length > 0) {
+        const categoryPath = categories
+          .join('/')
+          .replace(/\s+/g, ' ')
+          .replace(/[›\\/]+/g, '/')
+          .replace(/^\W+|\W+$/g, '')
+          .trim();
         
-        const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-        
-        // Chercher dans le contenu total
-        const pageMatches = (pageContent.match(regex) || []).length;
-        
-        // Chercher dans le nom du produit (poids multiplié par 3)
-        const productNameMatches = productName ? (productName.match(regex) || []).length * 3 : 0;
-        
-        score += pageMatches + productNameMatches;
+        console.log('DansMaZone: Catégorie trouvée via fil d\'Ariane:', categoryPath);
+        return categoryPath;
       }
-      
-      return { category, score };
-    });
-
-    // Trier par score et prendre la meilleure correspondance
-    const bestMatch = scores.reduce((max, curr) => 
-      curr.score > max.score ? curr : max,
-      { category: 'default', score: 0 }
-    );
-
-    console.log('DansMaZone: Category scores:', scores);
-    
-    // Détecter la langue et renvoyer la catégorie appropriée
-    const lang = detectLanguage();
-    if (lang === 'en' && bestMatch.score > 0) {
-      // Convertir en anglais si nécessaire
-      return categoryMapping[bestMatch.category] || bestMatch.category;
     }
-    
-    return bestMatch.score > 0 ? bestMatch.category : 'default';
-  } catch (error) {
-    console.error('DansMaZone: Error in classifyPage:', error);
-    return 'default'; // Retourner la catégorie par défaut en cas d'erreur
   }
+  
+  // Approche 2: Par les métadonnées
+  const metaSelectors = [
+    'meta[name="keywords"]',
+    'meta[property="product:category"]',
+    'meta[property="og:product:category"]'
+  ];
+  
+  for (const selector of metaSelectors) {
+    const metaElement = document.querySelector(selector);
+    if (metaElement && metaElement.content) {
+      const metaContent = metaElement.content.split(',')[0].trim();
+      if (metaContent) {
+        console.log('DansMaZone: Catégorie trouvée via métadonnées:', metaContent);
+        return metaContent;
+      }
+    }
+  }
+  
+  // Approche 3: Par les données structurées JSON-LD
+  const jsonLdScripts = document.querySelectorAll('script[type="application/ld+json"]');
+  for (const script of jsonLdScripts) {
+    try {
+      const data = JSON.parse(script.textContent);
+      // Rechercher différentes propriétés possibles de catégorie
+      const category = data.category || 
+                       data.itemListElement?.[0]?.item?.category ||
+                       data.about?.category ||
+                       data.offers?.category ||
+                       data.brand?.category;
+      
+      if (category) {
+        console.log('DansMaZone: Catégorie trouvée via JSON-LD:', category);
+        return typeof category === 'string' ? category : category.name || JSON.stringify(category);
+      }
+    } catch (e) {
+      // Ignorer les erreurs de parsing JSON
+    }
+  }
+  
+  // Approche 4: Par l'URL
+  const urlPatterns = [
+    /\/([^\/]+)\/dp\//,
+    /\/([^\/]+)\/product\//,
+    /\/gp\/product\/[^\/]+\/([^\/]+)\//
+  ];
+  
+  for (const pattern of urlPatterns) {
+    const urlMatch = window.location.pathname.match(pattern);
+    if (urlMatch && urlMatch[1]) {
+      const urlCategory = urlMatch[1].replace(/-/g, ' ');
+      console.log('DansMaZone: Catégorie trouvée via URL:', urlCategory);
+      return urlCategory;
+    }
+  }
+  
+  // Approche 5: Par les data-attributes
+  const dataAttributeSelectors = [
+    '[data-category]',
+    '[data-department]',
+    '[data-asin-category]'
+  ];
+  
+  for (const selector of dataAttributeSelectors) {
+    const element = document.querySelector(selector);
+    if (element) {
+      for (const attr of ['data-category', 'data-department', 'data-asin-category']) {
+        const value = element.getAttribute(attr);
+        if (value) {
+          console.log(`DansMaZone: Catégorie trouvée via ${attr}:`, value);
+          return value;
+        }
+      }
+    }
+  }
+  
+  // Approche 6: Rechercher dans la section "Best Sellers Rank"
+  const salesRankSelectors = [
+    '#SalesRank',
+    '#productDetails_detailBullets_sections1 th:contains("Best Sellers Rank"), #productDetails_detailBullets_sections1 th:contains("Classement des meilleures ventes")',
+    '.a-section:contains("Best Sellers Rank"), .a-section:contains("Classement des meilleures ventes")'
+  ];
+  
+  for (const selector of salesRankSelectors) {
+    const element = document.querySelector(selector);
+    if (element) {
+      const text = element.textContent;
+      const rankMatch = text.match(/in ([^(]+)/);
+      if (rankMatch && rankMatch[1]) {
+        console.log('DansMaZone: Catégorie trouvée via Best Sellers Rank:', rankMatch[1].trim());
+        return rankMatch[1].trim();
+      }
+    }
+  }
+  
+  console.log('DansMaZone: Aucune catégorie trouvée, retour à Unknown');
+  return 'Unknown';
+}
+
+/**
+ * Trouve la catégorie connue la plus proche d'une chaîne de caractères
+ * @param {string} categoryString - La chaîne de texte représentant la catégorie
+ * @param {Object} knownCategories - Les catégories connues (soit combinedSites, soit categoryKeywords)
+ * @returns {string} La catégorie connue correspondante ou 'default'
+ */
+function findNearestCategory(categoryString, knownCategories) {
+  if (!categoryString || categoryString === 'Unknown') {
+    return 'default';
+  }
+  
+  // Conversion en minuscules pour comparaison insensible à la casse
+  const lowercaseCategory = categoryString.toLowerCase();
+  
+  // 1. Rechercher une correspondance exacte
+  for (const category in knownCategories) {
+    if (category.toLowerCase() === lowercaseCategory) {
+      console.log('DansMaZone: Correspondance exacte trouvée:', category);
+      return category;
+    }
+  }
+  
+  // 2. Rechercher des correspondances partielles
+  // D'abord essayer de trouver une catégorie qui est incluse dans la chaîne
+  for (const category in knownCategories) {
+    if (lowercaseCategory.includes(category.toLowerCase())) {
+      console.log('DansMaZone: Catégorie incluse trouvée:', category);
+      return category;
+    }
+  }
+  
+  // 3. Vérifier si la chaîne est incluse dans une catégorie
+  for (const category in knownCategories) {
+    if (category.toLowerCase().includes(lowercaseCategory)) {
+      console.log('DansMaZone: Chaîne incluse dans catégorie:', category);
+      return category;
+    }
+  }
+  
+  // 4. Rechercher des correspondances de mots (mots en commun)
+  const categoryWords = lowercaseCategory.split(/\s+/);
+  let bestCategory = 'default';
+  let maxCommonWords = 0;
+  
+  for (const category in knownCategories) {
+    const categoryLowercase = category.toLowerCase();
+    const knownCategoryWords = categoryLowercase.split(/\s+/);
+    
+    // Compter les mots en commun
+    const commonWords = categoryWords.filter(word => 
+      knownCategoryWords.some(knownWord => knownWord.includes(word) || word.includes(knownWord))
+    ).length;
+    
+    if (commonWords > maxCommonWords) {
+      maxCommonWords = commonWords;
+      bestCategory = category;
+    }
+  }
+  
+  if (maxCommonWords > 0) {
+    console.log('DansMaZone: Meilleure correspondance de mots:', bestCategory, 'avec', maxCommonWords, 'mots en commun');
+    return bestCategory;
+  }
+  
+  // 5. Rechercher dans les mappings de catégories
+  // Vérifier si on a des correspondances dans le mapping français/anglais
+  for (const [frCategory, enCategory] of Object.entries(categoryMapping)) {
+    if (lowercaseCategory.includes(enCategory.toLowerCase())) {
+      console.log('DansMaZone: Correspondance trouvée dans le mapping EN->FR:', frCategory);
+      return frCategory;
+    }
+  }
+  
+  console.log('DansMaZone: Aucune correspondance trouvée, utilisation de default');
+  return 'default';
 }
 
 // Fonction pour récupérer les mots-clés combinés avec gestion d'erreur améliorée
@@ -559,4 +725,118 @@ export function getLocalizedCategory(category, targetLang = 'fr') {
     return categoryMapping[category] || category;
   }
   return category;
+}
+
+/**
+ * Classifie la page produit Amazon en utilisant plusieurs approches
+ * @returns {Promise<string>} La catégorie détectée
+ */
+export async function classifyPage(combinedSites) {
+  try {
+    // Obtenir les mots-clés combinés (par défaut + personnalisés)
+    const combinedKeywords = await getCombinedKeywords();
+    
+    // 1. D'abord essayer par le fil d'Ariane et autres méthodes structurées
+    const structuredCategory = getProductCategoryRobust();
+    
+    // 2. Essayer de trouver une correspondance directe avec la catégorie structurée
+    if (structuredCategory !== 'Unknown') {
+      const directMatch = findNearestCategory(structuredCategory, combinedKeywords);
+      if (directMatch !== 'default') {
+        console.log('DansMaZone: Catégorie trouvée directement:', directMatch);
+        return directMatch;
+      }
+    }
+    
+    // 3. Analyser le contenu pour les mots-clés
+    const pageContent = cleanText(extractPageContent());
+    
+    // Obtenir le nom du produit
+    const productNameElement = document.getElementById('productTitle');
+    const productName = productNameElement ? cleanText(productNameElement.textContent) : '';
+    
+    // Obtenir le fabricant/marque
+    const brandElement = document.querySelector('.po-brand .po-break-word') || 
+                          document.querySelector('#bylineInfo') ||
+                          document.querySelector('[id*="brand"]');
+    const brandName = brandElement ? cleanText(brandElement.textContent) : '';
+    
+    // Calculer un score pour chaque catégorie
+    const scores = Object.entries(combinedKeywords).map(([category, keywords]) => {
+      let score = 0;
+      
+      // Parcourir tous les mots-clés
+      for (const keyword of keywords) {
+        if (!keyword) continue; // Ignorer les mots-clés vides
+        
+        const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+        
+        // Chercher dans le contenu total
+        const pageMatches = (pageContent.match(regex) || []).length;
+        
+        // Chercher dans le nom du produit (poids multiplié par 3)
+        const productNameMatches = productName ? (productName.match(regex) || []).length * 3 : 0;
+        
+        // Chercher dans le nom de la marque (poids multiplié par 2)
+        const brandMatches = brandName ? (brandName.match(regex) || []).length * 2 : 0;
+        
+        score += pageMatches + productNameMatches + brandMatches;
+      }
+      
+      // Boost pour les catégories qui correspondent partiellement au structuredCategory
+      if (structuredCategory !== 'Unknown') {
+        if (structuredCategory.toLowerCase().includes(category.toLowerCase()) || 
+            category.toLowerCase().includes(structuredCategory.toLowerCase())) {
+          score += 3;
+        }
+      }
+      
+      return { category, score };
+    });
+
+    // Trier par score et prendre la meilleure correspondance
+    const bestMatch = scores.reduce((max, curr) => 
+      curr.score > max.score ? curr : max,
+      { category: 'default', score: 0 }
+    );
+
+    console.log('DansMaZone: Scores des catégories:', scores);
+    
+    // Si le score est faible et qu'on a une catégorie structurée, essayer une approche hybride
+    if (bestMatch.score < 2 && structuredCategory !== 'Unknown') {
+      // Utiliser la catégorie du breadcrumb et essayer de trouver une correspondance
+      const nearestCategory = findNearestCategory(structuredCategory, combinedKeywords);
+      if (nearestCategory !== 'default') {
+        console.log('DansMaZone: Score faible, utilisation de la catégorie structurée:', nearestCategory);
+        return nearestCategory;
+      }
+    }
+    
+    // Détecter la langue et renvoyer la catégorie appropriée
+    const lang = detectLanguage();
+    if (lang === 'en' && bestMatch.score > 0) {
+      // Convertir en anglais si nécessaire
+      return categoryMapping[bestMatch.category] || bestMatch.category;
+    }
+    
+    return bestMatch.score > 0 ? bestMatch.category : 'default';
+  } catch (error) {
+    console.error('DansMaZone: Error in classifyPage:', error);
+    
+    // Tentative de récupération en cas d'erreur
+    try {
+      const fallbackCategory = getProductCategoryRobust();
+      if (fallbackCategory !== 'Unknown' && combinedSites) {
+        const nearestCategory = findNearestCategory(fallbackCategory, combinedSites);
+        if (nearestCategory !== 'default') {
+          console.log('DansMaZone: Récupération d\'erreur avec catégorie:', nearestCategory);
+          return nearestCategory;
+        }
+      }
+    } catch (fallbackError) {
+      console.error('DansMaZone: Erreur lors de la récupération:', fallbackError);
+    }
+    
+    return 'default'; // Retourner la catégorie par défaut en cas d'erreur
+  }
 }

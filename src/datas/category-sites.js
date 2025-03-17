@@ -15,8 +15,8 @@ export const categorySites = {
   ],
   'Auto et Moto': [
     {
-      name: 'Pièces d\'Auto Canadian Tire',
-      url: 'https://www.canadiantire.ca/fr/recherche-de-produits.html?q=##QUERY##'
+      name: 'Canadian Tire',
+      url: 'https://www.canadiantire.ca/fr/resultats-de-recherche.html?q=##QUERY##'
     },
     {
       name: 'Centre de l\'Auto Élégance',
@@ -587,8 +587,8 @@ export const categorySites = {
   ],
   'default': [
     {
-      name: 'Canadian Tire',
-      url: 'https://www.canadiantire.ca/fr/resultats-de-recherche.html?q=##QUERY##'
+      name: 'Google Canada',
+      url:'https://www.google.ca/search?q=##QUERY##'
     }
   ],
 };

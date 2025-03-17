@@ -112,46 +112,118 @@ async function initSites() {
 }
 
 function getISBN() {
+  // Définir un pattern plus strict pour l'ISBN
+  const isbnRegex = /(?:ISBN(?:-13)?:?\s*)?(?=[0-9X]{13}|[0-9X]{10})([0-9]{9}[0-9X]|[0-9]{12}[0-9X])/i;
+  
+  // Vérifier la validité d'un ISBN trouvé
+  const isValidISBN = (isbn) => {
+    // Enlever les tirets et espaces
+    const cleanIsbn = isbn.replace(/[-\s]/g, '');
+    
+    // Vérifier la longueur (ISBN-10 ou ISBN-13)
+    if (cleanIsbn.length !== 10 && cleanIsbn.length !== 13) {
+      return false;
+    }
+    
+    // Exclure les valeurs suspectes
+    if (cleanIsbn === '4294967295' || // 2^32-1, valeur limite
+        cleanIsbn === '0000000000' ||
+        cleanIsbn === '1111111111' ||
+        cleanIsbn === '9999999999' ||
+        /^(.)\1+$/.test(cleanIsbn)) { // Tous les chiffres identiques
+      return false;
+    }
+    
+    // Vérification supplémentaire : les ISBN-13 commencent généralement par 978 ou 979
+    if (cleanIsbn.length === 13 && !cleanIsbn.startsWith('978') && !cleanIsbn.startsWith('979')) {
+      return false;
+    }
+    
+    // Si l'ISBN semble valide, le retourner
+    return cleanIsbn;
+  };
+  
+  // Méthode 1: Recherche dans la section détails
   const detailBullets = document.getElementById('detailBullets_feature_div');
   if (detailBullets) {
     const listItems = detailBullets.querySelectorAll('li span.a-list-item');
     for (const item of listItems) {
       const boldText = item.querySelector('span.a-text-bold');
-      if (boldText && boldText.textContent.includes('ISBN-13')) {
+      if (boldText && (boldText.textContent.includes('ISBN-13') || boldText.textContent.includes('ISBN-10'))) {
         const isbnSpan = item.querySelector('span:not(.a-text-bold)');
         if (isbnSpan) {
-          return isbnSpan.textContent.trim().replace(/-/g, '');
+          const potentialIsbn = isbnSpan.textContent.trim();
+          const validIsbn = isValidISBN(potentialIsbn);
+          if (validIsbn) {
+            console.log('DansMaZone: ISBN trouvé dans les détails:', validIsbn);
+            return validIsbn;
+          }
         }
       }
     }
   }
-  return null;
-}
-
-function getProductCategory() {
-  // Via le fil d'Ariane
-  const breadcrumbs = document.querySelectorAll('#wayfinding-breadcrumbs_feature_div li span.a-list-item');
-  if (breadcrumbs.length > 0) {
-    const categories = Array.from(breadcrumbs)
-      .map(item => item.textContent.trim())
-      .filter(text => 
-        text && 
-        text !== '›' && 
-        !text.includes('retour') &&
-        !text.includes('Retour')
-      )
-      .slice(0, 2);
-    
-    if (categories.length > 0) {
-      return categories
-        .join('/')
-        .replace(/\s+/g, ' ')
-        .replace(/[›\\/]+/g, '/')
-        .replace(/^\W+|\W+$/g, '')
-        .trim();
+  
+  // Méthode 2: Chercher dans les métadonnées
+  const metaIsbn = document.querySelector('meta[property="books:isbn"]');
+  if (metaIsbn && metaIsbn.content) {
+    const match = metaIsbn.content.match(isbnRegex);
+    if (match && match[1]) {
+      const validIsbn = isValidISBN(match[1]);
+      if (validIsbn) {
+        console.log('DansMaZone: ISBN trouvé dans les métadonnées:', validIsbn);
+        return validIsbn;
+      }
     }
   }
-  return 'Unknown';
+  
+  // Méthode 3: Chercher dans des zones de contenu spécifiques
+  const textContentElements = [
+    document.getElementById('productDescription'),
+    document.getElementById('feature-bullets'),
+    document.getElementById('bookDescription_feature_div')
+  ];
+  
+  for (const element of textContentElements) {
+    if (element) {
+      const text = element.textContent;
+      const matches = text.match(isbnRegex);
+      if (matches && matches[1]) {
+        const validIsbn = isValidISBN(matches[1]);
+        if (validIsbn) {
+          console.log('DansMaZone: ISBN trouvé dans le contenu:', validIsbn);
+          return validIsbn;
+        }
+      }
+    }
+  }
+  
+  // Méthode 4: Vérifier s'il existe une section d'informations sur les livres
+  const bookSections = [
+    document.getElementById('rpi-attribute-book_details-isbn13'),
+    document.getElementById('rpi-attribute-book_details-isbn10'),
+    document.querySelector('[data-feature-name="bookDescription"]')
+  ];
+  
+  if (!bookSections.some(element => element !== null)) {
+    console.log('DansMaZone: Aucune section liée aux livres trouvée');
+    return null; // Pas de section liée aux livres, donc pas un livre
+  }
+  
+  // Méthode 5 (prudente): Chercher dans le corps entier de la page, mais avec une confiance faible
+  // Uniquement si les sections liées aux livres existent
+  const pageText = document.body.textContent;
+  const bodyMatches = pageText.match(isbnRegex);
+  if (bodyMatches && bodyMatches[1]) {
+    const validIsbn = isValidISBN(bodyMatches[1]);
+    if (validIsbn) {
+      console.log('DansMaZone: ISBN potentiel trouvé dans le corps du texte:', validIsbn);
+      return validIsbn;
+    }
+  }
+  
+  // Aucun ISBN valide trouvé
+  console.log('DansMaZone: Aucun ISBN valide trouvé');
+  return null;
 }
 
 function getProductDetails() {
@@ -365,7 +437,7 @@ async function start() {
       addLinkButtons(combinedSites['Livres'] || [], isbn);
     } else {
       // Détecte la catégorie (en français ou anglais selon la langue de la page)
-      const detectedCategory = await classifyPage();
+      const detectedCategory = await classifyPage(combinedSites);
       console.info('DansMaZone: Category detected:', detectedCategory);
 
       if (!detectedCategory) {

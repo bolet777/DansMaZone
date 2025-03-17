@@ -1225,36 +1225,6 @@ function setupBugReporting() {
   document.head.appendChild(style);
 }
 
-
-function setupBugReporting_OLD() {
-    const bugReportBtn = document.createElement('button');
-    bugReportBtn.textContent = i18n.reportBug || 'Signaler un problème';
-    bugReportBtn.className = 'bug-report-btn';
-    bugReportBtn.onclick = () => {
-      const diagnosticInfo = {
-        version: browser.runtime.getManifest().version,
-        browser: navigator.userAgent,
-        storageSize: Object.keys(userSites).length,
-        errors: [] // Liste des erreurs récentes
-      };
-      
-      // Créer un corps de mail encodé
-      const subject = encodeURIComponent('DansMaZone - Rapport de bug');
-      const body = encodeURIComponent(
-        `Merci de décrire le problème rencontré :\n\n\n` +
-        `-------- Informations de diagnostic --------\n` +
-        `Version: ${diagnosticInfo.version}\n` +
-        `Navigateur: ${diagnosticInfo.browser}\n` +
-        `Sites personnalisés: ${diagnosticInfo.storageSize} catégories`
-      );
-      
-      // Ouvrir le client mail par défaut
-      window.open(`mailto:ccosenza.dlab@gmail.com?subject=${subject}&body=${body}`);
-    };
-    
-    document.querySelector('footer').appendChild(bugReportBtn);
-}
-
 // Ajouter les références DOM pour les éléments des mots-clés
 elements.keywordCategory = document.getElementById('keyword-category');
 elements.keywordInput = document.getElementById('keyword-input');

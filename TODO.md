@@ -12,8 +12,53 @@
 
 ## Performance et optimisation
 
+**Améliorations de la recherche des sites locaux**
+
+- url de recherche FR et EN
+- ajouter des specialités et des marque par category-sites
+
+```
+// Dans category-sites.js
+{
+  name: 'Boutique Planète Bébé',
+  url: 'https://www.boutiqueplanetebebe.com/search?q=##QUERY##',
+  specialties: ['bio', 'écologique', 'zéro déchet'],
+  brands: ['Charlie Banana', 'AppleCheeks']
+}
+
+// Dans index.js, calculer un score de pertinence
+function calculateSiteRelevance(site, searchTerm, productDetails) {
+  let score = 1;
+  
+  // Booste le score si le site est spécialisé dans des termes pertinents
+  if (site.specialties) {
+    for (const specialty of site.specialties) {
+      if (searchTerm.toLowerCase().includes(specialty.toLowerCase())) {
+        score += 2;
+      }
+    }
+  }
+  
+  // Booste si le site vend spécifiquement cette marque
+  if (site.brands && productDetails.manufacturer) {
+    if (site.brands.some(brand => 
+        productDetails.manufacturer.toLowerCase().includes(brand.toLowerCase()))) {
+      score += 3;
+    }
+  }
+  
+  // Booste les sites déjà utilisés (stockés dans préférences)
+  const visitCount = getVisitCount(site.name);
+  score += Math.min(visitCount * 0.5, 2); // Max +2 pour les sites fréquents
+  
+  return score;
+}
+```
+
+
 **Améliorer l'algorithme de classification**
    - Remplacer l'approche actuelle par une méthode plus sophistiquée comme TF-IDF pour le matching de mots-clés.
+
 
 **Implémenter le caching des sites**
    - Utiliser l'API LRU-Cache pour stocker les sites fréquemment consultés.
@@ -39,6 +84,41 @@
 
 **Ajouter des recherches spécifiques par marque**
    - Implémenter une logique pour rediriger directement vers les sites officiels des marques (ex: https://epson.ca/search/?text=EcoTank).
+
+```
+// Base de données des marques
+const brandWebsites = {
+  'Sony': {
+    url: 'https://www.sony.ca/fr/search?q=##QUERY##',
+    categories: ['Électronique', 'Photo']
+  },
+  'Samsung': {
+    url: 'https://www.samsung.com/ca_fr/search/?searchvalue=##QUERY##',
+    categories: ['Électronique', 'Électroménager']
+  }
+  // etc.
+};
+
+// Dans le code qui génère la barre latérale
+function addOfficialSiteSection(manufacturer, searchTerm) {
+  if (manufacturer && brandWebsites[manufacturer]) {
+    const brandSection = document.createElement('div');
+    brandSection.className = 'dmz-brand-section';
+    
+    const header = document.createElement('h3');
+    header.textContent = 'Site officiel';
+    
+    const link = document.createElement('a');
+    link.href = brandWebsites[manufacturer].url.replace('##QUERY##', searchTerm);
+    link.textContent = manufacturer;
+    link.target = '_blank';
+    
+    brandSection.appendChild(header);
+    brandSection.appendChild(link);
+    sidebarEl.insertBefore(brandSection, contentContainer);
+  }
+}
+```
 
 **Collecter des métriques d'utilisation anonymes**
    - Ajouter une option pour les utilisateurs d'accepter la collecte de données anonymes sur les fonctionnalités utilisées.
