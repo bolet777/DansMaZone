@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { categorySites } from '../datas/category-sites.js';
+import defaultSites from '../datas/default-sites.json';
 import { categoryKeywords, categoryMapping } from '../datas/category-classifier.js';
 
 // Fonction pour obtenir les traductions
@@ -66,8 +66,6 @@ const elements = {
 
 // Structure de données pour stocker les sites personnalisés
 let userSites = {};
-// Stockage des sites par défaut de l'extension
-let defaultSites = {};
 // Objet pour stocker les traductions
 let i18n = {};
 
@@ -230,8 +228,7 @@ async function initOptions() {
     // Initialiser les onglets
     initTabs();
     
-    // Cloner les sites par défaut
-    defaultSites = structuredClone(categorySites);
+    // Cloner les sites par défaut (déjà importés du JSON)
     
     // Charger les sites personnalisés depuis le stockage
     await loadUserSites();
@@ -787,7 +784,7 @@ function exportUserSites(forContribution = false) {
       };
     }
     
-    // Convertir en JSON
+    // Convertir en JSON bien formaté
     const jsonData = JSON.stringify(dataToExport, null, 2);
     
     // Créer un objet Blob

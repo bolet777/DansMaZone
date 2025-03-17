@@ -66,7 +66,7 @@ const config = {
     topLevelAwait: true,
   },
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.js', '.json'],
   },
   module: {
     rules: [
@@ -109,6 +109,11 @@ const config = {
         use: 'raw-loader',
       },
       {
+        test: /\.json$/,
+        type: 'javascript/auto',
+        use: 'json-loader',
+      },
+      {
         test: /\.(png|jpg|jpeg|gif|svg|ico)$/,
         type: 'asset/resource',
         generator: {
@@ -149,6 +154,7 @@ const config = {
       patterns: [
         { from: '_locales', to: '_locales' },
         { from: 'icons', to: 'icons', globOptions: { ignore: ['icon.xcf', '.DS_Store'] } },
+        { from: 'datas/*.json', to: '[path][name][ext]' },
       ],
     }),
   ],

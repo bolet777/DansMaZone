@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import '../styles/content_script.scss';
-import { categorySites } from '../datas/category-sites.js';
+import defaultSites from '../datas/default-sites.json';
 import { classifyPage, categoryMapping, detectLanguage } from '../datas/category-classifier.js';
 
 // Stockage pour les sites combinés (par défaut + personnalisés)
@@ -48,7 +48,7 @@ async function loadI18nStrings() {
 async function initSites() {
   try {
     // Copier les sites par défaut
-    combinedSites = structuredClone(categorySites);
+    combinedSites = structuredClone(defaultSites);
     
     // Récupérer les sites personnalisés depuis le stockage local
     const result = await browser.storage.local.get('userSites');
@@ -80,7 +80,7 @@ async function initSites() {
     console.error('DansMaZone: Erreur lors du chargement des sites personnalisés', error);
     
     // S'assurer que combinedSites est initialisé correctement même en cas d'erreur
-    combinedSites = structuredClone(categorySites);
+    combinedSites = structuredClone(defaultSites);
     
     // Notification discrète en cas d'erreur
     const errorElement = document.createElement('div');
@@ -614,7 +614,7 @@ function fallbackInitialization() {
   
   try {
     // Initialiser avec seulement les sites par défaut
-    combinedSites = structuredClone(categorySites);
+    combinedSites = structuredClone(defaultSites);
     
     // Charger les traductions de secours
     i18nStrings = {
