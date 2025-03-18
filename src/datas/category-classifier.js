@@ -506,6 +506,33 @@ function getProductCategoryRobust() {
           .replace(/^\W+|\W+$/g, '')
           .trim();
         
+        // Termes spécifiques à chaque catégorie qui nécessitent une attribution directe
+        const categorySpecificTerms = {
+          'Électronique et Informatique': ['audio', 'casque', 'écouteur', 'amplificateur', 'dac', 'headphone', 'earphone', 'amplifier', 'ordinateur', 'pc', 'smartphone', 'tablette'],
+          'Instruments de Musique': ['guitare', 'piano', 'batterie', 'violon', 'saxophone', 'trompette'],
+          'Photographie': ['appareil photo', 'objectif', 'reflex', 'mirrorless', 'dslr', 'camera']
+        };
+        
+        // Détecter si la catégorie contient des termes spécifiques
+        let matchedCategory = null;
+        
+        for (const [category, terms] of Object.entries(categorySpecificTerms)) {
+          const isMatch = terms.some(term => categoryPath.toLowerCase().includes(term));
+          if (isMatch) {
+            matchedCategory = category;
+            console.log(`DansMaZone: Produit de type ${category} détecté dans le fil d'Ariane`);
+            break;
+          }
+        }
+        
+        if (matchedCategory) {
+          const originalPath = categoryPath;
+          // Vérifie si la catégorie détectée n'est pas déjà incluse
+          if (!categoryPath.toLowerCase().includes(matchedCategory.toLowerCase())) {
+            categoryPath = matchedCategory + '/' + originalPath;
+          }
+        }
+        
         console.log('DansMaZone: Catégorie trouvée via fil d\'Ariane:', categoryPath);
         return categoryPath;
       }
@@ -649,28 +676,120 @@ function findNearestCategory(categoryString, knownCategories) {
     }
   }
   
-  // 4. Rechercher des correspondances de mots (mots en commun)
-  const categoryWords = lowercaseCategory.split(/\s+/);
+  // 4. Rechercher des correspondances de mots (mots en commun) avec vérification sémantique
+  const categoryWords = lowercaseCategory.split(/\s+/).filter(word => word.length > 2); // Ignorer les mots trop courts
   let bestCategory = 'default';
-  let maxCommonWords = 0;
+  let maxCategoryScore = 0;
+  
+  // Liste de mots à ignorer pour la correspondance car trop génériques
+  const stopWords = ['et', 'and', 'the', 'les', 'des', 'de', 'la', 'le', 'un', 'une', 'a', 'an'];
+  
+  // Groupes de catégories similaires qui peuvent prêter à confusion
+  const categoryGroups = {
+    tech: ['Électronique et Informatique', 'Instruments de Musique', 'Jeux Vidéo et Consoles', 'Photographie'],
+    beauty: ['Santé et Soins personnels', 'Beauté et Parfum', 'Bijoux et Accessoires'],
+    home: ['Maison', 'Décoration', 'Mobilier', 'Literie', 'Cuisine', 'Luminaire'],
+    clothing: ['Mode et Vêtements', 'Chaussures', 'Bijoux et Accessoires']
+  };
+  
+  // Termes spécifiques à chaque catégorie qui aident à désambiguïser
+  const categorySpecificTerms = {
+    'Électronique et Informatique': {
+      terms: ['ordinateur', 'pc', 'smartphone', 'tablette', 'audio', 'casque', 'écouteur', 'amplificateur'],
+      matchBonus: 3
+    },
+    'Instruments de Musique': {
+      terms: ['guitare', 'piano', 'batterie', 'violon', 'instrument'],
+      matchBonus: 3
+    },
+    'Bijoux et Accessoires': {
+      terms: ['bijou', 'montre', 'bracelet', 'collier', 'bague', 'or', 'argent', 'perle'],
+      matchBonus: 3,
+      required: ['bijou', 'bracelet', 'montre', 'collier']  // Au moins un de ces termes doit être présent
+    }
+  };
+  
+  // Déterminer si la chaîne contient des termes ambigus
+  const hasAccessoireTerm = lowercaseCategory.includes('accessoire');
+  const hasAudioTerm = lowercaseCategory.includes('audio') || 
+                       lowercaseCategory.includes('écouteur') || 
+                       lowercaseCategory.includes('headphone') || 
+                       lowercaseCategory.includes('casque');
+  
+  // Trouver à quels groupes appartient chaque catégorie
+  const getCategoryGroups = (category) => {
+    return Object.entries(categoryGroups)
+      .filter(([_, categories]) => categories.includes(category))
+      .map(([group, _]) => group);
+  };
   
   for (const category in knownCategories) {
     const categoryLowercase = category.toLowerCase();
-    const knownCategoryWords = categoryLowercase.split(/\s+/);
+    const knownCategoryWords = categoryLowercase.split(/\s+/).filter(word => !stopWords.includes(word));
     
     // Compter les mots en commun
     const commonWords = categoryWords.filter(word => 
+      !stopWords.includes(word) && 
       knownCategoryWords.some(knownWord => knownWord.includes(word) || word.includes(knownWord))
     ).length;
     
-    if (commonWords > maxCommonWords) {
-      maxCommonWords = commonWords;
+    // Poids initial basé sur les mots communs
+    let categoryScore = commonWords;
+    
+    // Vérifier les termes spécifiques à la catégorie
+    const specificTerms = categorySpecificTerms[category];
+    if (specificTerms) {
+      // Vérifier si les termes spécifiques sont présents
+      const hasSpecificTerms = specificTerms.terms.some(term => 
+        lowercaseCategory.includes(term)
+      );
+      
+      if (hasSpecificTerms) {
+        categoryScore += specificTerms.matchBonus || 2;
+      }
+      
+      // Vérifier si un terme requis est absent pour cette catégorie
+      if (specificTerms.required && specificTerms.required.length > 0) {
+        const hasRequiredTerm = specificTerms.required.some(term => 
+          lowercaseCategory.includes(term)
+        );
+        
+        if (!hasRequiredTerm) {
+          categoryScore -= 2; // Pénalité si aucun terme requis n'est présent
+        }
+      }
+    }
+    
+    // Désambiguïsation contextuelle pour les catégories qui peuvent se chevaucher
+    if (hasAccessoireTerm) {
+      // Si on parle d'accessoires et d'audio, favoriser l'électronique
+      if (hasAudioTerm && category === 'Électronique et Informatique') {
+        categoryScore += 3;
+      }
+      
+      // Réduire la pertinence de "Bijoux et Accessoires" s'il n'y a pas de termes de bijouterie
+      if (category === 'Bijoux et Accessoires' && !lowercaseCategory.includes('bijou') && 
+          !lowercaseCategory.includes('montre') && !lowercaseCategory.includes('bracelet')) {
+        categoryScore -= 1;
+      }
+    }
+    
+    // Trouver à quels groupes cette catégorie appartient
+    const groups = getCategoryGroups(category);
+    
+    // Vérifier si la catégorie appartient à un groupe cohérent avec le contexte
+    if (hasAudioTerm && groups.includes('tech')) {
+      categoryScore += 1; // Petit bonus pour les catégories tech quand on parle d'audio
+    }
+    
+    if (categoryScore > maxCategoryScore) {
+      maxCategoryScore = categoryScore;
       bestCategory = category;
     }
   }
   
-  if (maxCommonWords > 0) {
-    console.log('DansMaZone: Meilleure correspondance de mots:', bestCategory, 'avec', maxCommonWords, 'mots en commun');
+  if (maxCategoryScore > 0) {
+    console.log('DansMaZone: Meilleure correspondance de mots:', bestCategory, 'avec score', maxCategoryScore);
     return bestCategory;
   }
   

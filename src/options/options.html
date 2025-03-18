@@ -48,13 +48,24 @@
             <input type="text" id="site-name" placeholder="Ex: Ma Librairie Locale">
           </div>
           <div class="form-row">
-            <label for="site-url">URL de recherche:</label>
-            <input type="text" id="site-url" placeholder="Ex: https://example.com/search?q=##QUERY##">
+            <label for="site-url-fr">URL de recherche (FR):</label>
+            <input type="text" id="site-url-fr" placeholder="Ex: https://example.com/fr/search?q=##QUERY##">
             <p class="url-info">Utilisez <code>##QUERY##</code> pour indiquer où le terme de recherche sera inséré, ou <code>##ISBN##</code> pour les livres.</p>
           </div>
           <div class="form-row">
+            <label for="site-url-en">URL de recherche (EN):</label>
+            <input type="text" id="site-url-en" placeholder="Ex: https://example.com/en/search?q=##QUERY##">
+            <div class="url-actions">
+              <button id="auto-generate-url" class="small-btn">Auto-générer depuis l'URL FR</button>
+              <button id="copy-url-fr" class="small-btn">Copier depuis FR</button>
+            </div>
+          </div>
+          <div class="form-row test-url-row">
             <input type="text" id="site-url-test" placeholder="Terme de test (pour essayer l'URL)">
-            <button id="test-url-btn">Tester l'URL</button>
+            <div class="test-url-buttons">
+              <button id="test-url-fr-btn">Tester URL FR</button>
+              <button id="test-url-en-btn">Tester URL EN</button>
+            </div>
           </div>
           <div class="form-actions">
             <button id="add-site-btn">Ajouter le site</button>

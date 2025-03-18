@@ -39,9 +39,13 @@ const elements = {
   sitesContainer: document.querySelector('.sites-container'),
   siteCategory: document.getElementById('site-category'),
   siteName: document.getElementById('site-name'),
-  siteUrl: document.getElementById('site-url'),
+  siteUrlFr: document.getElementById('site-url-fr'),
+  siteUrlEn: document.getElementById('site-url-en'),
   siteUrlTest: document.getElementById('site-url-test'),
-  testUrlBtn: document.getElementById('test-url-btn'),
+  testUrlFrBtn: document.getElementById('test-url-fr-btn'),
+  testUrlEnBtn: document.getElementById('test-url-en-btn'),
+  autoGenerateUrlBtn: document.getElementById('auto-generate-url'),
+  copyUrlFrBtn: document.getElementById('copy-url-fr'),
   addSiteBtn: document.getElementById('add-site-btn'),
   exportBtn: document.getElementById('export-btn'),
   exportContribBtn: document.getElementById('export-contrib-btn'),
@@ -57,7 +61,9 @@ const elements = {
   addSiteTitle: document.querySelector('.add-site-form h3'),
   siteCategoryLabel: document.querySelector('label[for="site-category"]'),
   siteNameLabel: document.querySelector('label[for="site-name"]'),
-  searchUrlLabel: document.querySelector('label[for="site-url"]'),
+  // Utiliser des sélecteurs plus robustes ou initialiser ces références plus tard
+  searchUrlFrLabel: null, // Sera initialisé dans localizeUI
+  searchUrlEnLabel: null, // Sera initialisé dans localizeUI
   searchUrlInfo: document.querySelector('.url-info'),
   myCustomSitesTitle: document.querySelector('.sites-container').previousElementSibling,
   importExportTitle: document.querySelector('.import-export h3'),
@@ -71,143 +77,210 @@ let i18n = {};
 
 // Fonction pour appliquer les traductions à l'interface utilisateur
 function localizeUI() {
-  // Charger les traductions
-  i18n = getI18nMessages();
-  
-  // Titre de la page
-  document.title = i18n.optionsTitle || "Options DansMaZone";
-  elements.optionsTitleElement.textContent = i18n.optionsTitle || "Options DansMaZone";
-  
-  // Onglets
-  elements.mySitesTabElement.textContent = i18n.mySitesTab || "Mes sites";
-  elements.keywordsTabElement.textContent = i18n.keywordsTab || "Mots-clés";
-  elements.contributeTabElement.textContent = i18n.contributeTab || "Contribuer";
-  
-  // Recherche et filtre
-  elements.searchSiteElement.placeholder = i18n.searchSite || "Rechercher un site...";
-  elements.categoryFilterLabel.textContent = i18n.category || "Catégorie:";
-  
-  // Formulaire d'ajout de site
-  elements.addSiteTitle.textContent = i18n.addSite || "Ajouter un site";
-  elements.siteCategoryLabel.textContent = i18n.category || "Catégorie:";
-  elements.siteNameLabel.textContent = i18n.siteName || "Nom du site:";
-  elements.siteName.placeholder = i18n.siteNamePlaceholder || "Ex: Ma Librairie Locale";
-  elements.searchUrlLabel.textContent = i18n.searchUrl || "URL de recherche:";
-  elements.siteUrl.placeholder = i18n.searchUrlPlaceholder || "Ex: https://example.com/search?q=##QUERY##";
-  elements.searchUrlInfo.innerHTML = i18n.searchUrlInfo || 'Utilisez <code>##QUERY##</code> pour indiquer où le terme de recherche sera inséré, ou <code>##ISBN##</code> pour les livres.';
-  elements.siteUrlTest.placeholder = i18n.testTerm || "Terme de test (pour essayer l'URL)";
-  elements.testUrlBtn.textContent = i18n.testUrl || "Tester l'URL";
-  elements.addSiteBtn.textContent = i18n.addButton || "Ajouter le site";
-  
-  // Liste des sites personnalisés
-  elements.myCustomSitesTitle.textContent = i18n.myCustomSites || "Mes sites personnalisés";
-  
-  // Import/Export
-  elements.importExportTitle.textContent = i18n.importExport || "Importer / Exporter";
-  elements.exportBtn.textContent = i18n.exportSites || "Exporter mes sites";
-  elements.importSitesLabel.textContent = i18n.importSites || "Importer des sites";
-  
-  // Option "Toutes les catégories"
-  const allCategoriesOption = elements.categoryFilter.querySelector('option[value="all"]');
-  if (allCategoriesOption) {
-    allCategoriesOption.textContent = i18n.allCategories || "Toutes les catégories";
-  }
-  
-  // Section des mots-clés
-  const keywordsMgmtTitle = document.getElementById('keywords-management-title');
-  if (keywordsMgmtTitle) {
-    keywordsMgmtTitle.textContent = i18n.keywordsManagement || "Gestion des mots-clés";
-  }
-  
-  const keywordsInputLabel = document.getElementById('keywords-input-label');
-  if (keywordsInputLabel) {
-    keywordsInputLabel.textContent = i18n.addKeywords || "Ajouter des mots-clés (séparés par virgule):";
-  }
-  
-  const keywordInput = document.getElementById('keyword-input');
-  if (keywordInput) {
-    keywordInput.placeholder = i18n.keywordsPlaceholder || "Ex: ordinateur, écran, clavier";
-  }
-  
-  const keywordsLanguageLabel = document.getElementById('keywords-language-label');
-  if (keywordsLanguageLabel) {
-    keywordsLanguageLabel.textContent = i18n.language || "Langue:";
-  }
-  
-  const addKeywordsBtn = document.getElementById('add-keywords-btn');
-  if (addKeywordsBtn) {
-    addKeywordsBtn.textContent = i18n.addButton || "Ajouter";
-  }
-  
-  const frKeywordsTitle = document.getElementById('fr-keywords-title');
-  if (frKeywordsTitle) {
-    frKeywordsTitle.textContent = i18n.frenchKeywords || "Mots-clés français";
-  }
-  
-  const enKeywordsTitle = document.getElementById('en-keywords-title');
-  if (enKeywordsTitle) {
-    enKeywordsTitle.textContent = i18n.englishKeywords || "Mots-clés anglais";
-  }
-  
-  // Section Contribuer
-  const contributeTitle = document.getElementById('contribute-title');
-  if (contributeTitle) {
-    contributeTitle.textContent = i18n.contributeTitle || "Contribuer à DansMaZone";
-  }
-  
-  const contributeDescription = document.getElementById('contribute-description');
-  if (contributeDescription) {
-    contributeDescription.textContent = i18n.contributeDescription || "Aidez à améliorer DansMaZone en partageant vos sites ou en signalant des bugs.";
-  }
-  
-  const shareSitesTitle = document.getElementById('share-sites-title');
-  if (shareSitesTitle) {
-    shareSitesTitle.textContent = i18n.shareSites || "Partager vos sites";
-  }
-  
-  const exportStep1 = document.getElementById('export-step-1');
-  if (exportStep1) {
-    exportStep1.textContent = i18n.exportSitesStep1 || "Exportez vos sites personnalisés";
-  }
-  
-  const exportStep2 = document.getElementById('export-step-2');
-  if (exportStep2) {
-    exportStep2.textContent = i18n.exportSitesStep2 || "Envoyez le fichier JSON généré par email";
-  }
-  
-  const exportStep3 = document.getElementById('export-step-3');
-  if (exportStep3) {
-    exportStep3.textContent = i18n.exportSitesStep3 || "Vos sites pourront être intégrés dans une future version";
-  }
-  
-  const exportContribBtn = document.getElementById('export-contrib-btn');
-  if (exportContribBtn) {
-    exportContribBtn.textContent = i18n.exportForContribution || "Exporter pour contribution";
-  }
-  
-  const improveCodeTitle = document.getElementById('improve-code-title');
-  if (improveCodeTitle) {
-    improveCodeTitle.textContent = i18n.improveCode || "Améliorer le code";
-  }
-  
-  const improveStep1 = document.getElementById('improve-step-1');
-  if (improveStep1) {
-    improveStep1.textContent = i18n.improveCodeStep1 || "Le code est disponible sur GitHub";
-  }
-  
-  const improveStep2 = document.getElementById('improve-step-2');
-  if (improveStep2) {
-    improveStep2.textContent = i18n.improveCodeStep2 || "Vous pouvez proposer des améliorations via des Pull Requests";
-  }
-  
-  const improveStep3 = document.getElementById('improve-step-3');
-  if (improveStep3) {
-    improveStep3.textContent = i18n.improveCodeStep3 || "Ou signaler des bugs via des Issues";
-  }
-  
-  const githubLink = document.getElementById('github-link');
-  if (githubLink) {
-    githubLink.textContent = i18n.viewOnGitHub || "Voir sur GitHub";
+  try {
+    // Charger les traductions
+    i18n = getI18nMessages();
+    
+    // Initialiser les éléments qui n'avaient pas pu être trouvés plus tôt
+    elements.searchUrlFrLabel = document.querySelector('label[for="site-url-fr"]');
+    elements.searchUrlEnLabel = document.querySelector('label[for="site-url-en"]');
+    
+    // Titre de la page
+    document.title = i18n.optionsTitle || "Options DansMaZone";
+    if (elements.optionsTitleElement) {
+      elements.optionsTitleElement.textContent = i18n.optionsTitle || "Options DansMaZone";
+    }
+    
+    // Onglets
+    if (elements.mySitesTabElement) {
+      elements.mySitesTabElement.textContent = i18n.mySitesTab || "Mes sites";
+    }
+    if (elements.keywordsTabElement) {
+      elements.keywordsTabElement.textContent = i18n.keywordsTab || "Mots-clés";
+    }
+    if (elements.contributeTabElement) {
+      elements.contributeTabElement.textContent = i18n.contributeTab || "Contribuer";
+    }
+    
+    // Recherche et filtre
+    if (elements.searchSiteElement) {
+      elements.searchSiteElement.placeholder = i18n.searchSite || "Rechercher un site...";
+    }
+    if (elements.categoryFilterLabel) {
+      elements.categoryFilterLabel.textContent = i18n.category || "Catégorie:";
+    }
+    
+    // Formulaire d'ajout de site
+    if (elements.addSiteTitle) {
+      elements.addSiteTitle.textContent = i18n.addSite || "Ajouter un site";
+    }
+    if (elements.siteCategoryLabel) {
+      elements.siteCategoryLabel.textContent = i18n.category || "Catégorie:";
+    }
+    if (elements.siteNameLabel) {
+      elements.siteNameLabel.textContent = i18n.siteName || "Nom du site:";
+    }
+    if (elements.siteName) {
+      elements.siteName.placeholder = i18n.siteNamePlaceholder || "Ex: Ma Librairie Locale";
+    }
+    if (elements.searchUrlFrLabel) {
+      elements.searchUrlFrLabel.textContent = "URL de recherche (FR):";
+    }
+    if (elements.searchUrlEnLabel) {
+      elements.searchUrlEnLabel.textContent = "URL de recherche (EN):";
+    }
+    if (elements.siteUrlFr) {
+      elements.siteUrlFr.placeholder = "Ex: https://example.com/fr/search?q=##QUERY##";
+    }
+    if (elements.siteUrlEn) {
+      elements.siteUrlEn.placeholder = "Ex: https://example.com/en/search?q=##QUERY##";
+    }
+    if (elements.searchUrlInfo) {
+      elements.searchUrlInfo.innerHTML = i18n.searchUrlInfo || 'Utilisez <code>##QUERY##</code> pour indiquer où le terme de recherche sera inséré, ou <code>##ISBN##</code> pour les livres.';
+    }
+    if (elements.siteUrlTest) {
+      elements.siteUrlTest.placeholder = i18n.testTerm || "Terme de test (pour essayer l'URL)";
+    }
+    if (elements.testUrlFrBtn) {
+      elements.testUrlFrBtn.textContent = "Tester URL FR";
+    }
+    if (elements.testUrlEnBtn) {
+      elements.testUrlEnBtn.textContent = "Tester URL EN";
+    }
+    if (elements.addSiteBtn) {
+      elements.addSiteBtn.textContent = i18n.addButton || "Ajouter le site";
+    }
+    
+    // Liste des sites personnalisés
+    if (elements.myCustomSitesTitle) {
+      elements.myCustomSitesTitle.textContent = i18n.myCustomSites || "Mes sites personnalisés";
+    }
+    
+    // Import/Export
+    if (elements.importExportTitle) {
+      elements.importExportTitle.textContent = i18n.importExport || "Importer / Exporter";
+    }
+    if (elements.exportBtn) {
+      elements.exportBtn.textContent = i18n.exportSites || "Exporter mes sites";
+    }
+    if (elements.importSitesLabel) {
+      elements.importSitesLabel.textContent = i18n.importSites || "Importer des sites";
+    }
+    
+    // Option "Toutes les catégories"
+    if (elements.categoryFilter) {
+      const allCategoriesOption = elements.categoryFilter.querySelector('option[value="all"]');
+      if (allCategoriesOption) {
+        allCategoriesOption.textContent = i18n.allCategories || "Toutes les catégories";
+      }
+    }
+    
+    // Section des mots-clés
+    const keywordsMgmtTitle = document.getElementById('keywords-management-title');
+    if (keywordsMgmtTitle) {
+      keywordsMgmtTitle.textContent = i18n.keywordsManagement || "Gestion des mots-clés";
+    }
+    
+    const keywordsInputLabel = document.getElementById('keywords-input-label');
+    if (keywordsInputLabel) {
+      keywordsInputLabel.textContent = i18n.addKeywords || "Ajouter des mots-clés (séparés par virgule):";
+    }
+    
+    const keywordInput = document.getElementById('keyword-input');
+    if (keywordInput) {
+      keywordInput.placeholder = i18n.keywordsPlaceholder || "Ex: ordinateur, écran, clavier";
+    }
+    
+    const keywordsLanguageLabel = document.getElementById('keywords-language-label');
+    if (keywordsLanguageLabel) {
+      keywordsLanguageLabel.textContent = i18n.language || "Langue:";
+    }
+    
+    const addKeywordsBtn = document.getElementById('add-keywords-btn');
+    if (addKeywordsBtn) {
+      addKeywordsBtn.textContent = i18n.addButton || "Ajouter";
+    }
+    
+    const frKeywordsTitle = document.getElementById('fr-keywords-title');
+    if (frKeywordsTitle) {
+      frKeywordsTitle.textContent = i18n.frenchKeywords || "Mots-clés français";
+    }
+    
+    const enKeywordsTitle = document.getElementById('en-keywords-title');
+    if (enKeywordsTitle) {
+      enKeywordsTitle.textContent = i18n.englishKeywords || "Mots-clés anglais";
+    }
+    
+    // Section Contribuer
+    const contributeTitle = document.getElementById('contribute-title');
+    if (contributeTitle) {
+      contributeTitle.textContent = i18n.contributeTitle || "Contribuer à DansMaZone";
+    }
+    
+    const contributeDescription = document.getElementById('contribute-description');
+    if (contributeDescription) {
+      contributeDescription.textContent = i18n.contributeDescription || "Aidez à améliorer DansMaZone en partageant vos sites ou en signalant des bugs.";
+    }
+    
+    const shareSitesTitle = document.getElementById('share-sites-title');
+    if (shareSitesTitle) {
+      shareSitesTitle.textContent = i18n.shareSites || "Partager vos sites";
+    }
+    
+    const exportStep1 = document.getElementById('export-step-1');
+    if (exportStep1) {
+      exportStep1.textContent = i18n.exportSitesStep1 || "Exportez vos sites personnalisés";
+    }
+    
+    const exportStep2 = document.getElementById('export-step-2');
+    if (exportStep2) {
+      exportStep2.textContent = i18n.exportSitesStep2 || "Envoyez le fichier JSON généré par email";
+    }
+    
+    const exportStep3 = document.getElementById('export-step-3');
+    if (exportStep3) {
+      exportStep3.textContent = i18n.exportSitesStep3 || "Vos sites pourront être intégrés dans une future version";
+    }
+    
+    const exportContribBtn = document.getElementById('export-contrib-btn');
+    if (exportContribBtn) {
+      exportContribBtn.textContent = i18n.exportForContribution || "Exporter pour contribution";
+    }
+    
+    const improveCodeTitle = document.getElementById('improve-code-title');
+    if (improveCodeTitle) {
+      improveCodeTitle.textContent = i18n.improveCode || "Améliorer le code";
+    }
+    
+    const improveStep1 = document.getElementById('improve-step-1');
+    if (improveStep1) {
+      improveStep1.textContent = i18n.improveCodeStep1 || "Le code est disponible sur GitHub";
+    }
+    
+    const improveStep2 = document.getElementById('improve-step-2');
+    if (improveStep2) {
+      improveStep2.textContent = i18n.improveCodeStep2 || "Vous pouvez proposer des améliorations via des Pull Requests";
+    }
+    
+    const improveStep3 = document.getElementById('improve-step-3');
+    if (improveStep3) {
+      improveStep3.textContent = i18n.improveCodeStep3 || "Ou signaler des bugs via des Issues";
+    }
+    
+    const githubLink = document.getElementById('github-link');
+    if (githubLink) {
+      githubLink.textContent = i18n.viewOnGitHub || "Voir sur GitHub";
+    }
+    
+    // Boutons spécifiques au nouveau format multilingue
+    if (elements.autoGenerateUrlBtn) {
+      elements.autoGenerateUrlBtn.textContent = "Auto-générer depuis l'URL FR";
+    }
+    if (elements.copyUrlFrBtn) {
+      elements.copyUrlFrBtn.textContent = "Copier depuis FR";
+    }
+  } catch (error) {
+    console.error("Erreur lors de la localisation de l'interface:", error);
   }
 }
 
@@ -216,7 +289,9 @@ async function initOptions() {
   try {
     // Afficher la version de l'extension
     const manifestData = browser.runtime.getManifest();
-    elements.versionElement.textContent = manifestData.version;
+    if (elements.versionElement) {
+      elements.versionElement.textContent = manifestData.version;
+    }
     
     if (elements.versionFooterElement) {
       elements.versionFooterElement.textContent = manifestData.version;
@@ -228,54 +303,124 @@ async function initOptions() {
     // Initialiser les onglets
     initTabs();
     
-    // Cloner les sites par défaut (déjà importés du JSON)
-    
     // Charger les sites personnalisés depuis le stockage
     await loadUserSites();
     
     // Charger les mots-clés par défaut
-    loadDefaultKeywords();
-    
-    // Remplir les listes déroulantes de catégories
-    populateCategoryDropdowns();
-    populateKeywordCategoryDropdown();
-    
-    // Initialiser la fonctionnalité de mots-clés
-    await initKeywordsFeature();
-    
-    // Afficher les sites
-    renderSites();
-    
-    // Si un onglet des mots-clés est actif, afficher les mots-clés
-    if (elements.keywordCategory && elements.keywordCategory.value) {
-      renderKeywords(elements.keywordCategory.value);
+    try {
+      loadDefaultKeywords();
+    } catch (keywordsError) {
+      console.error("Erreur lors du chargement des mots-clés par défaut:", keywordsError);
+      // Continuer l'exécution même si cette partie échoue
     }
     
-    setupBugReporting();
+    // Remplir les listes déroulantes de catégories
+    try {
+      populateCategoryDropdowns();
+    } catch (categoriesError) {
+      console.error("Erreur lors du remplissage des catégories:", categoriesError);
+      // Continuer l'exécution même si cette partie échoue
+    }
+    
+    try {
+      populateKeywordCategoryDropdown();
+    } catch (keywordCategoriesError) {
+      console.error("Erreur lors du remplissage des catégories de mots-clés:", keywordCategoriesError);
+      // Continuer l'exécution même si cette partie échoue
+    }
+    
+    // Initialiser la fonctionnalité de mots-clés
+    try {
+      await initKeywordsFeature();
+    } catch (keywordFeatureError) {
+      console.error("Erreur lors de l'initialisation des mots-clés:", keywordFeatureError);
+      // Continuer l'exécution même si cette partie échoue
+    }
+    
+    // Afficher les sites
+    try {
+      renderSites();
+    } catch (renderError) {
+      console.error("Erreur lors du rendu des sites:", renderError);
+      // Continuer l'exécution même si cette partie échoue
+    }
+    
+    // Si un onglet des mots-clés est actif, afficher les mots-clés
+    try {
+      if (elements.keywordCategory && elements.keywordCategory.value) {
+        renderKeywords(elements.keywordCategory.value);
+      }
+    } catch (renderKeywordsError) {
+      console.error("Erreur lors du rendu des mots-clés:", renderKeywordsError);
+      // Continuer l'exécution même si cette partie échoue
+    }
+    
+    try {
+      setupBugReporting();
+    } catch (bugReportingError) {
+      console.error("Erreur lors de la configuration du rapport de bugs:", bugReportingError);
+      // Continuer l'exécution même si cette partie échoue
+    }
     
     // Ajouter les écouteurs d'événements
-    attachEventListeners();
+    try {
+      attachEventListeners();
+    } catch (eventsError) {
+      console.error("Erreur lors de l'attachement des écouteurs d'événements:", eventsError);
+      // Continuer l'exécution même si cette partie échoue
+    }
+    
+    console.log("Initialisation de la page d'options terminée avec succès!");
   } catch (error) {
-    handleError(error, "initialisation des options", true, true);
+    console.error("Erreur critique lors de l'initialisation des options:", error);
+    // Afficher une notification plus détaillée
+    showNotification("Une erreur est survenue lors de l'initialisation. Consultez la console pour plus de détails.", "error");
   }
 }
 
 // Initialiser les onglets
 function initTabs() {
-  elements.tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      // Supprimer la classe active de tous les onglets
-      elements.tabs.forEach(t => t.classList.remove('active'));
-      elements.tabContents.forEach(c => c.classList.remove('active'));
+  try {
+    if (!elements.tabs || !elements.tabs.forEach) {
+      console.warn("Les onglets n'ont pas été correctement initialisés");
+      return;
+    }
+    
+    elements.tabs.forEach(tab => {
+      if (!tab) return;
       
-      // Ajouter la classe active à l'onglet cliqué
-      tab.classList.add('active');
-      
-      // Afficher le contenu de l'onglet
-      const tabId = tab.dataset.tab;
-      document.getElementById(tabId).classList.add('active');
+      tab.addEventListener('click', () => {
+        try {
+          // Supprimer la classe active de tous les onglets
+          elements.tabs.forEach(t => {
+            if (t) t.classList.remove('active');
+          });
+          
+          if (elements.tabContents && elements.tabContents.forEach) {
+            elements.tabContents.forEach(c => {
+              if (c) c.classList.remove('active');
+            });
+          }
+          
+          // Ajouter la classe active à l'onglet cliqué
+          tab.classList.add('active');
+          
+          // Afficher le contenu de l'onglet
+          const tabId = tab.dataset.tab;
+          const tabContent = document.getElementById(tabId);
+          if (tabContent) {
+            tabContent.classList.add('active');
+          } else {
+            console.warn(`Contenu d'onglet non trouvé pour l'ID: ${tabId}`);
+          }
+        } catch (tabClickError) {
+          console.error("Erreur lors du changement d'onglet:", tabClickError);
+        }
+      });
     });
-  });
+  } catch (error) {
+    console.error("Erreur lors de l'initialisation des onglets:", error);
+  }
 }
 
 // Charger les sites personnalisés depuis le stockage
@@ -373,6 +518,50 @@ function populateCategoryDropdowns() {
   elements.siteCategory.appendChild(newCategoryOption);
 }
 
+/**
+ * Auto-génère une URL en anglais à partir d'une URL en français
+ * @param {string} frUrl - L'URL en français
+ * @returns {string} L'URL en anglais générée
+ */
+function autoGenerateEnUrlFromFr(frUrl) {
+  if (!frUrl) return '';
+  
+  // Cas simple : remplacement de /fr/ par /en/
+  if (frUrl.includes('/fr/')) {
+    return frUrl.replace('/fr/', '/en/');
+  }
+  
+  // Cas avec un domaine .fr
+  if (frUrl.includes('.fr/')) {
+    return frUrl.replace('.fr/', '.com/');
+  }
+  
+  // Cas avec ?lang=fr ou &lang=fr
+  if (frUrl.includes('lang=fr')) {
+    return frUrl.replace('lang=fr', 'lang=en');
+  }
+  
+  // Cas avec locale=fr ou locale=fr_FR ou locale=fr_CA
+  if (frUrl.match(/locale=fr(_[A-Z]{2})?/)) {
+    return frUrl.replace(/locale=fr(_[A-Z]{2})?/, 'locale=en_CA');
+  }
+  
+  // Cas avec "recherche" dans l'URL (pour les sites français)
+  const searchTerms = {
+    'recherche': 'search',
+    'resultats-de-recherche': 'search-results',
+    'resultats': 'results'
+  };
+  
+  let newUrl = frUrl;
+  Object.entries(searchTerms).forEach(([fr, en]) => {
+    newUrl = newUrl.replace(fr, en);
+  });
+  
+  // Si aucune modification n'a été apportée, simplement retourner l'URL d'origine
+  return newUrl !== frUrl ? newUrl : frUrl;
+}
+
 // Afficher tous les sites (par défaut + personnalisés)
 function renderSites() {
     // Vider le conteneur
@@ -416,10 +605,21 @@ function renderSites() {
     
     // Filtrer les sites si un terme de recherche est fourni
     if (searchTerm) {
-      allSites = allSites.filter(site => 
-        site.name.toLowerCase().includes(searchTerm) || 
-        site.url.toLowerCase().includes(searchTerm)
-      );
+      allSites = allSites.filter(site => {
+        const nameMatch = site.name.toLowerCase().includes(searchTerm);
+        
+        // Vérifier les URLs (ancien et nouveau format)
+        let urlMatch = false;
+        if (site.url) {
+          urlMatch = site.url.toLowerCase().includes(searchTerm);
+        } else if (site.urls) {
+          urlMatch = Object.values(site.urls).some(url => 
+            url && url.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        return nameMatch || urlMatch;
+      });
     }
     
     // Si aucun site ne correspond au filtre, ne pas afficher cette catégorie
@@ -459,7 +659,16 @@ function renderSites() {
         
         const siteUrl = document.createElement('div');
         siteUrl.className = 'site-url';
-        siteUrl.textContent = site.url;
+        
+        // Afficher les URLs selon le format (ancien ou nouveau)
+        if (site.urls) {
+          siteUrl.innerHTML = `
+            <div><small>FR:</small> ${site.urls.fr || 'N/A'}</div>
+            <div><small>EN:</small> ${site.urls.en || 'N/A'}</div>
+          `;
+        } else {
+          siteUrl.textContent = site.url || 'N/A';
+        }
         
         siteInfo.appendChild(siteName);
         siteInfo.appendChild(siteUrl);
@@ -467,7 +676,7 @@ function renderSites() {
         const siteActions = document.createElement('div');
         siteActions.className = 'site-actions';
         
-        // Bouton de test
+        // Bouton de test - maintenant un menu déroulant
         const testBtn = document.createElement('button');
         testBtn.className = 'test-site-btn';
         testBtn.title = 'Tester';
@@ -476,17 +685,17 @@ function renderSites() {
         
         // Boutons d'édition et de suppression pour les sites non par défaut
         if (!site.isDefault) {
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-site-btn';
-        editBtn.title = 'Modifier';
-        editBtn.textContent = '✏️';
-        siteActions.appendChild(editBtn);
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-site-btn';
-        deleteBtn.title = 'Supprimer';
-        deleteBtn.textContent = '🗑️';
-        siteActions.appendChild(deleteBtn);
+          const editBtn = document.createElement('button');
+          editBtn.className = 'edit-site-btn';
+          editBtn.title = 'Modifier';
+          editBtn.textContent = '✏️';
+          siteActions.appendChild(editBtn);
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-site-btn';
+          deleteBtn.title = 'Supprimer';
+          deleteBtn.textContent = '🗑️';
+          siteActions.appendChild(deleteBtn);
         }
         
         siteItem.appendChild(siteInfo);
@@ -495,7 +704,15 @@ function renderSites() {
         // Ajouter les données du site à l'élément de manière sécurisée
         siteItem.dataset.category = category;
         siteItem.dataset.name = site.name;
-        siteItem.dataset.url = site.url;
+        
+        // Stocker les URLs selon le format (ancien ou nouveau)
+        if (site.urls) {
+          siteItem.dataset.urlFr = site.urls.fr || '';
+          siteItem.dataset.urlEn = site.urls.en || '';
+        } else {
+          siteItem.dataset.url = site.url || '';
+        }
+        
         siteItem.dataset.isDefault = site.isDefault.toString(); // Conversion explicite en chaîne
         
         categoryContent.appendChild(siteItem);
@@ -546,7 +763,7 @@ function validateSearchUrl(url) {
 }
 
 // Tester une URL de recherche
-function testSearchUrl(url, testTerm) {
+function testSearchUrl(url, testTerm, language = null) {
   // Valider l'URL
   const validation = validateSearchUrl(url);
   if (!validation.valid) {
@@ -561,14 +778,25 @@ function testSearchUrl(url, testTerm) {
   
   // Ouvrir l'URL dans un nouvel onglet
   browser.tabs.create({ url: testUrl });
+  
+  // Afficher un message indiquant la langue testée
+  if (language) {
+    showNotification(`Test de l'URL ${language.toUpperCase()} en cours...`, 'success');
+  }
 }
 
 // Ajouter un site personnalisé
-async function addUserSite(category, name, url) {
-  // Valider l'URL
-  const validation = validateSearchUrl(url);
-  if (!validation.valid) {
-    showNotification(validation.message, 'error');
+async function addUserSite(category, name, urlFr, urlEn) {
+  // Valider les URLs
+  const validationFr = validateSearchUrl(urlFr);
+  if (!validationFr.valid) {
+    showNotification(`URL FR: ${validationFr.message}`, 'error');
+    return false;
+  }
+  
+  const validationEn = validateSearchUrl(urlEn);
+  if (!validationEn.valid) {
+    showNotification(`URL EN: ${validationEn.message}`, 'error');
     return false;
   }
   
@@ -583,13 +811,19 @@ async function addUserSite(category, name, url) {
     // Mettre à jour le site existant
     userSites[category][existingIndex] = {
       name,
-      url
+      urls: {
+        fr: urlFr,
+        en: urlEn
+      }
     };
   } else {
     // Ajouter un nouveau site
     userSites[category].push({
       name,
-      url
+      urls: {
+        fr: urlFr,
+        en: urlEn
+      }
     });
   }
   
@@ -647,9 +881,39 @@ function attachEventListeners() {
       renderSites();
     });
     
-    // Écouteur pour le test d'URL
-    elements.testUrlBtn.addEventListener('click', () => {
-      const url = elements.siteUrl.value;
+    // Écouteur pour auto-générer l'URL EN depuis l'URL FR
+    elements.autoGenerateUrlBtn.addEventListener('click', () => {
+      const frUrl = elements.siteUrlFr.value;
+      if (!frUrl) {
+        showNotification('Veuillez d\'abord saisir l\'URL FR.', 'error');
+        return;
+      }
+      
+      const enUrl = autoGenerateEnUrlFromFr(frUrl);
+      elements.siteUrlEn.value = enUrl;
+      
+      if (enUrl === frUrl) {
+        showNotification('Impossible de générer l\'URL EN automatiquement. Veuillez la saisir manuellement.', 'warning');
+      } else {
+        showNotification('URL EN générée!', 'success');
+      }
+    });
+    
+    // Écouteur pour copier l'URL FR vers l'URL EN
+    elements.copyUrlFrBtn.addEventListener('click', () => {
+      const frUrl = elements.siteUrlFr.value;
+      if (!frUrl) {
+        showNotification('Veuillez d\'abord saisir l\'URL FR.', 'error');
+        return;
+      }
+      
+      elements.siteUrlEn.value = frUrl;
+      showNotification('URL FR copiée vers URL EN!', 'success');
+    });
+    
+    // Écouteur pour le test d'URL FR
+    elements.testUrlFrBtn.addEventListener('click', () => {
+      const url = elements.siteUrlFr.value;
       const testTerm = elements.siteUrlTest.value;
       
       if (!testTerm) {
@@ -657,17 +921,31 @@ function attachEventListeners() {
         return;
       }
       
-      testSearchUrl(url, testTerm);
+      testSearchUrl(url, testTerm, 'fr');
+    });
+    
+    // Écouteur pour le test d'URL EN
+    elements.testUrlEnBtn.addEventListener('click', () => {
+      const url = elements.siteUrlEn.value;
+      const testTerm = elements.siteUrlTest.value;
+      
+      if (!testTerm) {
+        showNotification(i18n.enterTestTerm || 'Veuillez entrer un terme de test.', 'error');
+        return;
+      }
+      
+      testSearchUrl(url, testTerm, 'en');
     });
     
     // Écouteur pour l'ajout de site
     elements.addSiteBtn.addEventListener('click', async () => {
       const category = elements.siteCategory.value;
       const name = elements.siteName.value;
-      const url = elements.siteUrl.value;
+      const urlFr = elements.siteUrlFr.value;
+      const urlEn = elements.siteUrlEn.value;
       
       // Validation de base
-      if (!name || !url) {
+      if (!name || !urlFr || !urlEn) {
         showNotification(i18n.fillAllFields || 'Veuillez remplir tous les champs.', 'error');
         return;
       }
@@ -682,11 +960,12 @@ function attachEventListeners() {
         finalCategory = newCategory;
       }
       
-      const added = await addUserSite(finalCategory, name, url);
+      const added = await addUserSite(finalCategory, name, urlFr, urlEn);
       if (added) {
         // Réinitialiser le formulaire
         elements.siteName.value = '';
-        elements.siteUrl.value = '';
+        elements.siteUrlFr.value = '';
+        elements.siteUrlEn.value = '';
         elements.siteUrlTest.value = '';
         
         showNotification(i18n.siteAddedSuccess || 'Site ajouté avec succès!', 'success');
@@ -719,13 +998,25 @@ function attachEventListeners() {
       if (!button) return;
       
       const siteItem = button.closest('.site-item');
-      const { category, name, url, isDefault } = siteItem.dataset;
+      const { category, name, url, urlFr, urlEn, isDefault } = siteItem.dataset;
       
       // Test du site
       if (button.classList.contains('test-site-btn')) {
         const testTerm = prompt(i18n.enterSearchTerm || 'Entrez un terme de recherche pour tester ce site:');
         if (testTerm) {
-          testSearchUrl(url, testTerm);
+          // Déterminer quelle URL tester (ancien ou nouveau format)
+          if (urlFr && urlEn) {
+            // Nouveau format bilingue
+            const langChoice = prompt("Choisissez la langue à tester (fr/en):", "fr");
+            if (langChoice && langChoice.toLowerCase() === 'fr') {
+              testSearchUrl(urlFr, testTerm, 'fr');
+            } else if (langChoice && langChoice.toLowerCase() === 'en') {
+              testSearchUrl(urlEn, testTerm, 'en');
+            }
+          } else {
+            // Ancien format avec une seule URL
+            testSearchUrl(url, testTerm);
+          }
         }
       }
       
@@ -734,7 +1025,17 @@ function attachEventListeners() {
         // Remplir le formulaire d'ajout avec les données du site
         elements.siteCategory.value = category;
         elements.siteName.value = name;
-        elements.siteUrl.value = url;
+        
+        // Déterminer quelles URLs utiliser (ancien ou nouveau format)
+        if (urlFr && urlEn) {
+          // Nouveau format bilingue
+          elements.siteUrlFr.value = urlFr;
+          elements.siteUrlEn.value = urlEn;
+        } else if (url) {
+          // Ancien format avec une seule URL
+          elements.siteUrlFr.value = url;
+          elements.siteUrlEn.value = url;
+        }
         
         // Faire défiler jusqu'au formulaire
         elements.addSiteBtn.scrollIntoView({ behavior: 'smooth' });

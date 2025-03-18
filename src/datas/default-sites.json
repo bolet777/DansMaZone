@@ -2,29 +2,47 @@
   "Animalerie": [
     {
       "name": "Chico",
-      "url": "https://www.chico.ca/?post_type=product&s=##QUERY##"
+      "urls": {
+        "fr": "https://www.chico.ca/?post_type=product&s=##QUERY##",
+        "en": "https://www.chico.ca/?post_type=product&s=##QUERY##"
+      }
     },
     {
       "name": "Mondou",
-      "url": "https://www.mondou.com/fr/search?q=##QUERY##"
+      "urls": {
+        "fr": "https://www.mondou.com/fr/search?q=##QUERY##",
+        "en": "https://www.mondou.com/en/search?q=##QUERY##"
+      }
     },
     {
       "name": "Pattes et Griffes",
-      "url": "https://pattesgriffes.com/catalogsearch/result/?q=##QUERY##"
+      "urls": {
+        "fr": "https://pattesgriffes.com/catalogsearch/result/?q=##QUERY##",
+        "en": "https://pattesgriffes.com/catalogsearch/result/?q=##QUERY##"
+      }
     }
   ],
   "Auto et Moto": [
     {
       "name": "Canadian Tire",
-      "url": "https://www.canadiantire.ca/fr/resultats-de-recherche.html?q=##QUERY##"
+      "urls": {
+        "fr": "https://www.canadiantire.ca/fr/resultats-de-recherche.html?q=##QUERY##",
+        "en": "https://www.canadiantire.ca/en/search-results.html?q=##QUERY##"
+      }
     },
     {
       "name": "Centre de l'Auto Élégance",
-      "url": "https://centredelautoelegance.ca/search?q=##QUERY##"
+      "urls": {
+        "fr": "https://centredelautoelegance.ca/search?q=##QUERY##",
+        "en": "https://centredelautoelegance.ca/search?q=##QUERY##"
+      }
     },
     {
       "name": "NAPA Pièces d'auto",
-      "url": "https://www.napacanada.com/fr/search/?text=##QUERY##"
+      "urls": {
+        "fr": "https://www.napacanada.com/fr/search/?text=##QUERY##",
+        "en": "https://www.napacanada.com/en/search/?text=##QUERY##"
+      }
     }
   ],
   "Bagages et Voyage": [
@@ -225,6 +243,13 @@
     {
       "name": "Hamster",
       "url": "https://www.hamster.ca/recherche-produits?qs=##QUERY##"
+    },
+    {
+      "name":"AliExpress",
+      "urls": {
+        "fr": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##",
+        "en": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##"
+      }
     }
   ],
   "Épicerie et Alimentation": [
@@ -587,7 +612,17 @@
   "default": [
     {
       "name": "Google Canada",
-      "url": "https://www.google.ca/search?q=##QUERY##"
+      "urls": {
+        "fr": "https://www.google.ca/search?q=##QUERY##&hl=fr",
+        "en": "https://www.google.ca/search?q=##QUERY##&hl=en"
+      }
+    },
+    {
+      "name":"AliExpress",
+      "urls": {
+        "fr": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##",
+        "en": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##"
+      }
     }
   ]
 }

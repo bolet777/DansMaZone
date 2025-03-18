@@ -235,17 +235,42 @@ header h1 {
   border-radius: 3px;
 }
 
-.form-row:has(#site-url-test) {
+.url-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.small-btn {
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  background-color: #eee;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.small-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.test-url-row {
   display: flex;
   align-items: flex-end;
   gap: 10px;
 }
 
-.form-row:has(#site-url-test) input {
+.test-url-row input {
   flex-grow: 1;
 }
 
-#test-url-btn {
+.test-url-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+#test-url-fr-btn, #test-url-en-btn {
   padding: 8px 15px;
   background-color: var(--secondary-color);
   color: white;
@@ -255,7 +280,7 @@ header h1 {
   transition: background-color 0.2s;
 }
 
-#test-url-btn:hover {
+#test-url-fr-btn:hover, #test-url-en-btn:hover {
   background-color: #344258;
 }
 

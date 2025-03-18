@@ -36,7 +36,7 @@ async function loadI18nStrings() {
     
     // Valeurs par défaut en cas d'erreur
     i18nStrings = {
-      sidebarTitle: 'Dans ma zone',
+      sidebarTitle: 'Dans Ma Zone',
       optionsText: 'Options'
     };
     
@@ -307,6 +307,10 @@ function addLinkButtons(sites, searchTerm) {
     return;
   }
   
+  // Déterminer la langue de l'utilisateur
+  const userLanguage = detectLanguage();
+  console.log('DansMaZone: Langue détectée:', userLanguage);
+  
   // Créer un bandeau vertical
   const sidebarEl = document.createElement('div');
   sidebarEl.classList.add('dmz-sidebar');
@@ -333,12 +337,28 @@ function addLinkButtons(sites, searchTerm) {
     
     // Créer les boutons des sites
     for (const site of sites) {
-      if (!site || !site.url || !site.name) {
+      if (!site || (!site.url && !site.urls) || !site.name) {
         console.warn('DansMaZone: Site invalide ignoré', site);
         continue;
       }
+
+      // Déterminer l'URL à utiliser (structure ancienne ou nouvelle)
+      let siteUrl;
+      if (site.urls) {
+        // Nouvelle structure avec URLs multilingues
+        siteUrl = site.urls[userLanguage] || site.urls[(userLanguage === 'fr' ? 'en' : 'fr')];
+      } else {
+        // Ancienne structure avec une seule URL
+        siteUrl = site.url;
+      }
       
-      const url = site.url
+      // Si aucune URL valide n'a été trouvée, ignorer ce site
+      if (!siteUrl) {
+        console.warn('DansMaZone: Aucune URL valide pour le site', site.name);
+        continue;
+      }
+      
+      const url = siteUrl
         .replace('##QUERY##', encodeURIComponent(searchTerm))
         .replace('##ISBN##', searchTerm);
       
@@ -451,7 +471,41 @@ async function start() {
 
       // Si la catégorie n'est pas dans combinedSites, il s'agit probablement d'une catégorie en anglais
       let frenchCategory = detectedCategory;
-      if (!combinedSites[detectedCategory]) {
+      
+      // Structure de mapping spécial pour les produits particuliers
+      const specialCategoryMappings = {
+        audio: {
+          terms: ['audio', 'casque', 'écouteur', 'amplificateur', 'dac', 'headphone', 'earphone', 'amplifier'],
+          targetCategory: 'Électronique et Informatique'
+        },
+        photo: {
+          terms: ['appareil photo', 'objectif', 'reflex', 'mirrorless', 'dslr', 'camera', 'photographie'],
+          targetCategory: 'Photographie'
+        },
+        instrument: {
+          terms: ['guitare', 'piano', 'batterie', 'violon', 'instrument'],
+          targetCategory: 'Instruments de Musique'
+        }
+      };
+      
+      // Vérifier si la catégorie correspond à un cas spécial
+      let specialCategoryFound = false;
+      
+      for (const [type, mapping] of Object.entries(specialCategoryMappings)) {
+        const isSpecialProduct = mapping.terms.some(term => 
+          detectedCategory.toLowerCase().includes(term)
+        );
+        
+        if (isSpecialProduct && !detectedCategory.toLowerCase().includes(mapping.targetCategory.toLowerCase())) {
+          console.info(`DansMaZone: Produit ${type} détecté, attribution à la catégorie ${mapping.targetCategory}`);
+          frenchCategory = mapping.targetCategory;
+          specialCategoryFound = true;
+          break;
+        }
+      }
+      
+      // Si aucune catégorie spéciale n'a été trouvée, procéder normalement
+      if (!specialCategoryFound && !combinedSites[detectedCategory]) {
         // Chercher la clé française qui correspond à cette catégorie anglaise
         const frenchCategoryEntry = Object.entries(categoryMapping)
           .find(([fr, en]) => en === detectedCategory);
