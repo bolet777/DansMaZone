@@ -216,11 +216,11 @@
     },
     {
       "name": "Corbeil Électroménagers",
-      "url": "https://www.corbeilelectro.com/catalogsearch/result/?q=##QUERY##"
+      "url": "https://www.corbeilelectro.com/fr/catalogsearch/result/?q=##QUERY##"
     },
     {
       "name": "Germain Larivière",
-      "url": "https://www.germainlariviere.com/catalogsearch/result/?q=##QUERY##"
+      "url": "https://www.germainlariviere.com/a/search?type=product&q=##QUERY##"
     },
     {
       "name": "Brault & Martineau",
@@ -407,7 +407,7 @@
   "Mobilier": [
     {
       "name": "Maison Corbeil",
-      "url": "https://maisoncorbeil.com/fr/catalogsearch/result/?q=##QUERY##"
+      "url": "https://www.corbeilelectro.com/fr/catalogsearch/result/?q=##QUERY##"
     },
     {
       "name": "EQ3",

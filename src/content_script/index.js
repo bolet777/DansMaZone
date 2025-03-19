@@ -282,7 +282,8 @@ function getProductDetails() {
 }
 
 // Dans la fonction addLinkButtons - plus besoin du paramètre container
-function addLinkButtons(sites, searchTerm) {
+// Dans la fonction addLinkButtons - plus besoin du paramètre container
+function addLinkButtons(sites, searchTerm, detectedCategory) { // Ajout du paramètre detectedCategory
   // Vérifier si sites est bien un tableau
   if (!Array.isArray(sites)) {
     console.error('DansMaZone: sites n\'est pas un tableau valide', sites);
@@ -330,6 +331,18 @@ function addLinkButtons(sites, searchTerm) {
     header.appendChild(icon);
     header.appendChild(title);
     sidebarEl.appendChild(header);
+    
+    // Ajouter la catégorie détectée sous l'en-tête
+    if (detectedCategory) {
+      const categoryInfo = document.createElement('div');
+      categoryInfo.classList.add('dmz-category-info');
+      
+      const categoryText = document.createElement('span');
+      categoryText.textContent = detectedCategory;
+      
+      categoryInfo.appendChild(categoryText);
+      sidebarEl.appendChild(categoryInfo);
+    }
     
     // Conteneur pour les boutons des sites
     const contentContainer = document.createElement('div');
@@ -454,73 +467,28 @@ async function start() {
     const isbn = getISBN();
     if (isbn) {
       console.log('DansMaZone: ISBN found:', isbn);
-      addLinkButtons(combinedSites['Livres'] || [], isbn);
+      // Passer "Livres" comme catégorie
+      addLinkButtons(combinedSites['Livres'] || [], isbn, 'Livres');
     } else {
       // Détecte la catégorie (en français ou anglais selon la langue de la page)
       const detectedCategory = await classifyPage(combinedSites);
       console.info('DansMaZone: Category detected:', detectedCategory);
 
-      if (!detectedCategory) {
-        console.warn('DansMaZone: Aucune catégorie détectée, utilisation de la catégorie par défaut');
+      if (!detectedCategory || detectedCategory === 'default') {
+        console.warn('DansMaZone: Aucune catégorie spécifique détectée, utilisation de la catégorie par défaut');
         const searchQuery = getProductDetails();
         if (searchQuery) {
-          addLinkButtons(combinedSites['default'] || [], searchQuery);
+          addLinkButtons(combinedSites['default'] || [], searchQuery, 'Général');
         }
         return;
       }
 
-      // Si la catégorie n'est pas dans combinedSites, il s'agit probablement d'une catégorie en anglais
-      let frenchCategory = detectedCategory;
-      
-      // Structure de mapping spécial pour les produits particuliers
-      const specialCategoryMappings = {
-        audio: {
-          terms: ['audio', 'casque', 'écouteur', 'amplificateur', 'dac', 'headphone', 'earphone', 'amplifier'],
-          targetCategory: 'Électronique et Informatique'
-        },
-        photo: {
-          terms: ['appareil photo', 'objectif', 'reflex', 'mirrorless', 'dslr', 'camera', 'photographie'],
-          targetCategory: 'Photographie'
-        },
-        instrument: {
-          terms: ['guitare', 'piano', 'batterie', 'violon', 'instrument'],
-          targetCategory: 'Instruments de Musique'
-        }
-      };
-      
-      // Vérifier si la catégorie correspond à un cas spécial
-      let specialCategoryFound = false;
-      
-      for (const [type, mapping] of Object.entries(specialCategoryMappings)) {
-        const isSpecialProduct = mapping.terms.some(term => 
-          detectedCategory.toLowerCase().includes(term)
-        );
-        
-        if (isSpecialProduct && !detectedCategory.toLowerCase().includes(mapping.targetCategory.toLowerCase())) {
-          console.info(`DansMaZone: Produit ${type} détecté, attribution à la catégorie ${mapping.targetCategory}`);
-          frenchCategory = mapping.targetCategory;
-          specialCategoryFound = true;
-          break;
-        }
-      }
-      
-      // Si aucune catégorie spéciale n'a été trouvée, procéder normalement
-      if (!specialCategoryFound && !combinedSites[detectedCategory]) {
-        // Chercher la clé française qui correspond à cette catégorie anglaise
-        const frenchCategoryEntry = Object.entries(categoryMapping)
-          .find(([fr, en]) => en === detectedCategory);
-        
-        if (frenchCategoryEntry) {
-          frenchCategory = frenchCategoryEntry[0];
-          console.info('DansMaZone: Converted category to French:', frenchCategory);
-        }
-      }
-      
+      // Récupérer les sites appropriés pour la catégorie détectée
       const searchQuery = getProductDetails();
       console.info('DansMaZone: Search query:', searchQuery);
       if (searchQuery) {
-        const sites = findSitesForCategory(frenchCategory);
-        addLinkButtons(sites, searchQuery);
+        const sites = findSitesForCategory(detectedCategory);
+        addLinkButtons(sites, searchQuery, detectedCategory);
       }
     }
   } catch (error) {
@@ -701,7 +669,7 @@ function fallbackInitialization() {
     // Si on a pu obtenir un terme de recherche, afficher le bandeau
     if (searchQuery) {
       // Utiliser la catégorie par défaut pour l'initialisation de secours
-      addLinkButtons(combinedSites['default'], searchQuery);
+      addLinkButtons(combinedSites['default'], searchQuery, 'Général');
       
       // Informer discrètement l'utilisateur que le mode de secours est actif
       const notification = document.createElement('div');

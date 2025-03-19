@@ -15,25 +15,9 @@
   overflow: hidden;
   transition: width 0.3s ease;
   
-  // Effet de déplacement au survol
-  &:hover {
-    width: 220px; // Légèrement plus large pour assurer que le texte est visible
-    
-    .dmz-sidebar-header span {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    
-    .dmz-sidebar-content {
-      max-height: 500px; // Se déploie au survol
-      opacity: 1;
-    }
-  }
-  
   // En-tête avec seulement l'icône visible initialement
   .dmz-sidebar-header {
     padding: 12px;
-    // background-color: #ff1100;
     background-color: #ffffff;
     display: flex;
     align-items: center;
@@ -47,13 +31,11 @@
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       background-color: white;
       padding: 3px;
-      flex-shrink: 0; // Empêche l'image de rétrécir
+      flex-shrink: 0;
     }
     
     span {
       white-space: nowrap;
-      // font-weight: bold;
-      // font-size: 14px;
       font-size: 1rem;
       margin-left: 10px;
       color: rgb(229, 11, 10);
@@ -61,6 +43,28 @@
       transform: translateX(-20px);
       transition: opacity 0.3s ease, transform 0.3s ease;
       overflow: hidden;
+    }
+  }
+  
+  // Styles pour l'élément d'information sur la catégorie
+  .dmz-category-info {
+    padding: 6px 12px;  // Moins haut que les boutons normaux
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    span {
+      font-style: italic;
+      color: #444;  // Gris foncé
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0;  // Initialement invisible
+      transform: translateX(-20px);  // Animation cohérente avec le titre
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
   }
   
@@ -93,13 +97,13 @@
       width: 24px;
       height: 24px;
       margin-right: 12px;
-      flex-shrink: 0; // Empêche l'image de rétrécir
+      flex-shrink: 0;
     }
     
     span {
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis; // Ajoute des points de suspension si le texte est trop long
+      text-overflow: ellipsis;
       font-size: 13px;
     }
     
@@ -110,7 +114,7 @@
   
   // Styles spécifiques pour le bouton d'options
   .dmz-options-button {
-    margin-top: auto; // Pousse le bouton vers le bas
+    margin-top: auto;
     background-color: #f8f8f8;
     border-top: 1px solid #e0e0e0;
     
@@ -127,6 +131,22 @@
       content: "⚙️";
       font-size: 16px;
       margin-right: 10px;
+    }
+  }
+  
+  // Effet de déplacement au survol - une seule définition regroupée
+  &:hover {
+    width: 220px;
+    
+    .dmz-sidebar-header span,
+    .dmz-category-info span {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .dmz-sidebar-content {
+      max-height: 500px;
+      opacity: 1;
     }
   }
 }

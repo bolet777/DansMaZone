@@ -405,6 +405,9 @@ export const categoryMapping = {
   'default': 'default'
 };
 
+// Cache pour les données préparées
+let preparedData = null;
+
 // Détecter la langue de la page Amazon
 export function detectLanguage() {
   // Basé sur l'URL Amazon.ca
@@ -437,373 +440,144 @@ export function detectLanguage() {
   return 'en';
 }
 
-function cleanText(text) {
+// Fonction de préprocesseur de texte unifiée
+function preprocessText(text) {
+  if (!text) return [];
   return text.toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Enlève les accents
     .replace(/[^\w\s]/g, ' ')                         // Garde uniquement lettres, chiffres et espaces
     .replace(/\s+/g, ' ')                             // Normalise les espaces
-    .trim();
+    .trim()
+    .split(' ')
+    .filter(word => word.length > 2);  // Enlève les mots trop courts
 }
 
-function extractPageContent() {
-  // Sections spécifiques au produit, en ordre de priorité
-  const prioritySections = {
-    title: '#productTitle',
-    brand: '.po-brand .po-break-word',
-    category: '#wayfinding-breadcrumbs_feature_div li',
-    aboutItem: '#feature-bullets .a-list-item', // Section "About this item"
-    productInfo: '.po-break-word', // Caractéristiques du produit
-    specTable: '.a-normal.a-spacing-micro tr' // Table des spécifications
+// Extraction du texte de la page simplifiée
+function extractProductText() {
+  return {
+    title: document.getElementById('productTitle')?.textContent || '',
+    breadcrumbs: Array.from(document.querySelectorAll('#wayfinding-breadcrumbs_feature_div li, .a-breadcrumb li span'))
+      .map(item => item.textContent.trim())
+      .filter(text => text && text !== '›' && !text.includes('Amazon'))
+      .join(' '),
+    description: document.getElementById('productDescription')?.textContent || '',
+    features: document.getElementById('feature-bullets')?.textContent || '',
+    details: document.getElementById('detailBullets_feature_div')?.textContent || '',
+    brand: document.querySelector('.po-brand .po-break-word, #bylineInfo, [id*="brand"]')?.textContent || ''
   };
-
-  return Object.entries(prioritySections).reduce((content, [key, selector]) => {
-    const elements = document.querySelectorAll(selector);
-    const text = Array.from(elements)
-      .map(el => el.textContent.trim())
-      .join(' ');
-    return `${content} ${text}`;
-  }, '');
 }
 
-
-/**
- * Extrait la catégorie de produit de manière robuste en utilisant plusieurs méthodes
- * @returns {string} La catégorie détectée ou 'Unknown'
- */
-function getProductCategoryRobust() {
-  // Approche 1: Par le fil d'Ariane avec plusieurs sélecteurs
-  const breadcrumbSelectors = [
-    '#wayfinding-breadcrumbs_feature_div li span.a-list-item',
-    '.a-breadcrumb li span',
-    '[id*="breadcrumb"] li',
-    '.breadcrumb li',
-    'nav[aria-label="Breadcrumb"] li',
-    '[id*="SalesRank"] a',
-    '#prodDetails .a-section a'
-  ];
-  
-  // Tester chaque sélecteur jusqu'à ce qu'on en trouve un qui fonctionne
-  for (const selector of breadcrumbSelectors) {
-    const breadcrumbs = document.querySelectorAll(selector);
-    if (breadcrumbs.length > 0) {
-      const categories = Array.from(breadcrumbs)
-        .map(item => item.textContent.trim())
-        .filter(text => 
-          text && 
-          text !== '›' && 
-          !text.includes('retour') &&
-          !text.includes('Retour') &&
-          !text.includes('Amazon') && 
-          !text.includes('Prime')
-        )
-        .slice(0, 3); // Prendre jusqu'à 3 niveaux de catégories
+// Module TF-IDF pour la classification
+const TfIdfClassifier = {
+  // Préparation des données (calculer les IDF une seule fois)
+  prepare(categoryKeywords) {
+    // Ensemble de tous les mots-clés à travers toutes les catégories
+    const allTerms = new Set();
+    
+    // Extraire tous les termes uniques
+    Object.values(categoryKeywords).forEach(keywords => {
+      keywords.forEach(keyword => {
+        preprocessText(keyword).forEach(term => allTerms.add(term));
+      });
+    });
+    
+    // Calculer IDF pour chaque terme
+    const idf = {};
+    const totalCategories = Object.keys(categoryKeywords).length;
+    
+    allTerms.forEach(term => {
+      // Compter dans combien de catégories le terme apparaît
+      let categoryCount = 0;
       
-      if (categories.length > 0) {
-        const categoryPath = categories
-          .join('/')
-          .replace(/\s+/g, ' ')
-          .replace(/[›\\/]+/g, '/')
-          .replace(/^\W+|\W+$/g, '')
-          .trim();
-        
-        // Termes spécifiques à chaque catégorie qui nécessitent une attribution directe
-        const categorySpecificTerms = {
-          'Électronique et Informatique': ['audio', 'casque', 'écouteur', 'amplificateur', 'dac', 'headphone', 'earphone', 'amplifier', 'ordinateur', 'pc', 'smartphone', 'tablette'],
-          'Instruments de Musique': ['guitare', 'piano', 'batterie', 'violon', 'saxophone', 'trompette'],
-          'Photographie': ['appareil photo', 'objectif', 'reflex', 'mirrorless', 'dslr', 'camera']
-        };
-        
-        // Détecter si la catégorie contient des termes spécifiques
-        let matchedCategory = null;
-        
-        for (const [category, terms] of Object.entries(categorySpecificTerms)) {
-          const isMatch = terms.some(term => categoryPath.toLowerCase().includes(term));
-          if (isMatch) {
-            matchedCategory = category;
-            console.log(`DansMaZone: Produit de type ${category} détecté dans le fil d'Ariane`);
-            break;
-          }
+      Object.values(categoryKeywords).forEach(keywords => {
+        const keywordTexts = keywords.map(k => preprocessText(k).join(' '));
+        if (keywordTexts.some(text => text.includes(term))) {
+          categoryCount++;
         }
-        
-        if (matchedCategory) {
-          const originalPath = categoryPath;
-          // Vérifie si la catégorie détectée n'est pas déjà incluse
-          if (!categoryPath.toLowerCase().includes(matchedCategory.toLowerCase())) {
-            categoryPath = matchedCategory + '/' + originalPath;
-          }
+      });
+      
+      // Calculer IDF
+      idf[term] = Math.log(totalCategories / Math.max(1, categoryCount));
+    });
+    
+    return { idf, allTerms: [...allTerms] };
+  },
+  
+  // Classification d'un produit
+  classify(productText, categoryKeywords, preparedData) {
+    const { idf } = preparedData;
+    
+    // Combiner tous les textes du produit
+    const allProductText = Object.values(productText).join(' ');
+    const productTerms = preprocessText(allProductText);
+    
+    // Calculer TF pour le texte du produit
+    const tf = {};
+    productTerms.forEach(term => {
+      tf[term] = (tf[term] || 0) + 1;
+    });
+    
+    // Normaliser TF (facultatif)
+    const maxTf = Math.max(...Object.values(tf), 1);
+    Object.keys(tf).forEach(term => {
+      tf[term] = tf[term] / maxTf;
+    });
+    
+    // Calculer le score pour chaque catégorie avec des pondérations différentes selon la source
+    const scores = {};
+    const sourceWeights = {
+      title: 3,     // Le titre est très important
+      breadcrumbs: 2.5, // Le fil d'Ariane est très fiable
+      brand: 1.5,   // La marque peut être indicative
+      features: 1.2,// Les caractéristiques sont assez importantes
+      details: 1,   // Les détails sont modérément importants
+      description: 0.8 // La description est moins spécifique
+    };
+    
+    Object.entries(categoryKeywords).forEach(([category, keywords]) => {
+      // Créer un ensemble des termes uniques pour cette catégorie
+      const categoryTerms = new Set();
+      keywords.forEach(keyword => {
+        preprocessText(keyword).forEach(term => categoryTerms.add(term));
+      });
+      
+      // Score de base pour la catégorie
+      let score = 0;
+      
+      // 1. Score TF-IDF global
+      categoryTerms.forEach(term => {
+        if (tf[term] && idf[term]) {
+          score += tf[term] * idf[term];
         }
-        
-        console.log('DansMaZone: Catégorie trouvée via fil d\'Ariane:', categoryPath);
-        return categoryPath;
-      }
-    }
-  }
-  
-  // Approche 2: Par les métadonnées
-  const metaSelectors = [
-    'meta[name="keywords"]',
-    'meta[property="product:category"]',
-    'meta[property="og:product:category"]'
-  ];
-  
-  for (const selector of metaSelectors) {
-    const metaElement = document.querySelector(selector);
-    if (metaElement && metaElement.content) {
-      const metaContent = metaElement.content.split(',')[0].trim();
-      if (metaContent) {
-        console.log('DansMaZone: Catégorie trouvée via métadonnées:', metaContent);
-        return metaContent;
-      }
-    }
-  }
-  
-  // Approche 3: Par les données structurées JSON-LD
-  const jsonLdScripts = document.querySelectorAll('script[type="application/ld+json"]');
-  for (const script of jsonLdScripts) {
-    try {
-      const data = JSON.parse(script.textContent);
-      // Rechercher différentes propriétés possibles de catégorie
-      const category = data.category || 
-                       data.itemListElement?.[0]?.item?.category ||
-                       data.about?.category ||
-                       data.offers?.category ||
-                       data.brand?.category;
+      });
       
-      if (category) {
-        console.log('DansMaZone: Catégorie trouvée via JSON-LD:', category);
-        return typeof category === 'string' ? category : category.name || JSON.stringify(category);
-      }
-    } catch (e) {
-      // Ignorer les erreurs de parsing JSON
-    }
-  }
-  
-  // Approche 4: Par l'URL
-  const urlPatterns = [
-    /\/([^\/]+)\/dp\//,
-    /\/([^\/]+)\/product\//,
-    /\/gp\/product\/[^\/]+\/([^\/]+)\//
-  ];
-  
-  for (const pattern of urlPatterns) {
-    const urlMatch = window.location.pathname.match(pattern);
-    if (urlMatch && urlMatch[1]) {
-      const urlCategory = urlMatch[1].replace(/-/g, ' ');
-      console.log('DansMaZone: Catégorie trouvée via URL:', urlCategory);
-      return urlCategory;
-    }
-  }
-  
-  // Approche 5: Par les data-attributes
-  const dataAttributeSelectors = [
-    '[data-category]',
-    '[data-department]',
-    '[data-asin-category]'
-  ];
-  
-  for (const selector of dataAttributeSelectors) {
-    const element = document.querySelector(selector);
-    if (element) {
-      for (const attr of ['data-category', 'data-department', 'data-asin-category']) {
-        const value = element.getAttribute(attr);
-        if (value) {
-          console.log(`DansMaZone: Catégorie trouvée via ${attr}:`, value);
-          return value;
+      // 2. Scores pondérés par source de texte
+      Object.entries(productText).forEach(([source, text]) => {
+        if (sourceWeights[source] && text) {
+          const sourceTerms = preprocessText(text);
+          const sourceWeight = sourceWeights[source];
+          
+          categoryTerms.forEach(term => {
+            // Vérifier si le terme apparaît dans cette source spécifique
+            if (sourceTerms.includes(term) && idf[term]) {
+              score += sourceWeight * idf[term];
+            }
+          });
         }
-      }
-    }
-  }
-  
-  // Approche 6: Rechercher dans la section "Best Sellers Rank"
-  const salesRankSelectors = [
-    '#SalesRank',
-    '#productDetails_detailBullets_sections1 th:contains("Best Sellers Rank"), #productDetails_detailBullets_sections1 th:contains("Classement des meilleures ventes")',
-    '.a-section:contains("Best Sellers Rank"), .a-section:contains("Classement des meilleures ventes")'
-  ];
-  
-  for (const selector of salesRankSelectors) {
-    const element = document.querySelector(selector);
-    if (element) {
-      const text = element.textContent;
-      const rankMatch = text.match(/in ([^(]+)/);
-      if (rankMatch && rankMatch[1]) {
-        console.log('DansMaZone: Catégorie trouvée via Best Sellers Rank:', rankMatch[1].trim());
-        return rankMatch[1].trim();
-      }
-    }
-  }
-  
-  console.log('DansMaZone: Aucune catégorie trouvée, retour à Unknown');
-  return 'Unknown';
-}
-
-/**
- * Trouve la catégorie connue la plus proche d'une chaîne de caractères
- * @param {string} categoryString - La chaîne de texte représentant la catégorie
- * @param {Object} knownCategories - Les catégories connues (soit combinedSites, soit categoryKeywords)
- * @returns {string} La catégorie connue correspondante ou 'default'
- */
-function findNearestCategory(categoryString, knownCategories) {
-  if (!categoryString || categoryString === 'Unknown') {
-    return 'default';
-  }
-  
-  // Conversion en minuscules pour comparaison insensible à la casse
-  const lowercaseCategory = categoryString.toLowerCase();
-  
-  // 1. Rechercher une correspondance exacte
-  for (const category in knownCategories) {
-    if (category.toLowerCase() === lowercaseCategory) {
-      console.log('DansMaZone: Correspondance exacte trouvée:', category);
-      return category;
-    }
-  }
-  
-  // 2. Rechercher des correspondances partielles
-  // D'abord essayer de trouver une catégorie qui est incluse dans la chaîne
-  for (const category in knownCategories) {
-    if (lowercaseCategory.includes(category.toLowerCase())) {
-      console.log('DansMaZone: Catégorie incluse trouvée:', category);
-      return category;
-    }
-  }
-  
-  // 3. Vérifier si la chaîne est incluse dans une catégorie
-  for (const category in knownCategories) {
-    if (category.toLowerCase().includes(lowercaseCategory)) {
-      console.log('DansMaZone: Chaîne incluse dans catégorie:', category);
-      return category;
-    }
-  }
-  
-  // 4. Rechercher des correspondances de mots (mots en commun) avec vérification sémantique
-  const categoryWords = lowercaseCategory.split(/\s+/).filter(word => word.length > 2); // Ignorer les mots trop courts
-  let bestCategory = 'default';
-  let maxCategoryScore = 0;
-  
-  // Liste de mots à ignorer pour la correspondance car trop génériques
-  const stopWords = ['et', 'and', 'the', 'les', 'des', 'de', 'la', 'le', 'un', 'une', 'a', 'an'];
-  
-  // Groupes de catégories similaires qui peuvent prêter à confusion
-  const categoryGroups = {
-    tech: ['Électronique et Informatique', 'Instruments de Musique', 'Jeux Vidéo et Consoles', 'Photographie'],
-    beauty: ['Santé et Soins personnels', 'Beauté et Parfum', 'Bijoux et Accessoires'],
-    home: ['Maison', 'Décoration', 'Mobilier', 'Literie', 'Cuisine', 'Luminaire'],
-    clothing: ['Mode et Vêtements', 'Chaussures', 'Bijoux et Accessoires']
-  };
-  
-  // Termes spécifiques à chaque catégorie qui aident à désambiguïser
-  const categorySpecificTerms = {
-    'Électronique et Informatique': {
-      terms: ['ordinateur', 'pc', 'smartphone', 'tablette', 'audio', 'casque', 'écouteur', 'amplificateur'],
-      matchBonus: 3
-    },
-    'Instruments de Musique': {
-      terms: ['guitare', 'piano', 'batterie', 'violon', 'instrument'],
-      matchBonus: 3
-    },
-    'Bijoux et Accessoires': {
-      terms: ['bijou', 'montre', 'bracelet', 'collier', 'bague', 'or', 'argent', 'perle'],
-      matchBonus: 3,
-      required: ['bijou', 'bracelet', 'montre', 'collier']  // Au moins un de ces termes doit être présent
-    }
-  };
-  
-  // Déterminer si la chaîne contient des termes ambigus
-  const hasAccessoireTerm = lowercaseCategory.includes('accessoire');
-  const hasAudioTerm = lowercaseCategory.includes('audio') || 
-                       lowercaseCategory.includes('écouteur') || 
-                       lowercaseCategory.includes('headphone') || 
-                       lowercaseCategory.includes('casque');
-  
-  // Trouver à quels groupes appartient chaque catégorie
-  const getCategoryGroups = (category) => {
-    return Object.entries(categoryGroups)
-      .filter(([_, categories]) => categories.includes(category))
-      .map(([group, _]) => group);
-  };
-  
-  for (const category in knownCategories) {
-    const categoryLowercase = category.toLowerCase();
-    const knownCategoryWords = categoryLowercase.split(/\s+/).filter(word => !stopWords.includes(word));
-    
-    // Compter les mots en commun
-    const commonWords = categoryWords.filter(word => 
-      !stopWords.includes(word) && 
-      knownCategoryWords.some(knownWord => knownWord.includes(word) || word.includes(knownWord))
-    ).length;
-    
-    // Poids initial basé sur les mots communs
-    let categoryScore = commonWords;
-    
-    // Vérifier les termes spécifiques à la catégorie
-    const specificTerms = categorySpecificTerms[category];
-    if (specificTerms) {
-      // Vérifier si les termes spécifiques sont présents
-      const hasSpecificTerms = specificTerms.terms.some(term => 
-        lowercaseCategory.includes(term)
-      );
+      });
       
-      if (hasSpecificTerms) {
-        categoryScore += specificTerms.matchBonus || 2;
-      }
-      
-      // Vérifier si un terme requis est absent pour cette catégorie
-      if (specificTerms.required && specificTerms.required.length > 0) {
-        const hasRequiredTerm = specificTerms.required.some(term => 
-          lowercaseCategory.includes(term)
-        );
-        
-        if (!hasRequiredTerm) {
-          categoryScore -= 2; // Pénalité si aucun terme requis n'est présent
-        }
-      }
-    }
+      scores[category] = score;
+    });
     
-    // Désambiguïsation contextuelle pour les catégories qui peuvent se chevaucher
-    if (hasAccessoireTerm) {
-      // Si on parle d'accessoires et d'audio, favoriser l'électronique
-      if (hasAudioTerm && category === 'Électronique et Informatique') {
-        categoryScore += 3;
-      }
-      
-      // Réduire la pertinence de "Bijoux et Accessoires" s'il n'y a pas de termes de bijouterie
-      if (category === 'Bijoux et Accessoires' && !lowercaseCategory.includes('bijou') && 
-          !lowercaseCategory.includes('montre') && !lowercaseCategory.includes('bracelet')) {
-        categoryScore -= 1;
-      }
-    }
+    // Trouver la meilleure catégorie
+    const sortedCategories = Object.entries(scores)
+      .sort((a, b) => b[1] - a[1]);
     
-    // Trouver à quels groupes cette catégorie appartient
-    const groups = getCategoryGroups(category);
+    // Log pour le débogage
+    console.log('DansMaZone: Scores TF-IDF', sortedCategories.slice(0, 3));
     
-    // Vérifier si la catégorie appartient à un groupe cohérent avec le contexte
-    if (hasAudioTerm && groups.includes('tech')) {
-      categoryScore += 1; // Petit bonus pour les catégories tech quand on parle d'audio
-    }
-    
-    if (categoryScore > maxCategoryScore) {
-      maxCategoryScore = categoryScore;
-      bestCategory = category;
-    }
+    return sortedCategories[0][0]; // Retourne la catégorie avec le score le plus élevé
   }
-  
-  if (maxCategoryScore > 0) {
-    console.log('DansMaZone: Meilleure correspondance de mots:', bestCategory, 'avec score', maxCategoryScore);
-    return bestCategory;
-  }
-  
-  // 5. Rechercher dans les mappings de catégories
-  // Vérifier si on a des correspondances dans le mapping français/anglais
-  for (const [frCategory, enCategory] of Object.entries(categoryMapping)) {
-    if (lowercaseCategory.includes(enCategory.toLowerCase())) {
-      console.log('DansMaZone: Correspondance trouvée dans le mapping EN->FR:', frCategory);
-      return frCategory;
-    }
-  }
-  
-  console.log('DansMaZone: Aucune correspondance trouvée, utilisation de default');
-  return 'default';
 }
 
 // Fonction pour récupérer les mots-clés combinés avec gestion d'erreur améliorée
@@ -838,16 +612,8 @@ async function getCombinedKeywords() {
   }
 }
 
-// Obtenir la catégorie dans la langue demandée
-export function getLocalizedCategory(category, targetLang = 'fr') {
-  if (targetLang === 'en') {
-    return categoryMapping[category] || category;
-  }
-  return category;
-}
-
 /**
- * Classifie la page produit Amazon en utilisant plusieurs approches
+ * Classifie la page produit Amazon en utilisant l'algorithme TF-IDF
  * @returns {Promise<string>} La catégorie détectée
  */
 export async function classifyPage(combinedSites) {
@@ -855,107 +621,35 @@ export async function classifyPage(combinedSites) {
     // Obtenir les mots-clés combinés (par défaut + personnalisés)
     const combinedKeywords = await getCombinedKeywords();
     
-    // 1. D'abord essayer par le fil d'Ariane et autres méthodes structurées
-    const structuredCategory = getProductCategoryRobust();
+    // Extraire le texte de la page
+    const productText = extractProductText();
     
-    // 2. Essayer de trouver une correspondance directe avec la catégorie structurée
-    if (structuredCategory !== 'Unknown') {
-      const directMatch = findNearestCategory(structuredCategory, combinedKeywords);
-      if (directMatch !== 'default') {
-        console.log('DansMaZone: Catégorie trouvée directement:', directMatch);
-        return directMatch;
-      }
+    // Préparer les données TF-IDF (avec mise en cache)
+    if (!preparedData) {
+      preparedData = TfIdfClassifier.prepare(combinedKeywords);
     }
     
-    // 3. Analyser le contenu pour les mots-clés
-    const pageContent = cleanText(extractPageContent());
+    // Classifier le produit
+    let category = TfIdfClassifier.classify(productText, combinedKeywords, preparedData);
     
-    // Obtenir le nom du produit
-    const productNameElement = document.getElementById('productTitle');
-    const productName = productNameElement ? cleanText(productNameElement.textContent) : '';
-    
-    // Obtenir le fabricant/marque
-    const brandElement = document.querySelector('.po-brand .po-break-word') || 
-                          document.querySelector('#bylineInfo') ||
-                          document.querySelector('[id*="brand"]');
-    const brandName = brandElement ? cleanText(brandElement.textContent) : '';
-    
-    // Calculer un score pour chaque catégorie
-    const scores = Object.entries(combinedKeywords).map(([category, keywords]) => {
-      let score = 0;
-      
-      // Parcourir tous les mots-clés
-      for (const keyword of keywords) {
-        if (!keyword) continue; // Ignorer les mots-clés vides
-        
-        const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-        
-        // Chercher dans le contenu total
-        const pageMatches = (pageContent.match(regex) || []).length;
-        
-        // Chercher dans le nom du produit (poids multiplié par 3)
-        const productNameMatches = productName ? (productName.match(regex) || []).length * 3 : 0;
-        
-        // Chercher dans le nom de la marque (poids multiplié par 2)
-        const brandMatches = brandName ? (brandName.match(regex) || []).length * 2 : 0;
-        
-        score += pageMatches + productNameMatches + brandMatches;
-      }
-      
-      // Boost pour les catégories qui correspondent partiellement au structuredCategory
-      if (structuredCategory !== 'Unknown') {
-        if (structuredCategory.toLowerCase().includes(category.toLowerCase()) || 
-            category.toLowerCase().includes(structuredCategory.toLowerCase())) {
-          score += 3;
-        }
-      }
-      
-      return { category, score };
-    });
-
-    // Trier par score et prendre la meilleure correspondance
-    const bestMatch = scores.reduce((max, curr) => 
-      curr.score > max.score ? curr : max,
-      { category: 'default', score: 0 }
-    );
-
-    console.log('DansMaZone: Scores des catégories:', scores);
-    
-    // Si le score est faible et qu'on a une catégorie structurée, essayer une approche hybride
-    if (bestMatch.score < 2 && structuredCategory !== 'Unknown') {
-      // Utiliser la catégorie du breadcrumb et essayer de trouver une correspondance
-      const nearestCategory = findNearestCategory(structuredCategory, combinedKeywords);
-      if (nearestCategory !== 'default') {
-        console.log('DansMaZone: Score faible, utilisation de la catégorie structurée:', nearestCategory);
-        return nearestCategory;
-      }
+    // Si aucune catégorie n'est trouvée, utiliser 'default'
+    if (!category || category === 'Unknown') {
+      category = 'default';
     }
     
-    // Détecter la langue et renvoyer la catégorie appropriée
+    console.info('DansMaZone: Category detected:', category);
+    
+    // Gérer la traduction si nécessaire
     const lang = detectLanguage();
-    if (lang === 'en' && bestMatch.score > 0) {
+    if (lang === 'en' && category !== 'default') {
       // Convertir en anglais si nécessaire
-      return categoryMapping[bestMatch.category] || bestMatch.category;
+      const enCategory = categoryMapping[category] || category;
+      return enCategory;
     }
     
-    return bestMatch.score > 0 ? bestMatch.category : 'default';
+    return category;
   } catch (error) {
     console.error('DansMaZone: Error in classifyPage:', error);
-    
-    // Tentative de récupération en cas d'erreur
-    try {
-      const fallbackCategory = getProductCategoryRobust();
-      if (fallbackCategory !== 'Unknown' && combinedSites) {
-        const nearestCategory = findNearestCategory(fallbackCategory, combinedSites);
-        if (nearestCategory !== 'default') {
-          console.log('DansMaZone: Récupération d\'erreur avec catégorie:', nearestCategory);
-          return nearestCategory;
-        }
-      }
-    } catch (fallbackError) {
-      console.error('DansMaZone: Erreur lors de la récupération:', fallbackError);
-    }
-    
     return 'default'; // Retourner la catégorie par défaut en cas d'erreur
   }
 }
