@@ -3,7 +3,7 @@
     {
       "name": "Chico",
       "urls": {
-        "fr": "https://www.chico.ca/?post_type=product&s=##QUERY##",
+        "fr": "https://www.chicooooo.ca/?post_type=product&s=##QUERY##",
         "en": "https://www.chico.ca/?post_type=product&s=##QUERY##"
       }
     },
@@ -16,10 +16,7 @@
     },
     {
       "name": "Pattes et Griffes",
-      "urls": {
-        "fr": "https://pattesgriffes.com/catalogsearch/result/?q=##QUERY##",
-        "en": "https://pattesgriffes.com/catalogsearch/result/?q=##QUERY##"
-      }
+      "url": "https://pattesgriffes.com/catalogsearch/result/?q=##QUERY##"
     }
   ],
   "Auto et Moto": [
@@ -32,10 +29,7 @@
     },
     {
       "name": "Centre de l'Auto Élégance",
-      "urls": {
-        "fr": "https://centredelautoelegance.ca/search?q=##QUERY##",
-        "en": "https://centredelautoelegance.ca/search?q=##QUERY##"
-      }
+      "url": "https://centredelautoelegance.ca/search?q=##QUERY##"
     },
     {
       "name": "NAPA Pièces d'auto",
@@ -93,17 +87,14 @@
     {
       "name": "Pharmaprix",
       "urls": {
-        "fr": "https://www1.pharmaprix.ca/search?text=##QUERY##&lang=fr",   
-        "en" : "https://www.pharmaprix.ca/search?text=##QUERY##&lang=en"
+        "fr": "https://www1.pharmaprix.ca/search?text=##QUERY##&lang=fr",
+        "en": "https://www.pharmaprix.ca/search?text=##QUERY##&lang=en"
       }
     },
     {
       "name": "Zorah Biocosmétiques",
-      "urls": {
-        "fr": "https://zorah.ca/fr/search?q=##QUERY##",
-        "en": "https://zorah.ca/fr/search?q=##QUERY##"
-      }
-    }    
+      "url": "https://zorah.ca/fr/search?q=##QUERY##"
+    }
   ],
   "Bébés et Puériculture": [
     {
@@ -263,11 +254,8 @@
       "url": "https://www.hamster.ca/recherche-produits?qs=##QUERY##"
     },
     {
-      "name":"AliExpress",
-      "urls": {
-        "fr": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##",
-        "en": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##"
-      }
+      "name": "AliExpress",
+      "url": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##"
     }
   ],
   "Épicerie et Alimentation": [
@@ -600,8 +588,8 @@
     {
       "name": "Pharmaprix",
       "urls": {
-        "fr": "https://www1.pharmaprix.ca/search?text=##QUERY##&lang=fr",   
-        "en" : "https://www.pharmaprix.ca/search?text=##QUERY##&lang=en"
+        "fr": "https://www1.pharmaprix.ca/search?text=##QUERY##&lang=fr",
+        "en": "https://www.pharmaprix.ca/search?text=##QUERY##&lang=en"
       }
     },
     {
