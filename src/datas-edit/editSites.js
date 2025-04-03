@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('categoryFilter').addEventListener('change', filterTable);
     document.getElementById('loadJsonFile').addEventListener('click', loadDefaultJsonFile);
     document.getElementById('testVisibleSites').addEventListener('click', showTestConfigModal);
+    document.getElementById('statusFilter').addEventListener('change', filterTable);
     document.getElementById('startTests').addEventListener('click', startTests);
     document.getElementById('cancelTests').addEventListener('click', function() {
         document.getElementById('testConfigModal').style.display = 'none';
@@ -270,15 +271,39 @@ function updateCategoryFilter() {
 // Filtrer le tableau par catégorie
 function filterTable() {
     const category = document.getElementById('categoryFilter').value;
+    const status = document.getElementById('statusFilter').value;
     const rows = document.getElementById('tableBody').getElementsByTagName('tr');
     
     for (let i = 0; i < rows.length; i++) {
         const categoryCell = rows[i].getElementsByTagName('td')[0];
-        if (!category || categoryCell.textContent === category) {
-            rows[i].style.display = '';
-        } else {
-            rows[i].style.display = 'none';
+        const siteIndex = parseInt(rows[i].dataset.siteIndex);
+        const site = sitesData[siteIndex];
+        
+        let showRow = true;
+        
+        // Filtre par catégorie
+        if (category && categoryCell.textContent !== category) {
+            showRow = false;
         }
+        
+        // Filtre par statut
+        if (status !== 'all' && showRow) {
+            const frStatus = site.validation?.fr?.status || 'untested';
+            const enStatus = site.validation?.en?.status || 'untested';
+            
+            if (status === 'valid') {
+                // Montrer seulement si les deux URLs sont valides
+                showRow = frStatus === 'valid' && enStatus === 'valid';
+            } else if (status === 'invalid') {
+                // Montrer si au moins une URL est invalide
+                showRow = frStatus === 'invalid' || enStatus === 'invalid';
+            } else if (status === 'untested') {
+                // Montrer si au moins une URL n'a pas été testée
+                showRow = frStatus === 'untested' || enStatus === 'untested';
+            }
+        }
+        
+        rows[i].style.display = showRow ? '' : 'none';
     }
 }
 

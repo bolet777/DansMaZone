@@ -251,10 +251,12 @@ button.edit-btn img, button.delete-btn img {
     font-family: inherit;
 }
 
-.filter-container { 
+.filter-container {
     margin-bottom: 1.25rem; /* 20px ÷ 16 = 1.25rem */
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .filter-container label {
@@ -262,7 +264,12 @@ button.edit-btn img, button.delete-btn img {
     font-weight: 500;
 }
 
-#categoryFilter { 
+.filter-group {
+    display: flex;
+    align-items: center;
+}
+
+#categoryFilter, #statusFilter { 
     padding: 0.5rem; /* 8px ÷ 16 = 0.5rem */
     width: 12.5rem; /* 200px ÷ 16 = 12.5rem */
     border: 0.0625rem solid var(--border-color); /* 1px ÷ 16 = 0.0625rem */
