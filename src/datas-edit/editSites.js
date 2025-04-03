@@ -269,6 +269,7 @@ function updateCategoryFilter() {
 }
 
 // Filtrer le tableau par catégorie
+// Filtrer le tableau par catégorie
 function filterTable() {
     const category = document.getElementById('categoryFilter').value;
     const status = document.getElementById('statusFilter').value;
@@ -378,15 +379,11 @@ async function exportToJson() {
             name: site.name
         };
         
-        // Gérer les URLs
-        if (site.urlFr === site.urlEn) {
-            newSite.url = site.urlFr;
-        } else {
-            newSite.urls = {
-                fr: site.urlFr,
-                en: site.urlEn
-            };
-        }
+        // Gérer les URLs - TOUJOURS utiliser la structure urls pour une cohérence du format
+        newSite.urls = {
+            fr: site.urlFr,
+            en: site.urlEn
+        };
         
         // Inclure les données de validation si elles existent
         if (site.validation) {
@@ -588,7 +585,14 @@ function updateTable() {
         editIcon.src = 'edit.png';
         editIcon.alt = 'Éditer';
         editButton.appendChild(editIcon);
-        editButton.addEventListener('click', () => showEditModal(index));
+        // Utiliser une IIFE pour capturer l'index actuel
+        ((currentSiteIndex) => {
+            editButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Empêcher la propagation de l'événement
+                console.log(`Édition du site: ${sitesData[currentSiteIndex].name} (index: ${currentSiteIndex})`);
+                showEditModal(currentSiteIndex);
+            });
+        })(index);
         
         // Bouton de suppression
         const deleteButton = document.createElement('button');
