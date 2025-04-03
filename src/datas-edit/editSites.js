@@ -530,48 +530,19 @@ function updateTable() {
         testButton.title = 'Tester';
         testButton.textContent = '🔍';
         testButton.addEventListener('click', (e) => {
-            // Lancer directement le test pour ce site sans ouvrir le modal
-            e.stopPropagation(); // Empêche la propagation de l'événement
+            // Empêcher la propagation de l'événement
+            e.stopPropagation();
             
-            // Configurer les tests
-            currentTests.queue = [];
-            currentTests.completed = 0;
-            currentTests.total = 0;
-            currentTests.running = false;
-            currentTests.stop = false;
-            
-            // Charger les paramètres par défaut
-            currentTests.timeout = 10000;
-            currentTests.maxConcurrent = 3;
-            currentTests.cacheDuration = 24 * 60 * 60 * 1000;
-            currentTests.forceTest = false;
-            currentTests.checkContent = false;
-            currentTests.followRedirects = true;
-            
-            // Ajouter les URLs du site aux tests
-            const site = sitesData[index];
-            
-            if (site.urlFr) {
-                currentTests.queue.push({ siteIndex: index, lang: 'fr', url: site.urlFr });
-                currentTests.total++;
+            // Si des tests sont déjà en cours, les arrêter
+            if (currentTests.running) {
+                currentTests.stop = true;
+                // Attendre un court instant pour s'assurer que les tests précédents sont arrêtés
+                setTimeout(() => {
+                    startTestForSite(index, site);
+                }, 200);
+            } else {
+                startTestForSite(index, site);
             }
-            
-            if (site.urlEn) {
-                currentTests.queue.push({ siteIndex: index, lang: 'en', url: site.urlEn });
-                currentTests.total++;
-            }
-            
-            if (currentTests.total === 0) {
-                showStatus('Aucune URL à tester pour ce site', 'error');
-                return;
-            }
-            
-            // Afficher un message de statut
-            showStatus(`Test des URLs pour ${site.name}...`, 'loading');
-            
-            // Lancer les tests directement
-            currentTests.running = true;
-            processUrlQueue();
         });
         
         // Bouton d'édition
@@ -616,6 +587,48 @@ function updateTable() {
     updateCategoryFilter();
     // Appliquer le filtre
     filterTable();
+}
+
+// Fonction auxiliaire pour démarrer les tests pour un site spécifique
+function startTestForSite(index, site) {
+    // Réinitialiser complètement l'état des tests
+    currentTests.queue = [];
+    currentTests.completed = 0;
+    currentTests.total = 0;
+    currentTests.running = false;
+    currentTests.stop = false;
+    currentTests.concurrent = 0;
+    
+    // Charger les paramètres par défaut
+    currentTests.timeout = 10000;
+    currentTests.maxConcurrent = 3;
+    currentTests.cacheDuration = 24 * 60 * 60 * 1000;
+    currentTests.forceTest = false;
+    currentTests.checkContent = false;
+    currentTests.followRedirects = true;
+    
+    // Ajouter les URLs du site aux tests
+    if (site.urlFr) {
+        currentTests.queue.push({ siteIndex: index, lang: 'fr', url: site.urlFr });
+        currentTests.total++;
+    }
+    
+    if (site.urlEn) {
+        currentTests.queue.push({ siteIndex: index, lang: 'en', url: site.urlEn });
+        currentTests.total++;
+    }
+    
+    if (currentTests.total === 0) {
+        showStatus('Aucune URL à tester pour ce site', 'error');
+        return;
+    }
+    
+    // Afficher un message de statut
+    showStatus(`Test des URLs pour ${site.name}...`, 'loading');
+    
+    // Lancer les tests
+    currentTests.running = true;
+    processUrlQueue();
 }
 
 // Créer un indicateur de statut pour une URL
@@ -728,21 +741,34 @@ function startTests() {
         currentTests.total = 0;
         currentTests.completed = 0;
         currentTests.queue = [];
+        currentTests.concurrent = 0;
         
+        // Compter et ajouter à la queue TOUTES les URLs, même pour les sites après "Boutique Griffon"
         visibleRows.forEach(row => {
             const siteIndex = parseInt(row.dataset.siteIndex);
             const site = sitesData[siteIndex];
             
-            if (site.urlFr) {
-                currentTests.queue.push({ siteIndex, lang: 'fr', url: site.urlFr });
-                currentTests.total++;
-            }
-            
-            if (site.urlEn) {
-                currentTests.queue.push({ siteIndex, lang: 'en', url: site.urlEn });
-                currentTests.total++;
+            if (site) {
+                // Vérifier explicitement l'existence des URLs
+                if (site.urlFr || (site.urls && site.urls.fr)) {
+                    const frUrl = site.urlFr || site.urls.fr;
+                    if (frUrl) {
+                        currentTests.queue.push({ siteIndex, lang: 'fr', url: frUrl });
+                        currentTests.total++;
+                    }
+                }
+                
+                if (site.urlEn || (site.urls && site.urls.en)) {
+                    const enUrl = site.urlEn || site.urls.en;
+                    if (enUrl) {
+                        currentTests.queue.push({ siteIndex, lang: 'en', url: enUrl });
+                        currentTests.total++;
+                    }
+                }
             }
         });
+        
+        console.log(`Total URLs à tester: ${currentTests.total} (${currentTests.queue.length} dans la queue)`);
     }
     
     if (currentTests.total === 0) {
@@ -870,10 +896,14 @@ function processUrlQueue() {
     }
     
     // Vérifier si tous les tests sont terminés
-    if (currentTests.completed >= currentTests.total && currentTests.concurrent === 0) {
+    // Ajout d'une vérification plus stricte: queue vide ET tous les tests concurrents terminés
+    if (currentTests.queue.length === 0 && currentTests.concurrent === 0) {
         currentTests.running = false;
         showStatus(`Tests terminés: ${currentTests.completed}/${currentTests.total} URLs testées`, 'success');
         updateTable();
+        
+        // Fermer automatiquement la modale de test
+        document.getElementById('testConfigModal').style.display = 'none';
         return;
     }
     
@@ -910,6 +940,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Méthode simple pour tester une URL
+// Méthode simple pour tester une URL
 function testUrl(testItem) {
     const { siteIndex, lang, url } = testItem;
     const site = sitesData[siteIndex];
@@ -923,8 +954,10 @@ function testUrl(testItem) {
             
             // Si le dernier test est assez récent, utiliser ce résultat
             if (now - lastTest < currentTests.cacheDuration) {
+                // Important: Incrémenter completed même pour les résultats en cache
                 updateTestProgress();
                 currentTests.concurrent--;
+                // Important: Continuer à traiter la queue même pour les résultats en cache
                 processUrlQueue();
                 return;
             }
@@ -952,7 +985,7 @@ function testUrl(testItem) {
     }
     
     // Si l'URL est vide
-    if (!url.trim()) {
+    if (!url || !url.trim()) {
         handleTestResult(siteIndex, lang, {
             status: 'invalid',
             code: 'EMPTY_URL',
@@ -991,6 +1024,10 @@ function testUrl(testItem) {
             timestamp: result.timestamp,
             error: result.error
         });
+        
+        // Mise à jour après avoir stocké le résultat
+        updateTestProgress();
+        updateTable(); // Mise à jour du tableau pour afficher l'état actuel
     })
     .catch(error => {
         console.error(`Erreur lors du test de l'URL ${url}:`, error);
@@ -1002,10 +1039,13 @@ function testUrl(testItem) {
             timestamp: Date.now(),
             error: `Erreur de test: ${error.message}`
         });
+        
+        // Mise à jour après avoir stocké le résultat d'erreur
+        updateTestProgress();
+        updateTable(); // Mise à jour du tableau pour afficher l'état d'erreur
     })
     .finally(() => {
-        // Mettre à jour la progression et continuer à traiter la queue
-        updateTestProgress();
+        // Décrémenter le compteur et continuer le traitement
         currentTests.concurrent--;
         processUrlQueue();
     });
@@ -1022,15 +1062,6 @@ function handleTestResult(siteIndex, lang, result) {
     
     // Stocker le résultat
     site.validation[lang] = result;
-    
-    // Mettre à jour l'UI
-    updateTestProgress();
-    
-    // Décrémenter le compteur de tests concurrents
-    currentTests.concurrent--;
-    
-    // Continuer à traiter la queue
-    processUrlQueue();
 }
 
 // Mettre à jour la progression des tests
