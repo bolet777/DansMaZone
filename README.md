@@ -143,7 +143,7 @@ Vous pouvez ajouter de nouveaux sites de deux façons :
 1. **Via l'interface utilisateur** :
    - Ouvrez les préférences de l'extension
    - Ajoutez vos sites personnalisés
-   - Exportez-les et envoyez-les par email à `ccosenza.dlab@gmail.com`
+   - Exportez-les et envoyez-les par email à `info@dansmazone.ca`
 
 2. **Via GitHub** :
    - Modifiez le fichier `src/datas/category-sites.js`

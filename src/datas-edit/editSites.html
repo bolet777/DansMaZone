@@ -28,7 +28,10 @@
             <button id="exportJson">Exporter JSON (default-sites-generated.json)</button>
             <button id="exportCsv">Exporter CSV</button>
         </div>
-        <button id="addRow" class="add-btn">Ajouter un site</button>
+        <div class="action-buttons">
+            <button id="testVisibleSites" class="test-btn">Tester URLs visibles</button>
+            <button id="addRow" class="add-btn">Ajouter un site</button>
+        </div>
     </div>
 
     <div class="table-container">
@@ -88,467 +91,58 @@
         </div>
     </div>
 
-    <script>
-        // Structure de données pour stocker les sites
-        let sitesData = [];
-        let categories = new Set();
-        const DEFAULT_JSON_PATH = "../datas/default-sites.json";
-        const EXPORT_JSON_PATH = "../datas/default-sites-generated.json";
+    <!-- Modal pour configuration des tests URL -->
+    <div id="testConfigModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Configuration des tests URL</h2>
+            <div class="test-config-form">
+                <div class="form-group">
+                    <label for="testTimeout">Timeout (ms):</label>
+                    <input type="number" id="testTimeout" min="1000" max="30000" value="10000">
+                </div>
+                <div class="form-group">
+                    <label for="maxConcurrent">Requêtes simultanées max:</label>
+                    <input type="number" id="maxConcurrent" min="1" max="10" value="3">
+                </div>
+                <div class="form-group">
+                    <label for="testCacheDuration">Durée cache (heures):</label>
+                    <input type="number" id="testCacheDuration" min="1" max="72" value="24">
+                </div>
+                <div class="form-group">
+                    <label for="forceTest">Forcer nouveau test:</label>
+                    <input type="checkbox" id="forceTest">
+                </div>
+            </div>
+            
+            <div class="test-options">
+                <h3>Options avancées</h3>
+                <div class="form-group">
+                    <label for="checkContent">Vérifier contenu de la page:</label>
+                    <input type="checkbox" id="checkContent">
+                </div>
+                <div class="form-group">
+                    <label for="followRedirects">Suivre les redirections:</label>
+                    <input type="checkbox" id="followRedirects" checked>
+                </div>
+            </div>
+            
+            <div class="test-progress">
+                <h3>Progression des tests</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="testProgressBar"></div>
+                </div>
+                <div id="testProgressText">0/0 URLs testées</div>
+                <button id="stopTests">Arrêter les tests</button>
+            </div>
+            
+            <div class="form-actions">
+                <button id="startTests" class="primary-btn">Démarrer les tests</button>
+                <button id="cancelTests" class="secondary-btn">Annuler</button>
+            </div>
+        </div>
+    </div>
 
-        // Fonctions d'initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gestion des modales
-            setupModals();
-            
-            // Gestionnaires d'événements pour les boutons
-            document.getElementById('addRow').addEventListener('click', showAddModal);
-            document.getElementById('importJson').addEventListener('click', showImportModal);
-            document.getElementById('exportJson').addEventListener('click', exportToJson);
-            document.getElementById('exportCsv').addEventListener('click', exportToCsv);
-            document.getElementById('siteForm').addEventListener('submit', saveSite);
-            document.getElementById('processImport').addEventListener('click', processImport);
-            document.getElementById('categoryFilter').addEventListener('change', filterTable);
-            document.getElementById('loadJsonFile').addEventListener('click', loadDefaultJsonFile);
-            
-            // Initialiser avec un tableau vide
-            updateTable();
-        });
-
-        // Charger le fichier JSON par défaut
-        async function loadDefaultJsonFile() {
-            // Créer un bouton temporaire pour ouvrir le sélecteur de fichiers
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'application/json';
-            
-            // Promesse pour attendre la sélection du fichier
-            const filePromise = new Promise((resolve, reject) => {
-                input.onchange = e => {
-                    if (e.target.files.length > 0) {
-                        resolve(e.target.files[0]);
-                    } else {
-                        reject(new Error("Aucun fichier sélectionné"));
-                    }
-                };
-                
-                // Si l'utilisateur annule, gérer ce cas
-                input.oncancel = () => reject(new Error("Sélection annulée"));
-            });
-            
-            // Déclencher la boîte de dialogue de sélection de fichier
-            input.click();
-            
-            try {
-                showStatus('Sélectionnez le fichier JSON default-sites.json...', 'loading');
-                const file = await filePromise;
-                
-                // Lire le contenu du fichier
-                const fileContent = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = e => resolve(e.target.result);
-                    reader.onerror = () => reject(new Error("Erreur lors de la lecture du fichier"));
-                    reader.readAsText(file);
-                });
-                
-                // Parser le JSON
-                const jsonData = JSON.parse(fileContent);
-                processJsonData(jsonData);
-                showStatus(`Fichier ${file.name} chargé avec succès!`, 'success');
-            } catch (error) {
-                console.error('Erreur lors du chargement du fichier JSON:', error);
-                showStatus('Erreur: ' + error.message, 'error');
-                // Initialiser avec un tableau vide en cas d'erreur
-                updateTable();
-            }
-        }
-
-        // Traiter les données JSON importées
-        function processJsonData(jsonData) {
-            sitesData = [];
-            categories = new Set();
-            
-            // Traiter chaque catégorie
-            for (const category in jsonData) {
-                const sites = jsonData[category];
-                sites.forEach(site => {
-                    const newSite = {
-                        category: category,
-                        name: site.name
-                    };
-                    
-                    // Gérer les URLs
-                    if (site.urls) {
-                        newSite.urlFr = site.urls.fr || '';
-                        newSite.urlEn = site.urls.en || '';
-                    } else if (site.url) {
-                        newSite.urlFr = site.url;
-                        newSite.urlEn = site.url;
-                    } else {
-                        newSite.urlFr = '';
-                        newSite.urlEn = '';
-                    }
-                    
-                    sitesData.push(newSite);
-                    categories.add(category);
-                });
-            }
-            
-            updateTable();
-        }
-
-        // Afficher un message de statut
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.textContent = message;
-            statusElement.className = 'status-message';
-            
-            if (type === 'success') {
-                statusElement.classList.add('success');
-            } else if (type === 'error') {
-                statusElement.classList.add('error');
-            } else if (type === 'loading') {
-                statusElement.classList.add('loading');
-                statusElement.innerHTML = `<span class="loading"></span> ${message}`;
-            }
-            
-            statusElement.style.display = 'block';
-            
-            if (type !== 'loading') {
-                setTimeout(() => {
-                    statusElement.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        // Configuration des modales
-        function setupModals() {
-            const modals = document.getElementsByClassName('modal');
-            const closeButtons = document.getElementsByClassName('close');
-            
-            // Fermer les modales quand on clique sur X
-            for (let i = 0; i < closeButtons.length; i++) {
-                closeButtons[i].addEventListener('click', function() {
-                    modals[i].style.display = "none";
-                });
-            }
-            
-            // Fermer les modales quand on clique en dehors
-            window.addEventListener('click', function(event) {
-                for (let i = 0; i < modals.length; i++) {
-                    if (event.target == modals[i]) {
-                        modals[i].style.display = "none";
-                    }
-                }
-            });
-        }
-
-        // Afficher la modale d'ajout
-        function showAddModal() {
-            document.getElementById('modalTitle').textContent = 'Ajouter un site';
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('siteForm').reset();
-            document.getElementById('editModal').style.display = 'block';
-            updateCategoriesDatalist();
-        }
-
-        // Afficher la modale d'édition
-        function showEditModal(index) {
-            const site = sitesData[index];
-            document.getElementById('modalTitle').textContent = 'Modifier un site';
-            document.getElementById('editIndex').value = index;
-            document.getElementById('category').value = site.category;
-            document.getElementById('name').value = site.name;
-            document.getElementById('urlFr').value = site.urlFr;
-            document.getElementById('urlEn').value = site.urlEn;
-            document.getElementById('editModal').style.display = 'block';
-            updateCategoriesDatalist();
-        }
-
-        // Afficher la modale d'import JSON
-        function showImportModal() {
-            document.getElementById('jsonInput').value = '';
-            document.getElementById('importModal').style.display = 'block';
-        }
-
-        // Mise à jour de la datalist des catégories
-        function updateCategoriesDatalist() {
-            const datalist = document.getElementById('categories');
-            datalist.innerHTML = '';
-            categories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                datalist.appendChild(option);
-            });
-        }
-
-        // Mettre à jour le filtre de catégories
-        function updateCategoryFilter() {
-            const select = document.getElementById('categoryFilter');
-            const currentValue = select.value;
-            select.innerHTML = '<option value="">Toutes les catégories</option>';
-            
-            const sortedCategories = Array.from(categories).sort();
-            sortedCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category;
-                select.appendChild(option);
-            });
-            
-            select.value = currentValue;
-        }
-
-        // Filtrer le tableau par catégorie
-        function filterTable() {
-            const category = document.getElementById('categoryFilter').value;
-            const rows = document.getElementById('tableBody').getElementsByTagName('tr');
-            
-            for (let i = 0; i < rows.length; i++) {
-                const categoryCell = rows[i].getElementsByTagName('td')[0];
-                if (!category || categoryCell.textContent === category) {
-                    rows[i].style.display = '';
-                } else {
-                    rows[i].style.display = 'none';
-                }
-            }
-        }
-
-        // Enregistrer un site (ajout ou modification)
-        function saveSite(e) {
-            e.preventDefault();
-            const index = parseInt(document.getElementById('editIndex').value);
-            const site = {
-                category: document.getElementById('category').value,
-                name: document.getElementById('name').value,
-                urlFr: document.getElementById('urlFr').value,
-                urlEn: document.getElementById('urlEn').value
-            };
-            
-            if (index === -1) {
-                // Ajout
-                sitesData.push(site);
-                showStatus('Site ajouté avec succès!', 'success');
-            } else {
-                // Modification
-                sitesData[index] = site;
-                showStatus('Site modifié avec succès!', 'success');
-            }
-            
-            categories.add(site.category);
-            updateTable();
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        // Supprimer un site
-        function deleteSite(index) {
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce site?')) {
-                sitesData.splice(index, 1);
-                updateTable();
-                showStatus('Site supprimé avec succès!', 'success');
-            }
-        }
-
-        // Importer des données JSON
-        function processImport() {
-            try {
-                const jsonText = document.getElementById('jsonInput').value;
-                const jsonData = JSON.parse(jsonText);
-                
-                // Traiter les données importées
-                processJsonData(jsonData);
-                
-                document.getElementById('importModal').style.display = 'none';
-                showStatus('Données importées avec succès!', 'success');
-            } catch (error) {
-                showStatus('Erreur lors de l\'import: ' + error.message, 'error');
-            }
-        }
-
-        // Exporter en JSON et enregistrer dans le fichier spécifié
-        async function exportToJson() {
-            const result = {};
-            
-            // Regrouper par catégorie
-            sitesData.forEach(site => {
-                if (!result[site.category]) {
-                    result[site.category] = [];
-                }
-                
-                const newSite = {
-                    name: site.name
-                };
-                
-                // Gérer les URLs
-                if (site.urlFr === site.urlEn) {
-                    newSite.url = site.urlFr;
-                } else {
-                    newSite.urls = {
-                        fr: site.urlFr,
-                        en: site.urlEn
-                    };
-                }
-                
-                result[site.category].push(newSite);
-            });
-            
-            // Créer le blob JSON
-            const jsonStr = JSON.stringify(result, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            
-            try {
-                // Utiliser l'API File System Access si disponible (navigateurs modernes)
-                if ('showSaveFilePicker' in window) {
-                    showStatus('Enregistrement du fichier...', 'loading');
-                    
-                    const opts = {
-                        suggestedName: 'default-sites-generated.json',
-                        types: [{
-                            description: 'JSON Files',
-                            accept: {'application/json': ['.json']}
-                        }]
-                    };
-                    
-                    try {
-                        const handle = await window.showSaveFilePicker(opts);
-                        const writable = await handle.createWritable();
-                        await writable.write(blob);
-                        await writable.close();
-                        showStatus('Fichier enregistré dans ' + handle.name, 'success');
-                    } catch (err) {
-                        if (err.name !== 'AbortError') {
-                            throw err;
-                        }
-                        showStatus('Opération annulée par l\'utilisateur', 'error');
-                    }
-                } else {
-                    // Fallback pour les navigateurs qui ne supportent pas l'API File System Access
-                    downloadFile('default-sites-generated.json', jsonStr, 'application/json');
-                    showStatus('Fichier téléchargé: default-sites-generated.json', 'success');
-                }
-            } catch (error) {
-                console.error('Erreur lors de l\'enregistrement:', error);
-                showStatus('Erreur lors de l\'enregistrement du fichier. Téléchargement à la place.', 'error');
-                
-                // Télécharger en cas d'erreur
-                downloadFile('default-sites-generated.json', jsonStr, 'application/json');
-            }
-        }
-
-        // Exporter en CSV
-        function exportToCsv() {
-            let csv = 'Catégorie,Nom,URL_FR,URL_EN\n';
-            
-            sitesData.forEach(site => {
-                // Échapper les virgules et les guillemets
-                const category = escapeCsvField(site.category);
-                const name = escapeCsvField(site.name);
-                const urlFr = escapeCsvField(site.urlFr);
-                const urlEn = escapeCsvField(site.urlEn);
-                
-                csv += `${category},${name},${urlFr},${urlEn}\n`;
-            });
-            
-            downloadFile('sites.csv', csv, 'text/csv');
-            showStatus('Fichier CSV téléchargé', 'success');
-        }
-
-        // Échapper un champ CSV
-        function escapeCsvField(field) {
-            if (!field) return '';
-            // Si le champ contient des virgules, des guillemets ou des sauts de ligne, l'entourer de guillemets
-            if (field.indexOf(',') !== -1 || field.indexOf('"') !== -1 || field.indexOf('\n') !== -1) {
-                // Remplacer les guillemets par des doubles guillemets
-                return '"' + field.replace(/"/g, '""') + '"';
-            }
-            return field;
-        }
-
-        // Télécharger un fichier
-        function downloadFile(filename, content, type) {
-            const blob = new Blob([content], { type: type });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 0);
-        }
-
-        // Mettre à jour le tableau
-        function updateTable() {
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = '';
-            
-            // Trier les données par catégorie puis par nom
-            const sortedData = [...sitesData].sort((a, b) => {
-                if (a.category !== b.category) {
-                    return a.category.localeCompare(b.category);
-                }
-                return a.name.localeCompare(b.name);
-            });
-            
-            sortedData.forEach((site, index) => {
-                const row = document.createElement('tr');
-                
-                // Créer les cellules
-                const categoryCell = document.createElement('td');
-                categoryCell.textContent = site.category;
-                
-                const nameCell = document.createElement('td');
-                nameCell.textContent = site.name;
-                
-                const urlFrCell = document.createElement('td');
-                urlFrCell.textContent = site.urlFr;
-                
-                const urlEnCell = document.createElement('td');
-                urlEnCell.textContent = site.urlEn;
-                
-                const actionsCell = document.createElement('td');
-                actionsCell.className = 'actions-cell';
-                
-                // Bouton d'édition
-                const editButton = document.createElement('button');
-                editButton.className = 'action-btn edit-btn';
-                const editIcon = document.createElement('img');
-                editIcon.src = 'edit.png';
-                editIcon.alt = 'Éditer';
-                editButton.appendChild(editIcon);
-                editButton.addEventListener('click', () => showEditModal(index));
-                
-                // Bouton de suppression
-                const deleteButton = document.createElement('button');
-                deleteButton.className = 'action-btn delete-btn';
-                const deleteIcon = document.createElement('img');
-                deleteIcon.src = 'delete.png';
-                deleteIcon.alt = 'Supprimer';
-                deleteIcon.className = 'delete-icon';
-                deleteButton.appendChild(deleteIcon);
-                deleteButton.addEventListener('click', () => deleteSite(index));
-                
-                // Ajouter les boutons à la cellule d'actions
-                actionsCell.appendChild(editButton);
-                actionsCell.appendChild(deleteButton);
-                
-                // Ajouter les cellules à la ligne
-                row.appendChild(categoryCell);
-                row.appendChild(nameCell);
-                row.appendChild(urlFrCell);
-                row.appendChild(urlEnCell);
-                row.appendChild(actionsCell);
-                
-                // Ajouter la ligne au tableau
-                tableBody.appendChild(row);
-            });
-            
-            // Mettre à jour le filtre de catégories
-            updateCategoryFilter();
-            // Appliquer le filtre
-            filterTable();
-        }
-    </script>
+    <script src="editSites.js"></script>
 </body>
 </html>

@@ -382,6 +382,13 @@
     {
       "name": "Librairies Locales Québécoises",
       "url": "https://www.leslibraires.ca/catalogue?s=##ISBN##"
+    },
+    {
+      "name" : "Pret Numerique",
+      "urls": {
+        "fr": "https://montreal.pretnumerique.ca/resources?q=##QUERY##",
+        "en": "https://montreal.pretnumerique.ca/resources?l=en&q=##QUERY##"
+      }
     }
   ],
   "Logiciels": [

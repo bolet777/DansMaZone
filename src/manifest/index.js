@@ -94,7 +94,7 @@ const manifestInput = {
   ...(process.env.TARGET === 'firefox' && {
     browser_specific_settings: {
       gecko: {
-        id: 'ccosenza.dlab@gmail.com',
+        id: 'info@dansmazone.ca',
       },
     },
   }),

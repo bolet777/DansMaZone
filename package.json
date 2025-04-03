@@ -1,8 +1,8 @@
 {
   "name": "dansmazone",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Extension pour chercher sur Amazon et acheter localement.",
-  "author": "ccosenza.dlab@gmail.com",
+  "author": "Bolet <info@dansmazone.ca> (https://dAnsMAZONe.ca)",
   "license": "MIT",
   "type": "module",
   "scripts": {

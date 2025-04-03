@@ -1332,7 +1332,7 @@ function setupBugReporting() {
               <div id="copy-success" style="display: none; color: green; margin-top: 10px;">Informations copiées dans le presse-papier!</div>
           </div>
           <div class="contact-info">
-              <p>Veuillez envoyer ces informations à : <strong>ccosenza.dlab@gmail.com</strong></p>
+              <p>Veuillez envoyer ces informations à : <strong>info@dansmazone.ca</strong></p>
           </div>
       </div>
   `;

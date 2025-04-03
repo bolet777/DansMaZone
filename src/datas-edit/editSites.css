@@ -8,6 +8,11 @@
     --success-hover: #218838;
     --danger-color: #dc3545;
     --danger-hover: #c82333;
+    --warning-color: #ffc107;
+    --warning-hover: #e0a800;
+    --valid-color: #28a745;
+    --invalid-color: #dc3545;
+    --neutral-color: #6c757d;
     /* Taille de base pour faciliter les calculs relatifs */
     --base-size: 1rem; /* équivalent à 16px par défaut */
 }
@@ -111,10 +116,9 @@ tr:hover {
     background-color: var(--hover-color);
 }
 
-.add-btn {
+.add-btn, .test-btn {
     padding: 0.625rem 0.9375rem;
     cursor: pointer;
-    background-color: var(--success-color);
     color: white;
     border: none;
     border-radius: 0.25rem;
@@ -126,8 +130,22 @@ tr:hover {
     align-self: flex-end;
 }
 
+.add-btn {
+    background-color: var(--success-color);
+}
+
 .add-btn:hover {
     background-color: var(--success-hover);
+}
+
+.test-btn {
+    background-color: var(--warning-color);
+    color: var(--text-color);
+    margin-right: 0.625rem;
+}
+
+.test-btn:hover {
+    background-color: var(--warning-hover);
 }
 
 .action-btn {
@@ -157,6 +175,16 @@ button.edit-btn {
 
 button.edit-btn:hover {
     background-color: var(--secondary-color);
+}
+
+button.test-site-btn {
+    background-color: var(--warning-color);
+    border: 0.0625rem solid var(--border-color);
+    color: var(--text-color);
+}
+
+button.test-site-btn:hover {
+    background-color: var(--warning-hover);
 }
 
 button.edit-btn img, button.delete-btn img {
@@ -286,12 +314,171 @@ th:nth-child(4), td:nth-child(4) { /* Colonnes URL */
 }
 
 th:nth-child(5), td:nth-child(5) { /* Colonne Actions */
-    min-width: 6.25rem; /* 100px ÷ 16 = 6.25rem */
-    width: 6.25rem; /* 100px ÷ 16 = 6.25rem */
+    min-width: 7.5rem; /* 120px ÷ 16 = 7.5rem */
+    width: 7.5rem; /* 120px ÷ 16 = 7.5rem */
+}
+
+/* Styles pour les indicateurs de validation d'URL */
+.url-status {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    margin-left: 0.5rem;
+}
+
+.url-status.valid {
+    background-color: var(--valid-color);
+}
+
+.url-status.invalid {
+    background-color: var(--invalid-color);
+}
+
+.url-status.untested {
+    background-color: var(--neutral-color);
+}
+
+.url-status.loading {
+    border: 0.125rem solid rgba(0,0,0,.2);
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+/* Modal de configuration des tests */
+#testConfigModal .form-group {
+    margin-bottom: 1rem;
+}
+
+.test-config-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.test-options {
+    margin-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.test-options h3 {
+    margin-top: 0;
+}
+
+.test-progress {
+    margin-top: 1rem;
+    display: none;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 1.25rem;
+    background-color: var(--secondary-color);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--primary-color);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+}
+
+.form-actions button {
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.primary-btn:hover {
+    background-color: var(--hover-color);
+}
+
+.secondary-btn {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.secondary-btn:hover {
+    background-color: #e0e0e0;
+}
+
+#stopTests {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin-top: 0.5rem;
+    cursor: pointer;
+}
+
+#stopTests:hover {
+    background-color: var(--danger-hover);
 }
 
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+/* Tooltip pour les statuts d'URL */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 12rem;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.75rem;
+}
+
+.tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -0.3125rem;
+    border-width: 0.3125rem;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
 }
 
 /* Media queries pour la responsivité */
@@ -304,7 +491,7 @@ th:nth-child(5), td:nth-child(5) { /* Colonne Actions */
         width: 100%;
     }
     
-    .add-btn {
+    .add-btn, .test-btn {
         width: 100%;
         margin-top: 0.625rem;
     }
@@ -312,6 +499,10 @@ th:nth-child(5), td:nth-child(5) { /* Colonne Actions */
     th, td {
         padding: 0.375rem; /* 6px ÷ 16 = 0.375rem */
         font-size: 0.875rem; /* 14px ÷ 16 = 0.875rem */
+    }
+    
+    .test-config-form {
+        grid-template-columns: 1fr;
     }
 }
 

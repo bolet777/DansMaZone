@@ -2,10 +2,7 @@
   "Animalerie": [
     {
       "name": "Chico",
-      "urls": {
-        "fr": "https://www.chicooooo.ca/?post_type=product&s=##QUERY##",
-        "en": "https://www.chico.ca/?post_type=product&s=##QUERY##"
-      }
+      "url": "https://www.chico.ca/?post_type=product&s=##QUERY##"
     },
     {
       "name": "Mondou",
@@ -147,31 +144,129 @@
   "Chaussures": [
     {
       "name": "Aldo",
-      "url": "https://www.aldoshoes.com/ca/fr/search?q=##QUERY##"
+      "url": "https://www.aldoshoes.com/ca/fr/search?q=##QUERY##",
+      "validation": {
+        "en": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642572652,
+          "error": null
+        },
+        "fr": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642572657,
+          "error": null
+        }
+      }
     },
     {
       "name": "Anamaria Dessin",
-      "url": "https://anamariedessin.ca/fr/search?q=##QUERY##"
+      "url": "https://anamariedessin.ca/fr/search?q=##QUERY##",
+      "validation": {
+        "fr": {
+          "status": "valid",
+          "code": "IFRAME_LOADED",
+          "timestamp": 1743642572673,
+          "error": null
+        },
+        "en": {
+          "status": "valid",
+          "code": "IFRAME_LOADED",
+          "timestamp": 1743642574222,
+          "error": null
+        }
+      }
     },
     {
       "name": "Browns",
-      "url": "https://www.brownsshoes.com/fr/search?q=##QUERY##"
+      "url": "https://www.brownsshoes.com/fr/search?q=##QUERY##",
+      "validation": {
+        "en": {
+          "status": "valid",
+          "code": "RESOURCE_FOUND",
+          "timestamp": 1743642574339,
+          "error": null
+        },
+        "fr": {
+          "status": "valid",
+          "code": "RESOURCE_FOUND",
+          "timestamp": 1743642574345,
+          "error": null
+        }
+      }
     },
     {
       "name": "La Canadienne",
-      "url": "https://lacanadienneshoes.com/fr/pages/search-results?q=##QUERY##"
+      "url": "https://lacanadienneshoes.com/fr/pages/search-results?q=##QUERY##",
+      "validation": {
+        "fr": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642574453,
+          "error": null
+        },
+        "en": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642574794,
+          "error": null
+        }
+      }
     },
     {
       "name": "Globo Chaussures",
-      "url": "https://www.globoshoes.com/ca/fr/search?q=##QUERY##"
+      "url": "https://www.globoshoes.com/ca/fr/search?q=##QUERY##",
+      "validation": {
+        "fr": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642574800,
+          "error": null
+        },
+        "en": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642574924,
+          "error": null
+        }
+      }
     },
     {
       "name": "L'Intervalle",
-      "url": "https://lintervalleshoes.com/fr/search?q=##QUERY##"
+      "url": "https://lintervalleshoes.com/fr/search?q=##QUERY##",
+      "validation": {
+        "en": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642575594,
+          "error": null
+        },
+        "fr": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642575677,
+          "error": null
+        }
+      }
     },
     {
       "name": "Maguire",
-      "url": "https://maguireshoes.com/search?type=product&q=##QUERY##"
+      "url": "https://maguireshoes.com/search?type=product&q=##QUERY##",
+      "validation": {
+        "fr": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642575160,
+          "error": null
+        },
+        "en": {
+          "status": "valid",
+          "code": "FETCH_SUCCESS",
+          "timestamp": 1743642575677,
+          "error": null
+        }
+      }
     }
   ],
   "Cuisine": [

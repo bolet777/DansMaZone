@@ -20,7 +20,7 @@ function processManifest(manifest, browser) {
   
   if (browser === 'firefox') {
     processed.browser_specific_settings = {
-      gecko: { id: 'ccosenza.dlab@gmail.com' }
+      gecko: { id: 'info@dansmazone.ca.com' }
     };
   }
   
