@@ -869,18 +869,19 @@ function processUrlQueue() {
         return;
     }
     
+    // Vérifier si tous les tests sont terminés
+    if (currentTests.completed >= currentTests.total && currentTests.concurrent === 0) {
+        currentTests.running = false;
+        showStatus(`Tests terminés: ${currentTests.completed}/${currentTests.total} URLs testées`, 'success');
+        updateTable();
+        return;
+    }
+    
     // Traiter jusqu'à maxConcurrent URLs en même temps
     while (currentTests.concurrent < currentTests.maxConcurrent && currentTests.queue.length > 0) {
         const testItem = currentTests.queue.shift();
         testUrl(testItem);
         currentTests.concurrent++;
-    }
-    
-    // Si la queue est vide et qu'il n'y a plus de tests en cours, terminer le processus
-    if (currentTests.queue.length === 0 && currentTests.concurrent === 0) {
-        currentTests.running = false;
-        showStatus(`Tests terminés: ${currentTests.total} URLs testées`, 'success');
-        updateTable(); // Rafraîchir l'affichage des données
     }
 }
 

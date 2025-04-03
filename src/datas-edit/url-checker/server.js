@@ -49,27 +49,29 @@ app.post('/check-url', async (req, res) => {
 
 // Route pour tester un lot d'URLs
 app.post('/check-urls-batch', async (req, res) => {
-  try {
-    const { urls, timeout, concurrency = 5 } = req.body;
-    
-    if (!urls || !Array.isArray(urls)) {
-      return res.status(400).json({ 
-        error: 'URLs array is required' 
+    try {
+      const { urls, timeout, concurrency = 5 } = req.body;
+      
+      if (!urls || !Array.isArray(urls)) {
+        return res.status(400).json({ 
+          error: 'URLs array is required' 
+        });
+      }
+  
+      console.log(`Testing ${urls.length} URLs in batch mode`);
+      // Vérifier que ce nombre correspond bien au total attendu (FR + EN pour chaque site)
+      
+      const results = await urlValidator.checkUrlsBatch(urls, timeout, concurrency);
+      
+      res.json(results);
+    } catch (error) {
+      console.error('Error checking URLs batch:', error);
+      res.status(500).json({ 
+        status: 'error', 
+        error: error.message || 'Unknown error occurred' 
       });
     }
-
-    console.log(`Testing ${urls.length} URLs in batch mode`);
-    const results = await urlValidator.checkUrlsBatch(urls, timeout, concurrency);
-    
-    res.json(results);
-  } catch (error) {
-    console.error('Error checking URLs batch:', error);
-    res.status(500).json({ 
-      status: 'error', 
-      error: error.message || 'Unknown error occurred' 
-    });
-  }
-});
+  });
 
 // Route pour charger le fichier default-sites.json 
 app.get('/load-default-sites', (req, res) => {
