@@ -193,7 +193,18 @@ function showAddModal() {
 
 // Afficher la modale d'édition
 function showEditModal(index) {
+    console.log(`showEditModal appelé avec index: ${index}`);
+    
+    // Vérifier que l'index est valide
+    if (index < 0 || index >= sitesData.length) {
+        console.error(`Index invalide: ${index}, max: ${sitesData.length-1}`);
+        showStatus('Erreur: Impossible de modifier cet enregistrement (index invalide)', 'error');
+        return;
+    }
+    
     const site = sitesData[index];
+    console.log(`Site à éditer: ${site.name}, catégorie: ${site.category}`);
+    
     document.getElementById('modalTitle').textContent = 'Modifier un site';
     document.getElementById('editIndex').value = index;
     document.getElementById('category').value = site.category;
@@ -268,18 +279,24 @@ function updateCategoryFilter() {
     select.value = currentValue;
 }
 
-// Filtrer le tableau par catégorie
-// Filtrer le tableau par catégorie
+// Filtrer le tableau par catégorie et statut
 function filterTable() {
     const category = document.getElementById('categoryFilter').value;
     const status = document.getElementById('statusFilter').value;
     const rows = document.getElementById('tableBody').getElementsByTagName('tr');
     
+    console.log(`Filtrage: catégorie=${category}, statut=${status}, ${rows.length} lignes au total`);
+    
     for (let i = 0; i < rows.length; i++) {
         const categoryCell = rows[i].getElementsByTagName('td')[0];
-        const siteIndex = parseInt(rows[i].dataset.siteIndex);
-        const site = sitesData[siteIndex];
+        const realIndex = parseInt(rows[i].dataset.realIndex);
         
+        if (isNaN(realIndex) || realIndex < 0 || realIndex >= sitesData.length) {
+            console.error(`Index invalide dans dataset.realIndex: ${rows[i].dataset.realIndex}`);
+            continue;
+        }
+        
+        const site = sitesData[realIndex];
         let showRow = true;
         
         // Filtre par catégorie
@@ -305,6 +322,17 @@ function filterTable() {
         }
         
         rows[i].style.display = showRow ? '' : 'none';
+        
+        if (showRow) {
+            // S'assurer que les indices dans les boutons sont corrects même après filtrage
+            const buttons = rows[i].querySelectorAll('button[data-real-index]');
+            buttons.forEach(button => {
+                if (parseInt(button.dataset.realIndex) !== realIndex) {
+                    console.warn(`Correction d'index de bouton: ${button.dataset.realIndex} -> ${realIndex}`);
+                    button.dataset.realIndex = realIndex;
+                }
+            });
+        }
     }
 }
 
@@ -341,10 +369,20 @@ function saveSite(e) {
 
 // Supprimer un site
 function deleteSite(index) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce site?')) {
+    console.log(`Tentative de suppression du site à l'index ${index}: ${sitesData[index]?.name || 'Index invalide'}`);
+    
+    // Vérifier que l'index est valide
+    if (index < 0 || index >= sitesData.length) {
+        console.error(`Index invalide pour la suppression: ${index}, max: ${sitesData.length-1}`);
+        showStatus('Erreur: Impossible de supprimer cet enregistrement (index invalide)', 'error');
+        return;
+    }
+    
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le site "${sitesData[index].name}"?`)) {
+        const siteName = sitesData[index].name;
         sitesData.splice(index, 1);
         updateTable();
-        showStatus('Site supprimé avec succès!', 'success');
+        showStatus(`Site "${siteName}" supprimé avec succès!`, 'success');
     }
 }
 
@@ -526,7 +564,18 @@ function updateTable() {
         return a.name.localeCompare(b.name);
     });
     
-    sortedData.forEach((site, index) => {
+    // Créer un mappage entre les indices triés et les indices d'origine
+    const originalIndices = sortedData.map((site, sortedIndex) => {
+        // Trouver l'index original de ce site dans sitesData
+        return sitesData.findIndex(s => s === site);
+    });
+    
+    sortedData.forEach((site, displayIndex) => {
+        // Récupérer l'index RÉEL dans sitesData
+        const realIndex = originalIndices[displayIndex];
+        
+        console.log(`Création ligne: ${site.name}, displayIndex: ${displayIndex}, realIndex: ${realIndex}`);
+        
         const row = document.createElement('tr');
         
         // Créer les cellules
@@ -562,47 +611,54 @@ function updateTable() {
         testButton.className = 'action-btn test-site-btn';
         testButton.title = 'Tester';
         testButton.textContent = '🔍';
+        testButton.dataset.realIndex = realIndex; // Stocker l'index réel directement dans le bouton
         testButton.addEventListener('click', (e) => {
-            // Empêcher la propagation de l'événement
             e.stopPropagation();
+            const siteIndex = parseInt(e.currentTarget.dataset.realIndex);
+            const siteToTest = sitesData[siteIndex];
             
-            // Si des tests sont déjà en cours, les arrêter
             if (currentTests.running) {
                 currentTests.stop = true;
-                // Attendre un court instant pour s'assurer que les tests précédents sont arrêtés
                 setTimeout(() => {
-                    startTestForSite(index, site);
+                    startTestForSite(siteIndex, siteToTest);
                 }, 200);
             } else {
-                startTestForSite(index, site);
+                startTestForSite(siteIndex, siteToTest);
             }
         });
         
         // Bouton d'édition
         const editButton = document.createElement('button');
         editButton.className = 'action-btn edit-btn';
+        editButton.dataset.realIndex = realIndex; // Stocker l'index réel directement dans le bouton
+        
         const editIcon = document.createElement('img');
         editIcon.src = 'edit.png';
         editIcon.alt = 'Éditer';
         editButton.appendChild(editIcon);
-        // Utiliser une IIFE pour capturer l'index actuel
-        ((currentSiteIndex) => {
-            editButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // Empêcher la propagation de l'événement
-                console.log(`Édition du site: ${sitesData[currentSiteIndex].name} (index: ${currentSiteIndex})`);
-                showEditModal(currentSiteIndex);
-            });
-        })(index);
+        
+        editButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const siteIndex = parseInt(e.currentTarget.dataset.realIndex);
+            console.log(`Clic sur édition pour ${site.name}, index réel: ${siteIndex}`);
+            showEditModal(siteIndex);
+        });
         
         // Bouton de suppression
         const deleteButton = document.createElement('button');
         deleteButton.className = 'action-btn delete-btn';
+        deleteButton.dataset.realIndex = realIndex; // Stocker l'index réel directement dans le bouton
+        
         const deleteIcon = document.createElement('img');
         deleteIcon.src = 'delete.png';
         deleteIcon.alt = 'Supprimer';
         deleteIcon.className = 'delete-icon';
         deleteButton.appendChild(deleteIcon);
-        deleteButton.addEventListener('click', () => deleteSite(index));
+        
+        deleteButton.addEventListener('click', (e) => {
+            const siteIndex = parseInt(e.currentTarget.dataset.realIndex);
+            deleteSite(siteIndex);
+        });
         
         // Ajouter les boutons à la cellule d'actions
         actionsCell.appendChild(testButton);
@@ -616,8 +672,10 @@ function updateTable() {
         row.appendChild(urlEnCell);
         row.appendChild(actionsCell);
         
-        // Ajouter les données du site à l'élément pour faciliter l'accès
-        row.dataset.siteIndex = index;
+        // Stocker les données directement dans la ligne
+        row.dataset.displayIndex = displayIndex;
+        row.dataset.realIndex = realIndex;
+        row.dataset.siteName = site.name;
         
         // Ajouter la ligne au tableau
         tableBody.appendChild(row);
@@ -631,6 +689,23 @@ function updateTable() {
 
 // Fonction auxiliaire pour démarrer les tests pour un site spécifique
 function startTestForSite(index, site) {
+    // Vérifier que l'index est valide
+    if (index < 0 || index >= sitesData.length) {
+        console.error(`Index invalide pour tester: ${index}, max: ${sitesData.length-1}`);
+        showStatus('Erreur: Impossible de tester cet enregistrement (index invalide)', 'error');
+        return;
+    }
+    
+    // Vérifier que le site est défini
+    if (!site) {
+        site = sitesData[index];
+        if (!site) {
+            console.error(`Site non défini pour l'index ${index}`);
+            showStatus('Erreur: Site non trouvé', 'error');
+            return;
+        }
+    }
+    
     // S'assurer que les tests précédents sont arrêtés
     currentTests.stop = true;
     
@@ -654,17 +729,25 @@ function startTestForSite(index, site) {
         currentTests.checkContent = false;
         currentTests.followRedirects = true;
         
-        // Ajouter les URLs du site aux tests
-        if (site.urlFr) {
-            currentTests.queue.push({ siteIndex: index, lang: 'fr', url: site.urlFr });
-            currentTests.total++;
-            console.log(`URL FR ajoutée à la queue: ${site.urlFr}`);
+        // Double vérification que le site est toujours valide
+        const currentSite = sitesData[index];
+        if (!currentSite) {
+            console.error(`Site disparu pour l'index ${index}`);
+            showStatus('Erreur: Site non trouvé', 'error');
+            return;
         }
         
-        if (site.urlEn) {
-            currentTests.queue.push({ siteIndex: index, lang: 'en', url: site.urlEn });
+        // Ajouter les URLs du site aux tests
+        if (currentSite.urlFr) {
+            currentTests.queue.push({ siteIndex: index, lang: 'fr', url: currentSite.urlFr });
             currentTests.total++;
-            console.log(`URL EN ajoutée à la queue: ${site.urlEn}`);
+            console.log(`URL FR ajoutée à la queue: ${currentSite.urlFr}`);
+        }
+        
+        if (currentSite.urlEn) {
+            currentTests.queue.push({ siteIndex: index, lang: 'en', url: currentSite.urlEn });
+            currentTests.total++;
+            console.log(`URL EN ajoutée à la queue: ${currentSite.urlEn}`);
         }
         
         if (currentTests.total === 0) {
@@ -673,7 +756,7 @@ function startTestForSite(index, site) {
         }
         
         // Afficher un message de statut
-        showStatus(`Test des URLs pour ${site.name}...`, 'loading');
+        showStatus(`Test des URLs pour ${currentSite.name}...`, 'loading');
         
         // Lancer les tests
         currentTests.running = true;
