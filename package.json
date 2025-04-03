@@ -20,7 +20,9 @@
     "build": "npm-run-all clean build:chrome build:firefox build:edge",
     "build:chrome": "cross-env NODE_ENV=production TARGET=chrome webpack",
     "build:firefox": "cross-env NODE_ENV=production TARGET=firefox webpack",
-    "build:edge": "cross-env NODE_ENV=production TARGET=edge webpack"
+    "build:edge": "cross-env NODE_ENV=production TARGET=edge webpack",
+    "edit-sites": "cd src/datas-edit/url-checker && npm start",
+    "edit-sites:install": "cd src/datas-edit/url-checker && npm install"
   },
   "browserslist": [
     "last 2 Chrome versions",

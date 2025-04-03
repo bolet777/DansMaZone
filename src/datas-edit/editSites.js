@@ -47,49 +47,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Charger le fichier JSON par défaut
 async function loadDefaultJsonFile() {
-    // Créer un bouton temporaire pour ouvrir le sélecteur de fichiers
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    
-    // Promesse pour attendre la sélection du fichier
-    const filePromise = new Promise((resolve, reject) => {
-        input.onchange = e => {
-            if (e.target.files.length > 0) {
-                resolve(e.target.files[0]);
-            } else {
-                reject(new Error("Aucun fichier sélectionné"));
-            }
-        };
-        
-        // Si l'utilisateur annule, gérer ce cas
-        input.oncancel = () => reject(new Error("Sélection annulée"));
-    });
-    
-    // Déclencher la boîte de dialogue de sélection de fichier
-    input.click();
-    
     try {
-        showStatus('Sélectionnez le fichier JSON default-sites.json...', 'loading');
-        const file = await filePromise;
+        showStatus('Chargement des sites par défaut...', 'loading');
         
-        // Lire le contenu du fichier
-        const fileContent = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = e => resolve(e.target.result);
-            reader.onerror = () => reject(new Error("Erreur lors de la lecture du fichier"));
-            reader.readAsText(file);
-        });
+        // Utiliser le serveur local pour charger le fichier
+        const response = await fetch('http://localhost:3000/load-default-sites');
         
-        // Parser le JSON
-        const jsonData = JSON.parse(fileContent);
+        if (!response.ok) {
+            throw new Error(`Erreur serveur: ${response.status} ${response.statusText}`);
+        }
+        
+        const jsonData = await response.json();
         processJsonData(jsonData);
-        showStatus(`Fichier ${file.name} chargé avec succès!`, 'success');
+        showStatus('Sites chargés avec succès!', 'success');
     } catch (error) {
         console.error('Erreur lors du chargement du fichier JSON:', error);
         showStatus('Erreur: ' + error.message, 'error');
-        // Initialiser avec un tableau vide en cas d'erreur
-        updateTable();
+        
+        // Essayer le chargement manuel si le serveur n'est pas disponible
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        
+        input.onchange = async (e) => {
+            if (e.target.files.length > 0) {
+                try {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = (event) => {
+                        try {
+                            const jsonData = JSON.parse(event.target.result);
+                            processJsonData(jsonData);
+                            showStatus(`Fichier ${file.name} chargé avec succès!`, 'success');
+                        } catch (parseError) {
+                            showStatus('Erreur de parsing JSON: ' + parseError.message, 'error');
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                } catch (fileError) {
+                    showStatus('Erreur de lecture: ' + fileError.message, 'error');
+                }
+            }
+        };
+        
+        input.click();
     }
 }
 
@@ -349,7 +352,7 @@ async function exportToJson() {
             };
         }
         
-        // IMPORTANT: Toujours inclure les données de validation si elles existent
+        // Inclure les données de validation si elles existent
         if (site.validation) {
             // Utiliser une copie profonde pour éviter de modifier l'original
             newSite.validation = {};
@@ -387,45 +390,35 @@ async function exportToJson() {
         }
     }
     
-    // Créer le blob JSON
-    const jsonStr = JSON.stringify(result, null, 2);
-    const blob = new Blob([jsonStr], { type: 'application/json' });
-    
     try {
-        // Utiliser l'API File System Access si disponible (navigateurs modernes)
-        if ('showSaveFilePicker' in window) {
-            showStatus('Enregistrement du fichier...', 'loading');
-            
-            const opts = {
-                suggestedName: 'default-sites-generated.json',
-                types: [{
-                    description: 'JSON Files',
-                    accept: {'application/json': ['.json']}
-                }]
-            };
-            
-            try {
-                const handle = await window.showSaveFilePicker(opts);
-                const writable = await handle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-                showStatus(`Fichier enregistré dans ${handle.name} (${validationCount} validations incluses)`, 'success');
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    throw err;
-                }
-                showStatus('Opération annulée par l\'utilisateur', 'error');
-            }
+        showStatus('Enregistrement du fichier...', 'loading');
+        
+        // Utiliser le serveur local pour sauvegarder le fichier
+        const response = await fetch('http://localhost:3000/save-sites', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data: result })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Erreur serveur: ${response.status} ${response.statusText}`);
+        }
+        
+        const saveResult = await response.json();
+        
+        if (saveResult.success) {
+            showStatus(`Fichier enregistré avec succès (${validationCount} validations incluses)`, 'success');
         } else {
-            // Fallback pour les navigateurs qui ne supportent pas l'API File System Access
-            downloadFile('default-sites-generated.json', jsonStr, 'application/json');
-            showStatus(`Fichier téléchargé: default-sites-generated.json (${validationCount} validations incluses)`, 'success');
+            throw new Error('Échec de l\'enregistrement');
         }
     } catch (error) {
         console.error('Erreur lors de l\'enregistrement:', error);
-        showStatus('Erreur lors de l\'enregistrement du fichier. Téléchargement à la place.', 'error');
+        showStatus('Erreur lors de l\'enregistrement du fichier: ' + error.message, 'error');
         
-        // Télécharger en cas d'erreur
+        // Fallback: télécharger en cas d'erreur
+        const jsonStr = JSON.stringify(result, null, 2);
         downloadFile('default-sites-generated.json', jsonStr, 'application/json');
     }
 }
@@ -957,30 +950,6 @@ function testUrl(testItem) {
         }
     }
     
-    // Remplacer les placeholders dans l'URL
-    const testUrl = url
-        .replace('##QUERY##', 'test')
-        .replace('##ISBN##', '9780446310789');
-    
-    // Vérifier si l'URL est valide
-    let urlObj;
-    try {
-        urlObj = new URL(testUrl);
-    } catch (e) {
-        // URL invalide, on la marque comme telle immédiatement
-        handleTestResult(siteIndex, lang, {
-            status: 'invalid',
-            code: 'INVALID_URL',
-            timestamp: Date.now(),
-            error: "URL mal formée: " + e.message
-        });
-        
-        updateTestProgress();
-        currentTests.concurrent--;
-        processUrlQueue();
-        return;
-    }
-    
     // Si l'URL est vide
     if (!url.trim()) {
         handleTestResult(siteIndex, lang, {
@@ -996,172 +965,49 @@ function testUrl(testItem) {
         return;
     }
     
-    // Variables de contrôle
-    let isCompleted = false;
-    let urlIsValid = false;
-    let dnsErrorDetected = false;
-    let testTimeoutId = null;
-    let domainErrorHandler = null;
-    
-    // Nettoyer les éléments créés
-    function cleanup() {
-        // Supprimer tous les timeouts
-        clearTimeout(testTimeoutId);
-        clearTimeout(quickTimeoutId);
+    // Tester l'URL via le serveur Node.js
+    fetch('http://localhost:3000/check-url', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            url: url,
+            timeout: currentTests.timeout
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Erreur serveur: ${response.status} ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        // Adapter les résultats du serveur au format attendu par l'interface
+        handleTestResult(siteIndex, lang, {
+            status: result.status,
+            code: result.code,
+            timestamp: result.timestamp,
+            error: result.error
+        });
+    })
+    .catch(error => {
+        console.error(`Erreur lors du test de l'URL ${url}:`, error);
         
-        try {
-            // Supprimer l'image du favicon
-            if (faviconImg && faviconImg.parentNode) {
-                faviconImg.parentNode.removeChild(faviconImg);
-            }
-            
-            // Supprimer l'image aléatoire
-            if (randomImg && randomImg.parentNode) {
-                randomImg.parentNode.removeChild(randomImg);
-            }
-            
-            // Supprimer le gestionnaire d'erreurs
-            if (domainErrorHandler) {
-                window.removeEventListener('error', domainErrorHandler, true);
-            }
-        } catch (e) {}
-    }
-    
-    // Fonction pour marquer l'URL comme valide
-    function markAsValid(code) {
-        if (!isCompleted) {
-            isCompleted = true;
-            cleanup();
-            
-            handleTestResult(siteIndex, lang, {
-                status: 'valid',
-                code: code || 'URL_VALID',
-                timestamp: Date.now(),
-                error: null
-            });
-        }
-    }
-    
-    // Fonction pour marquer l'URL comme invalide
-    function markAsInvalid(code, error) {
-        if (!isCompleted) {
-            isCompleted = true;
-            cleanup();
-            
-            handleTestResult(siteIndex, lang, {
-                status: 'invalid',
-                code: code || 'URL_INVALID',
-                timestamp: Date.now(),
-                error: error || "URL invalide"
-            });
-        }
-    }
-    
-    // Méthode 1: Test du favicon
-    // Cette méthode est très simple et fonctionne pour la plupart des sites
-    // Si le favicon charge, le domaine est certainement valide
-    const faviconImg = new Image();
-    faviconImg.style.display = 'none';
-    document.body.appendChild(faviconImg);
-    
-    faviconImg.onload = function() {
-        urlIsValid = true;
-        markAsValid('FAVICON_LOADED');
-    };
-    
-    faviconImg.onerror = function(e) {
-        // Si le favicon échoue, on essaie d'autres méthodes
-        // Ne rien faire ici, le timeout s'en chargera
-    };
-    
-    // Tester le favicon (en ajoutant un timestamp pour éviter le cache)
-    const domain = urlObj.hostname;
-    faviconImg.src = `https://${domain}/favicon.ico?_=${Date.now()}`;
-    
-    // Méthode 2: Test simple avec fetch en no-cors (simplement pour voir si le domaine répond)
-    fetch(`https://${domain}`, { 
-        method: 'HEAD',
-        mode: 'no-cors',  // Crucial pour éviter les erreurs CORS
-        cache: 'no-store'
+        // En cas d'erreur, marquer comme invalide
+        handleTestResult(siteIndex, lang, {
+            status: 'invalid',
+            code: 'TEST_ERROR',
+            timestamp: Date.now(),
+            error: `Erreur de test: ${error.message}`
+        });
     })
-    .then(() => {
-        // Si on arrive ici, le domaine existe certainement
-        urlIsValid = true;
-        markAsValid('FETCH_SUCCESS');
-    })
-    .catch(() => {
-        // Une erreur fetch n'est pas conclusive (peut être CORS)
+    .finally(() => {
+        // Mettre à jour la progression et continuer à traiter la queue
+        updateTestProgress();
+        currentTests.concurrent--;
+        processUrlQueue();
     });
-    
-    // Test spécifique pour les domaines inexistants
-    // Très simple: on crée une nouvelle image avec un chemin random sur le domaine
-    // Si elle déclenche une erreur DNS, le domaine n'existe probablement pas
-    const randomImg = new Image();
-    randomImg.style.display = 'none';
-    document.body.appendChild(randomImg);
-    
-    // On ajoute un gestionnaire qui détecte spécifiquement les erreurs DNS
-    domainErrorHandler = function(e) {
-        // Vérifier si l'erreur est liée à notre image ou au domaine que nous testons
-        if ((e.target === randomImg || 
-            (e.filename && e.filename.includes(domain))) && 
-            (e.message && (
-                e.message.includes('DNS') || 
-                e.message.includes('ERR_NAME_NOT_RESOLVED') || 
-                e.message.includes('net::ERR_NAME_NOT_RESOLVED') ||
-                e.message.includes('ERR_NAME') ||
-                e.message.includes('hostname')
-            ))) {
-            
-            dnsErrorDetected = true;
-            
-            // Si nous détectons une erreur DNS, on peut marquer l'URL comme invalide immédiatement
-            // C'est le signal le plus fiable qu'un domaine n'existe pas
-            if (!isCompleted) {
-                markAsInvalid('DNS_ERROR_IMMEDIATE', "Le domaine n'existe pas (DNS error)");
-            }
-        }
-        
-        // Toujours supprimer l'erreur de la console
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-    };
-    
-    // Ajouter le gestionnaire d'erreurs
-    window.addEventListener('error', domainErrorHandler, true);
-    
-    // On essaie de charger un chemin random (très efficace pour détecter les domaines inexistants)
-    // Nous utilisons un chemin totalement aléatoire qui ne devrait exister sur aucun site
-    randomImg.src = `https://${domain}/doesnotexist-${Math.random()}.png?_=${Date.now()}`;
-    
-    // Définir un timeout court pour les erreurs DNS rapides
-    const quickTimeoutId = setTimeout(() => {
-        // Si nous avons déjà détecté une erreur DNS mais que le test n'est pas encore terminé,
-        // on peut conclure plus rapidement
-        if (dnsErrorDetected && !isCompleted) {
-            markAsInvalid('DNS_ERROR_QUICK', "Le domaine n'existe pas (DNS error)");
-        }
-    }, 1500); // 1.5 secondes pour les erreurs DNS rapides
-    
-    // Définir un timeout plus long pour tirer des conclusions définitives
-    testTimeoutId = setTimeout(() => {
-        // Nettoyer le timeout rapide
-        clearTimeout(quickTimeoutId);
-        
-        // Si l'URL a été marquée comme valide ou invalide, ne rien faire
-        if (isCompleted) return;
-        
-        // Si on a détecté une erreur DNS, le domaine n'existe probablement pas
-        if (dnsErrorDetected) {
-            markAsInvalid('DNS_ERROR', "Le domaine n'existe pas (DNS error)");
-        } 
-        // Sinon, on considère l'URL comme valide par défaut
-        // La plupart des domaines valides vont bloquer nos tests mais existent quand même
-        else {
-            markAsValid('TIMEOUT_ASSUMED_VALID');
-        }
-    }, 5000); // 5 secondes suffisent généralement pour un test complet
 }
 
 // Gérer le résultat d'un test d'URL

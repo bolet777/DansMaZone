@@ -1,4 +1,5 @@
 /node_modules
+/src/datas-edit/url-checker/node_modules
 /*.log
 /dist
 /dist-zip
