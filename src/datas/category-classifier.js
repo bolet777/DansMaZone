@@ -1,394 +1,406 @@
 import browser from 'webextension-polyfill';
 
-// Liste de mots-clés par catégorie - version bilingue
+// Liste de mots-clés par catégorie - version bilingue séparée par langue
 export const categoryKeywords = {
-  'Animalerie': [
-    // Français
-    'chat', 'chien', 'animal', 'animaux', 'nourriture', 'litière', 'croquettes', 'jouets', 'laisse',
-    'aquarium', 'poisson', 'oiseau', 'hamster', 'rongeur', 'terrarium', 'gamelle', 'collier', 'harnais',
-    'veterinaire', 'pet', 'cage', 'niche', 'panier', 'griffoir', 'animalerie', 'toilettage', 'brosse',
-    'antiparasitaire', 'vermifuge', 'clapier', 'volière', 'reptile', 'tortue', 'perroquet', 'perruche',
-    'canne à pêche', 'hameçon', 'carpe', 'vêtement pour chien', 'manteau chien', 'friandise', 'santé animale',
-    'pipette', 'puce', 'tique', 'vermifuge', 'soin dentaire', 'sac transport', 'coussin', 'grattoir',
-    'écuelle', 'ratelier', 'foin', 'paille', 'copeaux', 'sciure', 'arbre à chat', 'chatière',
-    'canne à pêche', 'caisse transport', 'muselière', 'longe', 'croquette', 'pâtée', 'complément alimentaire',
-    'accessoire aquarium', 'pompe', 'filtre', 'oxygénateur', 'chauffage', 'éclairage', 'thermomètre',
-    'sable aquarium', 'plante aquatique', 'décor aquarium', 'filet', 'épuisette', 'lapin', 'NAC', 'souris',
-    
-    // Anglais
-    'cat', 'dog', 'pet', 'pets', 'food', 'litter', 'kibble', 'toys', 'leash',
-    'aquarium', 'fish', 'bird', 'hamster', 'rodent', 'terrarium', 'bowl', 'collar', 'harness',
-    'veterinary', 'cage', 'kennel', 'bed', 'scratcher', 'pet store', 'grooming', 'brush',
-    'antiparasitic', 'dewormer', 'hutch', 'aviary', 'reptile', 'turtle', 'parrot', 'budgie',
-    'fishing rod', 'hook', 'carp', 'dog clothing', 'dog coat', 'treat', 'pet health',
-    'pipette', 'flea', 'tick', 'dental care', 'carrier bag', 'cushion', 'scratch post',
-    'feeding bowl', 'hay rack', 'hay', 'straw', 'wood shavings', 'sawdust', 'cat tree', 'cat flap',
-    'fishing pole', 'pet carrier', 'muzzle', 'lunge line', 'dry food', 'wet food', 'supplement',
-    'aquarium accessory', 'pump', 'filter', 'oxygenator', 'heater', 'lighting', 'thermometer',
-    'aquarium sand', 'aquatic plant', 'aquarium decoration', 'net', 'landing net', 'rabbit', 'exotic pet', 'mouse',
-    'ferret', 'guinea pig', 'gerbil', 'cat litter box', 'scratching post', 'pet feeder', 'automatic feeder'
-  ],
-
-  'Auto et Moto': [
-    // Français
-    'voiture', 'auto', 'automobile', 'moto', 'scooter', 'vehicule', 'pieces', 'accessoires',
-    'entretien', 'nettoyage', 'pneu', 'batterie', 'huile', 'moteur', 'phare', 'frein',
-    'autoradio', 'gps', 'casque', 'siege', 'enjoliveur', 'essuie-glace', 'outillage', 'carenage',
-    'carrosserie', 'embrayage', 'boite de vitesse', 'alternateur', 'démarreur', 'courroie', 'suspension',
-    'amortisseur', 'échappement', 'silencieux', 'pot catalytique', 'radiateur', 'liquide de refroidissement',
-    'liquide de frein', 'filtre à air', 'filtre à huile', 'filtre à carburant', 'filtre habitacle',
-    'bougie', 'durite', 'joint', 'culasse', 'cylindre', 'piston', 'segment', 'vilebrequin', 'soupape',
-    'turbo', 'injecteur', 'pompe à eau', 'pompe à carburant', 'pompe à huile', 'disque', 'plaquette',
-    'etrier', 'maitre-cylindre', 'roulement', 'cardan', 'transmission', 'cardans', 'soufflet',
-    'pare-brise', 'vitre', 'rétroviseur', 'antenne', 'capot', 'portière', 'aile', 'pare-choc',
-    'calandre', 'jante', 'valve', 'barre de toit', 'attelage', 'remorque', 'coffre de toit',
-    
-    // Anglais
-    'car', 'automotive', 'motorcycle', 'scooter', 'vehicle', 'parts', 'accessories',
-    'maintenance', 'cleaning', 'tire', 'battery', 'oil', 'engine', 'headlight', 'brake',
-    'stereo', 'gps', 'helmet', 'seat', 'hubcap', 'wiper', 'tools', 'fairing',
-    'body', 'clutch', 'gearbox', 'alternator', 'starter', 'belt', 'suspension',
-    'shock absorber', 'exhaust', 'muffler', 'catalytic converter', 'radiator', 'coolant',
-    'brake fluid', 'air filter', 'oil filter', 'fuel filter', 'cabin filter',
-    'spark plug', 'hose', 'gasket', 'cylinder head', 'cylinder', 'piston', 'piston ring', 'crankshaft', 'valve',
-    'turbocharger', 'injector', 'water pump', 'fuel pump', 'oil pump', 'disc', 'pad',
-    'caliper', 'master cylinder', 'bearing', 'drive shaft', 'transmission', 'CV joint', 'boot',
-    'windshield', 'window', 'mirror', 'antenna', 'hood', 'door', 'fender', 'bumper',
-    'grille', 'wheel rim', 'valve stem', 'roof rack', 'tow hitch', 'trailer', 'roof box',
-    'spark plug', 'timing belt', 'camshaft', 'fuel tank', 'handlebars', 'mudguard', 'taillight'
-  ],
-
-  'Bagages et Voyage': [
-    // Français
-    'valise', 'bagage', 'sac', 'voyage', 'trolley', 'cabine', 'soute', 'etiquette',
-    'passeport', 'trousse', 'accessoires', 'organiseur', 'adaptateur', 'oreiller',
-    'masque', 'bouchon', 'transport', 'roulette', 'polycarbonate', 'bandouliere',
-    'sac à dos', 'bagage à main', 'portedocuments', 'pochette', 'sacoche', 'mallette',
-    'sac de voyage', 'malle', 'coffre', 'cadenas', 'balance', 'bagagerie', 
-    'protection bagage', 'housse', 'pochette voyage', 'trousse toilette', 'confort voyage',
-    'accessoire voyage', 'chargeur universel', 'convertisseur', 'adaptateur secteur',
-    'prise internationale', 'guide voyage', 'carte voyage', 'location voiture', 'vol',
-    'hôtel', 'auberge', 'camping', 'randonnée', 'trek', 'backpack', 'gourde',
-    'thermos', 'compas', 'jumelles', 'boussole', 'GPS portable', 'sac étanche',
-    'poche secrète', 'anti-vol', 'RFID', 'protège-passeport', 'porte-monnaie',
-    'serviette microfibre', 'imperméable', 'poncho', 'parapluie', 'lunettes soleil', 'crème solaire',
-    
-    // Anglais
-    'suitcase', 'luggage', 'bag', 'travel', 'trolley', 'cabin', 'hold', 'tag',
-    'passport', 'kit', 'accessories', 'organizer', 'adapter', 'pillow',
-    'mask', 'plug', 'transport', 'wheels', 'polycarbonate', 'strap',
-    'backpack', 'carry-on', 'document holder', 'pouch', 'satchel', 'briefcase',
-    'duffel bag', 'trunk', 'chest', 'lock', 'scale', 'luggage set',
-    'luggage cover', 'protective cover', 'travel pouch', 'toiletry bag', 'travel comfort',
-    'travel accessory', 'universal charger', 'converter', 'power adapter',
-    'international plug', 'travel guide', 'travel map', 'car rental', 'flight',
-    'hotel', 'hostel', 'camping', 'hiking', 'trekking', 'backpacking', 'water bottle',
-    'thermos', 'binoculars', 'compass', 'portable GPS', 'waterproof bag',
-    'hidden pocket', 'anti-theft', 'RFID', 'passport holder', 'wallet',
-    'microfiber towel', 'raincoat', 'poncho', 'umbrella', 'sunglasses', 'sunscreen',
-    'luggage tag', 'packing cubes', 'compression bags', 'travel pillow', 'luggage strap'
-  ],
-
-  'Beauté et Parfum': [
-    // Français
-    'beaute', 'parfum', 'maquillage', 'soin', 'visage', 'creme', 'serum', 'lotion',
-    'vernis', 'rouge', 'levres', 'fond', 'teint', 'mascara', 'shampoing', 'cheveux',
-    'coloration', 'coiffure', 'accessoire', 'manucure', 'pedicure', 'epilateur',
-    'rasoir', 'aftershave', 'eau de toilette', 'deodorant', 'anti-rides', 'solaire',
-    'parfumerie', 'soin peau', 'hydratant', 'nettoyant', 'exfoliant', 'gommage',
-    'masque visage', 'tonique', 'contour yeux', 'anti-cerne', 'highlighter', 'blush',
-    'fard à paupières', 'eye-liner', 'crayon', 'lèvres', 'gloss', 'rouge à lèvres',
-    'baume', 'démaquillant', 'coton', 'pinceau maquillage', 'éponge', 'beautyblender',
-    'palette', 'correcteur', 'contouring', 'poudre', 'bronzer', 'illuminateur',
-    'anti-imperfection', 'anti-âge', 'hyaluronique', 'cellulite', 'fermeté', 'cosmétique',
-    'huile essentielle', 'modelage', 'peeling', 'spa', 'bien-être', 'massage',
-    'raser', 'mousse', 'gel', 'lait corporel', 'gant', 'éponge', 'bougie parfumée',
-    
-    // Anglais
-    'beauty', 'perfume', 'makeup', 'care', 'face', 'cream', 'serum', 'lotion',
-    'nail polish', 'lipstick', 'foundation', 'mascara', 'shampoo', 'hair',
-    'color', 'hairstyle', 'accessory', 'manicure', 'pedicure', 'epilator',
-    'razor', 'aftershave', 'cologne', 'deodorant', 'anti-wrinkle', 'sunscreen',
-    'perfumery', 'skincare', 'moisturizer', 'cleanser', 'exfoliator', 'scrub',
-    'face mask', 'toner', 'eye cream', 'concealer', 'highlighter', 'blush',
-    'eyeshadow', 'eyeliner', 'pencil', 'lips', 'lip gloss', 'lipstick',
-    'balm', 'makeup remover', 'cotton pad', 'makeup brush', 'sponge', 'beautyblender',
-    'palette', 'corrector', 'contouring', 'powder', 'bronzer', 'illuminator',
-    'blemish', 'anti-aging', 'hyaluronic', 'cellulite', 'firmness', 'cosmetics',
-    'essential oil', 'modeling', 'peeling', 'spa', 'wellness', 'massage',
-    'shaving', 'foam', 'gel', 'body milk', 'glove', 'sponge', 'scented candle',
-    'facial', 'primer', 'setting spray', 'brow gel', 'lash curler', 'nail file'
-  ],
-
-  'Bébés et Puériculture': [
-    // Français
-    'bebe', 'enfant', 'puericulture', 'couche', 'poussette', 'biberon', 'chaise', 'siege',
-    'auto', 'vetement', 'repas', 'allaitement', 'baignoire', 'lange', 'lingette', 'toise',
-    'doudou', 'parc', 'lit', 'jouet', 'eveil', 'securite', 'surveillance', 'tetine',
-    'poussette', 'porte-bebe', 'echarpe', 'sterilisateur', 'mouche-bebe',
-    'landau', 'berceau', 'couffin', 'transat', 'tapis d\'eveil', 'mobile', 'veilleuse',
-    'babyphone', 'thermometre', 'mouche-bebe', 'anneau dentition', 'bavoir', 'goupillon',
-    'trotteur', 'chauffe-biberon', 'tire-lait', 'coussin allaitement', 'matelas à langer',
-    'table à langer', 'pot', 'rehausseur', 'siège auto', 'cosy', 'nacelle', 'gigoteuse',
-    'pyjama', 'body', 'grenouillère', 'chancelière', 'ombrelle', 'protection soleil',
-    'moustiquaire', 'filet', 'barrière', 'tapis de bain', 'trousse toilette', 'thermomètre bain',
-    'sortie de bain', 'cape de bain', 'gant toilette', 'shampoing', 'savon', 'lait corporel',
-    'crème change', 'talc', 'coton-tige', 'coupe-ongle', 'brosse cheveux', 'peigne',
-    
-    // Anglais
-    'baby', 'child', 'childcare', 'diaper', 'stroller', 'bottle', 'chair', 'seat',
-    'auto', 'clothing', 'meal', 'breastfeeding', 'bathtub', 'cloth', 'wipe', 'measuring',
-    'plush', 'playpen', 'crib', 'toy', 'development', 'safety', 'monitor', 'pacifier',
-    'stroller', 'carrier', 'sling', 'sterilizer', 'nasal aspirator',
-    'pram', 'cradle', 'bassinet', 'bouncer', 'play mat', 'mobile', 'night light',
-    'baby monitor', 'thermometer', 'nasal aspirator', 'teething ring', 'bib', 'bottle brush',
-    'walker', 'bottle warmer', 'breast pump', 'nursing pillow', 'changing mat',
-    'changing table', 'potty', 'booster seat', 'car seat', 'infant carrier', 'carrycot', 'sleeping bag',
-    'pajamas', 'bodysuit', 'onesie', 'footmuff', 'parasol', 'sun protection',
-    'mosquito net', 'mesh', 'safety gate', 'bath mat', 'toiletry bag', 'bath thermometer',
-    'hooded towel', 'bath cape', 'washcloth', 'shampoo', 'soap', 'body lotion',
-    'diaper cream', 'talcum powder', 'cotton swab', 'nail clipper', 'hairbrush', 'comb',
-    'high chair', 'baby food', 'formula', 'sippy cup', 'teether', 'diaper pail'
-  ],
-
-  'Cuisine': [
-    // Français
-    'casserole', 'poele', 'ustensile', 'assiette', 'verre', 'couvert', 'robot',
-    'mixeur', 'blender', 'four', 'micro onde', 'cafetiere', 'bouilloire', 'plat',
-    'cuisine', 'culinaire', 'batterie', 'cocotte', 'marmite', 'passoire',
-    'cuiseur', 'autocuiseur', 'mijoteuse', 'crêpière', 'gaufrier', 'sauteuse',
-    'thermostat', 'induction', 'plaque', 'cuisson', 'vitrocéramique', 'gaz',
-    'barbecue', 'plancha', 'grill', 'raclette', 'fondue', 'pierrade', 'wok',
-    'couteau', 'économe', 'mandoline', 'hachoir', 'fouet', 'spatule', 'louche',
-    'écumoire', 'presse-agrumes', 'centrifugeuse', 'presse-ail', 'balance',
-    'doseur', 'minuteur', 'thermomètre', 'moule', 'ramequin', 'plaque pâtisserie',
-    'rouleau', 'emporte-pièce', 'poche à douille', 'spatule pâtisserie', 'pinceau',
-    'saladier', 'bol', 'cuillère bois', 'cuillère silicone', 'passoire', 'chinois',
-    'entonnoir', 'râpe', 'zesteur', 'vide-pomme', 'casse-noix', 'ouvre-boîte',
-    
-    // Anglais
-    'pot', 'pan', 'utensil', 'plate', 'glass', 'cutlery', 'robot',
-    'mixer', 'blender', 'oven', 'microwave', 'coffee maker', 'kettle', 'dish',
-    'kitchen', 'culinary', 'cookware', 'dutch oven', 'cooking pot', 'colander',
-    'cooker', 'pressure cooker', 'slow cooker', 'crepe maker', 'waffle maker', 'saute pan',
-    'thermostat', 'induction', 'hob', 'cooking', 'ceramic', 'gas',
-    'barbecue', 'griddle', 'grill', 'raclette', 'fondue', 'stone grill', 'wok',
-    'knife', 'peeler', 'mandoline', 'chopper', 'whisk', 'spatula', 'ladle',
-    'skimmer', 'citrus juicer', 'juicer', 'garlic press', 'scale',
-    'measuring cup', 'timer', 'thermometer', 'mold', 'ramekin', 'baking sheet',
-    'rolling pin', 'cookie cutter', 'piping bag', 'pastry spatula', 'brush',
-    'salad bowl', 'bowl', 'wooden spoon', 'silicone spoon', 'strainer', 'conical strainer',
-    'funnel', 'grater', 'zester', 'apple corer', 'nutcracker', 'can opener',
-    'cutting board', 'knife set', 'measuring spoons', 'baking dish', 'muffin tin'
-  ],
-
-  'Décoration': [
-    // Français
-    'decoration', 'deco', 'cadre', 'miroir', 'vase', 'bougie', 'horloge', 'tapis',
-    'coussin', 'rideau', 'store', 'sticker', 'poster', 'tableau', 'statue',
-    'photophore', 'paillasson', 'panneau', 'tenture', 'bibelot', 'suspension',
-    'lustre', 'applique', 'lampadaire', 'lampion', 'guirlande', 'ampoule',
-    'abat-jour', 'plafonnier', 'éclairage', 'ambiance', 'décor', 'intérieur',
-    'extérieur', 'jardin', 'terrasse', 'balcon', 'plante', 'artificielle',
-    'paravent', 'séparateur', 'cloison', 'étagère', 'bibliothèque', 'meuble',
-    'table', 'chaise', 'fauteuil', 'canapé', 'pouf', 'banc', 'commode',
-    'console', 'vitrine', 'buffet', 'patère', 'porte-manteau', 'luminaire',
-    'plaid', 'jeté de lit', 'nappe', 'chemin de table', 'set de table',
-    'bougeoir', 'chandelier', 'lanterne', 'mobile', 'carillon', 'porte-photo',
-    'papier peint', 'sticker mural', 'peinture décorative', 'fresque', 'murale',
-    
-    // Anglais
-    'decoration', 'decor', 'frame', 'mirror', 'vase', 'candle', 'clock', 'rug',
-    'cushion', 'curtain', 'blind', 'sticker', 'poster', 'painting', 'statue',
-    'candle holder', 'doormat', 'sign', 'tapestry', 'ornament', 'pendant',
-    'chandelier', 'sconce', 'floor lamp', 'lantern', 'garland', 'bulb',
-    'lampshade', 'ceiling light', 'lighting', 'ambiance', 'decor', 'interior',
-    'exterior', 'garden', 'terrace', 'balcony', 'plant', 'artificial',
-    'screen', 'separator', 'partition', 'shelf', 'bookcase', 'furniture',
-    'table', 'chair', 'armchair', 'sofa', 'pouf', 'bench', 'dresser',
-    'console', 'display cabinet', 'buffet', 'coat hook', 'coat rack', 'light fixture',
-    'throw', 'bedspread', 'tablecloth', 'table runner', 'placemat',
-    'candle holder', 'chandelier', 'lantern', 'mobile', 'wind chime', 'photo frame',
-    'wallpaper', 'wall sticker', 'decorative paint', 'fresco', 'mural',
-    'throw pillow', 'area rug', 'wall art', 'ceramic vase', 'decorative bowl'
-  ],
-
-  'Électroménager': [
-    // Français
-    'electromenager', 'refrigerateur', 'frigo', 'lave', 'vaisselle', 'linge',
-    'seche', 'cuisiniere', 'congelateur', 'aspirateur', 'robot', 'climatiseur',
-    'ventilateur', 'micro ondes', 'plaque', 'hotte', 'four', 'grille-pain',
-    'mixeur', 'blender', 'batteur', 'centrifugeuse', 'machine à café', 'expresso',
-    'cafetière', 'bouilloire', 'friteuse', 'multicuiseur', 'rice cooker', 'crêpière',
-    'gaufrier', 'appareil raclette', 'appareil fondue', 'yaourtière', 'sorbetière',
-    'machine à pain', 'extracteur de jus', 'déshydrateur', 'cave à vin', 'cellier',
-    'réfrigérateur américain', 'combiné réfrigérateur-congélateur', 'congélateur armoire',
-    'congélateur coffre', 'lave-vaisselle encastrable', 'lave-vaisselle pose libre',
-    'lave-linge hublot', 'lave-linge top', 'sèche-linge pompe à chaleur', 'sèche-linge condensation',
-    'cuisinière induction', 'cuisinière vitrocéramique', 'cuisinière gaz', 'four encastrable',
-    'four combiné', 'four vapeur', 'four micro-ondes', 'plaque induction', 'plaque vitrocéramique',
-    
-    // Anglais
-    'appliance', 'refrigerator', 'fridge', 'dishwasher', 'washing machine',
-    'dryer', 'stove', 'freezer', 'vacuum', 'robot', 'air conditioner',
-    'fan', 'microwave', 'cooktop', 'hood', 'oven', 'toaster',
-    'mixer', 'blender', 'beater', 'juicer', 'coffee machine', 'espresso machine',
-    'coffee maker', 'kettle', 'deep fryer', 'multi-cooker', 'rice cooker', 'crepe maker',
-    'waffle maker', 'raclette grill', 'fondue set', 'yogurt maker', 'ice cream maker',
-    'bread machine', 'juice extractor', 'food dehydrator', 'wine cooler', 'cellar',
-    'american refrigerator', 'fridge-freezer', 'upright freezer',
-    'chest freezer', 'built-in dishwasher', 'freestanding dishwasher',
-    'front-loading washing machine', 'top-loading washing machine', 'heat pump dryer', 'condenser dryer',
-    'induction cooker', 'ceramic cooker', 'gas cooker', 'built-in oven',
-    'combination oven', 'steam oven', 'microwave oven', 'induction hob', 'ceramic hob',
-    'slow cooker', 'food processor', 'stand mixer', 'hand mixer', 'electric kettle'
-  ],
-
-  'Électronique et Informatique': [
-    // Français
-    'ordinateur', 'pc', 'portable', 'tablette', 'smartphone', 'telephone', 'ecran',
-    'moniteur', 'clavier', 'souris', 'casque', 'enceinte', 'imprimante', 'scanner',
-    'webcam', 'microphone', 'disque', 'memoire', 'ram', 'processeur', 'carte graphique',
-    'stockage', 'accessoire', 'cable', 'chargeur', 'batterie', 'reseau', 'routeur',
-    'modem', 'switch', 'connectique', 'adaptateur', 'hub', 'usb', 'hdmi', 'bluetooth',
-    'informatique', 'bureautique', 'serveur', 'nas', 'stockage réseau', 'disque dur',
-    'SSD', 'clé USB', 'carte SD', 'lecteur', 'graveur', 'DVD', 'Blu-ray', 'tour',
-    'boîtier', 'alimentation', 'refroidissement', 'ventilateur', 'watercooling',
-    'carte mère', 'écran tactile', 'écran led', 'écran oled', 'ultra HD', '4K', '8K',
-    'smart TV', 'télévision', 'home cinéma', 'barre de son', 'caisson de basse',
-    'ampli', 'tuner', 'récepteur', 'décodeur', 'satellite', 'console de jeu',
-    'manette', 'appareil photo', 'caméscope', 'drone', 'GPS', 'montres connectées',
-    
-    // Anglais
-    'computer', 'pc', 'laptop', 'tablet', 'smartphone', 'phone', 'screen',
-    'monitor', 'keyboard', 'mouse', 'headset', 'speaker', 'printer', 'scanner',
-    'webcam', 'microphone', 'disk', 'memory', 'ram', 'processor', 'graphics card',
-    'storage', 'accessory', 'cable', 'charger', 'battery', 'network', 'router',
-    'modem', 'switch', 'connectivity', 'adapter', 'hub', 'usb', 'hdmi', 'bluetooth',
-    'computing', 'office equipment', 'server', 'nas', 'network storage', 'hard drive',
-    'SSD', 'USB drive', 'SD card', 'reader', 'burner', 'DVD', 'Blu-ray', 'tower',
-    'case', 'power supply', 'cooling', 'fan', 'watercooling',
-    'motherboard', 'touchscreen', 'led screen', 'oled screen', 'ultra HD', '4K', '8K',
-    'smart TV', 'television', 'home theater', 'soundbar', 'subwoofer',
-    'amplifier', 'tuner', 'receiver', 'decoder', 'satellite', 'game console',
-    'controller', 'camera', 'camcorder', 'drone', 'GPS', 'smartwatch',
-    'desktop computer', 'all-in-one', 'CPU', 'SSD drive', 'mechanical keyboard'
-  ],
-  
-  'Épicerie et Alimentation': [
-    // Français
-    'nourriture', 'aliment', 'epicerie', 'boisson', 'the', 'cafe', 'infusion', 'snack',
-    'conserve', 'pate', 'riz', 'cereale', 'chocolat', 'bonbon', 'confiserie', 'huile',
-    'vinaigre', 'epice', 'condiment', 'farine', 'sucre', 'sel', 'bio', 'vegan',
-    'vegetarien', 'sans gluten', 'lactose', 'dietetique', 'boulangerie', 'patisserie',
-    'viennoiserie', 'baguette', 'pain', 'croissant', 'brioche', 'fruit', 'legume',
-    'produit laitier', 'fromage', 'yaourt', 'beurre', 'creme', 'lait', 'oeuf',
-    'viande', 'boeuf', 'poulet', 'porc', 'agneau', 'charcuterie', 'jambon', 'saucisson',
-    'poisson', 'fruit de mer', 'crevette', 'saumon', 'thon', 'pates alimentaires',
-    'ravioli', 'spaghetti', 'tagliatelle', 'sauce', 'tomate', 'pesto', 'soupe', 'bouillon',
-    'surgelé', 'dessert', 'gateau', 'tarte', 'compote', 'confiture', 'miel', 'sirop',
-    'aperitif', 'chips', 'olive', 'noix', 'amande', 'pistache', 'cacahuete', 'raisin sec',
-    'muesli', 'avoine', 'quinoa', 'couscous', 'biscuit', 'gaufre', 'crepe', 'moutarde',
-    'ketchup', 'mayonnaise', 'soja', 'tofu', 'seitan', 'legumineuse', 'lentille', 'pois chiche',
-    'haricot', 'feve', 'semoule', 'boulgour',
-    
-    // Anglais
-    'food', 'grocery', 'beverage', 'tea', 'coffee', 'infusion', 'snack',
-    'canned', 'pasta', 'rice', 'cereal', 'chocolate', 'candy', 'confectionery', 'oil',
-    'vinegar', 'spice', 'condiment', 'flour', 'sugar', 'salt', 'organic', 'vegan',
-    'vegetarian', 'gluten free', 'lactose', 'diet', 'bakery', 'pastry',
-    'bread', 'baguette', 'croissant', 'brioche', 'fruit', 'vegetable',
-    'dairy', 'cheese', 'yogurt', 'butter', 'cream', 'milk', 'egg',
-    'meat', 'beef', 'chicken', 'pork', 'lamb', 'deli', 'ham', 'salami',
-    'fish', 'seafood', 'shrimp', 'salmon', 'tuna', 'noodle',
-    'ravioli', 'spaghetti', 'tagliatelle', 'sauce', 'tomato', 'pesto', 'soup', 'broth',
-    'frozen', 'dessert', 'cake', 'pie', 'compote', 'jam', 'honey', 'syrup',
-    'appetizer', 'chips', 'olive', 'nut', 'almond', 'pistachio', 'peanut', 'raisin',
-    'muesli', 'oat', 'quinoa', 'couscous', 'cookie', 'waffle', 'pancake', 'mustard',
-    'ketchup', 'mayonnaise', 'soy', 'tofu', 'seitan', 'legume', 'lentil', 'chickpea',
-    'bean', 'broad bean', 'semolina', 'bulgur', 'smoothie', 'granola', 'cracker', 'pickle',
-    'relish', 'chutney', 'cornflakes', 'bagel', 'muffin', 'sausage', 'bacon', 'jerky'
+  'Animalerie': {
+    fr: [
+      'chat', 'chien', 'animal', 'animaux', 'nourriture', 'litière', 'croquettes', 'jouets', 'laisse',
+      'aquarium', 'poisson', 'oiseau', 'hamster', 'rongeur', 'terrarium', 'gamelle', 'collier', 'harnais',
+      'veterinaire', 'pet', 'cage', 'niche', 'panier', 'griffoir', 'animalerie', 'toilettage', 'brosse',
+      'antiparasitaire', 'vermifuge', 'clapier', 'volière', 'reptile', 'tortue', 'perroquet', 'perruche',
+      'canne à pêche', 'hameçon', 'carpe', 'vêtement pour chien', 'manteau chien', 'friandise', 'santé animale',
+      'pipette', 'puce', 'tique', 'vermifuge', 'soin dentaire', 'sac transport', 'coussin', 'grattoir',
+      'écuelle', 'ratelier', 'foin', 'paille', 'copeaux', 'sciure', 'arbre à chat', 'chatière',
+      'canne à pêche', 'caisse transport', 'muselière', 'longe', 'croquette', 'pâtée', 'complément alimentaire',
+      'accessoire aquarium', 'pompe', 'filtre', 'oxygénateur', 'chauffage', 'éclairage', 'thermomètre',
+      'sable aquarium', 'plante aquatique', 'décor aquarium', 'filet', 'épuisette', 'lapin', 'NAC', 'souris'
     ],
-    
-  'Films et Séries TV': [
-    // Français
-    'film', 'serie', 'dvd', 'blu-ray', 'bluray', 'coffret', 'edition', 'collector',
-    'limitee', 'integrale', 'saison', 'episode', 'box', 'set', 'cinema', 'television',
-    'documentaire', 'animation', 'comedie', 'action', 'thriller', 'horreur', 'fantastique',
-    'science-fiction', 'drame', 'romance', 'biopic', 'historique', 'aventure', 'western',
-    'policier', 'guerre', 'musical', 'jeunesse', 'familial', 'comedie musicale', 'dessin anime',
-    'super-heros', 'manga', 'anime', 'court-metrage', 'realisateur', 'acteur', 'actrice',
-    'producteur', 'scenario', 'bande-son', 'musique', 'soundtrack', 'adaptation', 'remake',
-    'prequel', 'sequel', 'spin-off', 'trilogie', 'saga', 'univers', 'franchise', 'sitcom',
-    'telenovela', 'feuilleton', 'mini-serie', 'docu-serie', 'tele-realite', 'talk-show',
-    'emission', 'jeu televise', 'telefilm', 'direct-to-video', 'inédit', 'sous-titre',
-    'doublage', 'version originale', 'VOST', 'VF', 'montage', 'format', 'widescreen',
-    '4K', 'HDR', 'UHD', 'streaming', 'VOD', 'plateforme', 'abonnement', 'diffusion',
-    'avant-premiere', 'critique', 'festival', 'ceremonie', 'prix', 'oscar', 'cesar',
-    'nomination', 'blockbuster', 'independant', 'court-metrage', 'long-metrage', 'camera',
-    'tournage', 'post-production', 'effets speciaux', 'CGI', 
-    
-    // Anglais
-    'movie', 'series', 'dvd', 'blu-ray', 'bluray', 'box set', 'edition', 'collector',
-    'limited', 'complete', 'season', 'episode', 'box', 'set', 'cinema', 'television',
-    'documentary', 'animation', 'comedy', 'action', 'thriller', 'horror', 'fantasy',
-    'sci-fi', 'drama', 'romance', 'biopic', 'historical', 'adventure', 'western',
-    'crime', 'war', 'musical', 'youth', 'family', 'cartoon', 'anime',
-    'superhero', 'manga', 'short film', 'director', 'actor', 'actress',
-    'producer', 'screenplay', 'soundtrack', 'music', 'adaptation', 'remake',
-    'prequel', 'sequel', 'spin-off', 'trilogy', 'saga', 'universe', 'franchise', 'sitcom',
-    'soap opera', 'mini-series', 'docuseries', 'reality show', 'talk show',
-    'program', 'game show', 'TV movie', 'direct-to-video', 'exclusive', 'subtitle',
-    'dubbing', 'original version', 'subbed', 'dubbed', 'edit', 'format', 'widescreen',
-    '4K', 'HDR', 'UHD', 'streaming', 'VOD', 'platform', 'subscription', 'broadcast',
-    'premiere', 'review', 'festival', 'ceremony', 'award', 'oscar', 'golden globe',
-    'nomination', 'blockbuster', 'indie', 'short', 'feature film', 'camera',
-    'filming', 'post-production', 'special effects', 'CGI', 'rotten tomatoes', 'imdb',
-    'metacritic', 'director cut', 'extended cut', 'theatrical release', 'cast', 'plot',
-    'screenplay', 'screenwriter', 'cinematography', 'binge-watch', 'cliffhanger', 'pilot'
-  ],
-    
-  'Fournitures de Bureau': [
-    // Français
-    'papier', 'stylo', 'crayon', 'feutre', 'marqueur', 'surligneur', 'gomme', 'taille-crayon',
-    'classeur', 'chemise', 'dossier', 'reliure', 'agenda', 'cahier', 'bloc', 'post-it',
-    'trombonne', 'agrafe', 'ciseaux', 'calculatrice', 'ruban', 'adhesif', 'etiquette',
-    'pince', 'perforateur', 'agrafeuse', 'pochette', 'intercalaire', 'separateur', 'carnet',
-    'repertoire', 'calendrier', 'ephemeride', 'semainier', 'memo', 'pense-bete', 'tableau',
-    'paperboard', 'punaise', 'aimant', 'veleda', 'effaceur', 'feuille', 'ramette', 'copie',
-    'bristol', 'carton', 'cartonné', 'plastifie', 'transparent', 'pochette plastique',
-    'protege-document', 'porte-vue', 'sous-main', 'tapis de souris', 'corbeille', 'poubelle',
-    'boite archive', 'destructeur', 'dechiqueteuse', 'devidoir', 'scotch', 'colle', 'baton de colle',
-    'correcteur', 'blanc correcteur', 'encre', 'cartouche', 'toner', 'imprimante', 'photocopie',
-    'scanner', 'tampon', 'encrier', 'enveloppe', 'timbre', 'courrier', 'lettre', 'colis',
-    'expediteur', 'destinataire', 'entete', 'papier a lettre', 'carte de visite', 'badge',
-    'porte-nom', 'attache parisienne', 'elastique', 'pince-notes', 'marque-page', 'regle',
-    'equerre', 'rapporteur', 'compas', 'formulaire', 'registre', 'signature', 'parapheur',
-    'trieur', 'bannette', 'porte-document', 'ardoise', 'craie', 'planche a pince',
-    
-    // Anglais
-    'paper', 'pen', 'pencil', 'marker', 'highlighter', 'eraser', 'sharpener',
-    'binder', 'folder', 'binding', 'agenda', 'notebook', 'pad', 'post-it',
-    'paperclip', 'staple', 'scissors', 'calculator', 'tape', 'adhesive', 'label',
-    'clip', 'hole punch', 'stapler', 'pocket', 'divider', 'separator', 'notepad',
-    'directory', 'calendar', 'daily calendar', 'weekly planner', 'memo', 'reminder', 'board',
-    'flipchart', 'thumbtack', 'magnet', 'whiteboard marker', 'eraser', 'sheet', 'ream', 'copy',
-    'index card', 'cardboard', 'cardstock', 'laminated', 'transparent', 'sheet protector',
-    'display book', 'desk pad', 'mouse pad', 'wastebasket', 'trash bin',
-    'archive box', 'shredder', 'dispenser', 'scotch tape', 'glue', 'glue stick',
-    'correction fluid', 'white-out', 'ink', 'cartridge', 'toner', 'printer', 'photocopy',
-    'scanner', 'stamp', 'ink pad', 'envelope', 'postage stamp', 'mail', 'letter', 'package',
-    'sender', 'recipient', 'letterhead', 'writing paper', 'business card', 'badge',
-    'name tag', 'paper fastener', 'rubber band', 'binder clip', 'bookmark', 'ruler',
-    'set square', 'protractor', 'compass', 'form', 'register', 'signature', 'signature book',
-    'sorter', 'letter tray', 'document holder', 'blackboard', 'chalk', 'clipboard',
-    'address book', 'desk organizer', 'staple remover', 'three-hole punch', 'document case',
-    'sticky note', 'memo pad', 'file cabinet', 'desk drawer', 'push pin', 'paper weight',
-    'pen holder', 'pencil cup', 'tape measure', 'calculator tape', 'envelope sealer'
-  ],
+    en: [
+      'cat', 'dog', 'pet', 'pets', 'food', 'litter', 'kibble', 'toys', 'leash',
+      'aquarium', 'fish', 'bird', 'hamster', 'rodent', 'terrarium', 'bowl', 'collar', 'harness',
+      'veterinary', 'cage', 'kennel', 'bed', 'scratcher', 'pet store', 'grooming', 'brush',
+      'antiparasitic', 'dewormer', 'hutch', 'aviary', 'reptile', 'turtle', 'parrot', 'budgie',
+      'fishing rod', 'hook', 'carp', 'dog clothing', 'dog coat', 'treat', 'pet health',
+      'pipette', 'flea', 'tick', 'dental care', 'carrier bag', 'cushion', 'scratch post',
+      'feeding bowl', 'hay rack', 'hay', 'straw', 'wood shavings', 'sawdust', 'cat tree', 'cat flap',
+      'fishing pole', 'pet carrier', 'muzzle', 'lunge line', 'dry food', 'wet food', 'supplement',
+      'aquarium accessory', 'pump', 'filter', 'oxygenator', 'heater', 'lighting', 'thermometer',
+      'aquarium sand', 'aquatic plant', 'aquarium decoration', 'net', 'landing net', 'rabbit', 'exotic pet', 'mouse',
+      'ferret', 'guinea pig', 'gerbil', 'cat litter box', 'scratching post', 'pet feeder', 'automatic feeder'
+    ]
+  },
+
+  'Auto et Moto': {
+    fr: [
+      'voiture', 'auto', 'automobile', 'moto', 'scooter', 'vehicule', 'pieces', 'accessoires',
+      'entretien', 'nettoyage', 'pneu', 'batterie', 'huile', 'moteur', 'phare', 'frein',
+      'autoradio', 'gps', 'casque', 'siege', 'enjoliveur', 'essuie-glace', 'outillage', 'carenage',
+      'carrosserie', 'embrayage', 'boite de vitesse', 'alternateur', 'démarreur', 'courroie', 'suspension',
+      'amortisseur', 'échappement', 'silencieux', 'pot catalytique', 'radiateur', 'liquide de refroidissement',
+      'liquide de frein', 'filtre à air', 'filtre à huile', 'filtre à carburant', 'filtre habitacle',
+      'bougie', 'durite', 'joint', 'culasse', 'cylindre', 'piston', 'segment', 'vilebrequin', 'soupape',
+      'turbo', 'injecteur', 'pompe à eau', 'pompe à carburant', 'pompe à huile', 'disque', 'plaquette',
+      'etrier', 'maitre-cylindre', 'roulement', 'cardan', 'transmission', 'cardans', 'soufflet',
+      'pare-brise', 'vitre', 'rétroviseur', 'antenne', 'capot', 'portière', 'aile', 'pare-choc',
+      'calandre', 'jante', 'valve', 'barre de toit', 'attelage', 'remorque', 'coffre de toit'
+    ],
+    en: [
+      'car', 'automotive', 'motorcycle', 'scooter', 'vehicle', 'parts', 'accessories',
+      'maintenance', 'cleaning', 'tire', 'battery', 'oil', 'engine', 'headlight', 'brake',
+      'stereo', 'gps', 'helmet', 'seat', 'hubcap', 'wiper', 'tools', 'fairing',
+      'body', 'clutch', 'gearbox', 'alternator', 'starter', 'belt', 'suspension',
+      'shock absorber', 'exhaust', 'muffler', 'catalytic converter', 'radiator', 'coolant',
+      'brake fluid', 'air filter', 'oil filter', 'fuel filter', 'cabin filter',
+      'spark plug', 'hose', 'gasket', 'cylinder head', 'cylinder', 'piston', 'piston ring', 'crankshaft', 'valve',
+      'turbocharger', 'injector', 'water pump', 'fuel pump', 'oil pump', 'disc', 'pad',
+      'caliper', 'master cylinder', 'bearing', 'drive shaft', 'transmission', 'CV joint', 'boot',
+      'windshield', 'window', 'mirror', 'antenna', 'hood', 'door', 'fender', 'bumper',
+      'grille', 'wheel rim', 'valve stem', 'roof rack', 'tow hitch', 'trailer', 'roof box',
+      'spark plug', 'timing belt', 'camshaft', 'fuel tank', 'handlebars', 'mudguard', 'taillight'
+    ]
+  },
+
+  'Bagages et Voyage': {
+    fr: [
+      'valise', 'bagage', 'sac', 'voyage', 'trolley', 'cabine', 'soute', 'etiquette',
+      'passeport', 'trousse', 'accessoires', 'organiseur', 'adaptateur', 'oreiller',
+      'masque', 'bouchon', 'transport', 'roulette', 'polycarbonate', 'bandouliere',
+      'sac à dos', 'bagage à main', 'portedocuments', 'pochette', 'sacoche', 'mallette',
+      'sac de voyage', 'malle', 'coffre', 'cadenas', 'balance', 'bagagerie', 
+      'protection bagage', 'housse', 'pochette voyage', 'trousse toilette', 'confort voyage',
+      'accessoire voyage', 'chargeur universel', 'convertisseur', 'adaptateur secteur',
+      'prise internationale', 'guide voyage', 'carte voyage', 'location voiture', 'vol',
+      'hôtel', 'auberge', 'camping', 'randonnée', 'trek', 'backpack', 'gourde',
+      'thermos', 'compas', 'jumelles', 'boussole', 'GPS portable', 'sac étanche',
+      'poche secrète', 'anti-vol', 'RFID', 'protège-passeport', 'porte-monnaie',
+      'serviette microfibre', 'imperméable', 'poncho', 'parapluie', 'lunettes soleil', 'crème solaire'
+    ],
+    en: [
+      'suitcase', 'luggage', 'bag', 'travel', 'trolley', 'cabin', 'hold', 'tag',
+      'passport', 'kit', 'accessories', 'organizer', 'adapter', 'pillow',
+      'mask', 'plug', 'transport', 'wheels', 'polycarbonate', 'strap',
+      'backpack', 'carry-on', 'document holder', 'pouch', 'satchel', 'briefcase',
+      'duffel bag', 'trunk', 'chest', 'lock', 'scale', 'luggage set',
+      'luggage cover', 'protective cover', 'travel pouch', 'toiletry bag', 'travel comfort',
+      'travel accessory', 'universal charger', 'converter', 'power adapter',
+      'international plug', 'travel guide', 'travel map', 'car rental', 'flight',
+      'hotel', 'hostel', 'camping', 'hiking', 'trekking', 'backpacking', 'water bottle',
+      'thermos', 'binoculars', 'compass', 'portable GPS', 'waterproof bag',
+      'hidden pocket', 'anti-theft', 'RFID', 'passport holder', 'wallet',
+      'microfiber towel', 'raincoat', 'poncho', 'umbrella', 'sunglasses', 'sunscreen',
+      'luggage tag', 'packing cubes', 'compression bags', 'travel pillow', 'luggage strap'
+    ]
+  },
+
+  'Beauté et Parfum': {
+    fr: [
+      'beaute', 'parfum', 'maquillage', 'soin', 'visage', 'creme', 'serum', 'lotion',
+      'vernis', 'rouge', 'levres', 'fond', 'teint', 'mascara', 'shampoing', 'cheveux',
+      'coloration', 'coiffure', 'accessoire', 'manucure', 'pedicure', 'epilateur',
+      'rasoir', 'aftershave', 'eau de toilette', 'deodorant', 'anti-rides', 'solaire',
+      'parfumerie', 'soin peau', 'hydratant', 'nettoyant', 'exfoliant', 'gommage',
+      'masque visage', 'tonique', 'contour yeux', 'anti-cerne', 'highlighter', 'blush',
+      'fard à paupières', 'eye-liner', 'crayon', 'lèvres', 'gloss', 'rouge à lèvres',
+      'baume', 'démaquillant', 'coton', 'pinceau maquillage', 'éponge', 'beautyblender',
+      'palette', 'correcteur', 'contouring', 'poudre', 'bronzer', 'illuminateur',
+      'anti-imperfection', 'anti-âge', 'hyaluronique', 'cellulite', 'fermeté', 'cosmétique',
+      'huile essentielle', 'modelage', 'peeling', 'spa', 'bien-être', 'massage',
+      'raser', 'mousse', 'gel', 'lait corporel', 'gant', 'éponge', 'bougie parfumée'
+    ],
+    en: [
+      'beauty', 'perfume', 'makeup', 'care', 'face', 'cream', 'serum', 'lotion',
+      'nail polish', 'lipstick', 'foundation', 'mascara', 'shampoo', 'hair',
+      'color', 'hairstyle', 'accessory', 'manicure', 'pedicure', 'epilator',
+      'razor', 'aftershave', 'cologne', 'deodorant', 'anti-wrinkle', 'sunscreen',
+      'perfumery', 'skincare', 'moisturizer', 'cleanser', 'exfoliator', 'scrub',
+      'face mask', 'toner', 'eye cream', 'concealer', 'highlighter', 'blush',
+      'eyeshadow', 'eyeliner', 'pencil', 'lips', 'lip gloss', 'lipstick',
+      'balm', 'makeup remover', 'cotton pad', 'makeup brush', 'sponge', 'beautyblender',
+      'palette', 'corrector', 'contouring', 'powder', 'bronzer', 'illuminator',
+      'blemish', 'anti-aging', 'hyaluronic', 'cellulite', 'firmness', 'cosmetics',
+      'essential oil', 'modeling', 'peeling', 'spa', 'wellness', 'massage',
+      'shaving', 'foam', 'gel', 'body milk', 'glove', 'sponge', 'scented candle',
+      'facial', 'primer', 'setting spray', 'brow gel', 'lash curler', 'nail file'
+    ]
+  },
+
+  'Bébés et Puériculture': {
+    fr: [
+      'bebe', 'enfant', 'puericulture', 'couche', 'poussette', 'biberon', 'chaise', 'siege',
+      'auto', 'vetement', 'repas', 'allaitement', 'baignoire', 'lange', 'lingette', 'toise',
+      'doudou', 'parc', 'lit', 'jouet', 'eveil', 'securite', 'surveillance', 'tetine',
+      'poussette', 'porte-bebe', 'echarpe', 'sterilisateur', 'mouche-bebe',
+      'landau', 'berceau', 'couffin', 'transat', 'tapis d\'eveil', 'mobile', 'veilleuse',
+      'babyphone', 'thermometre', 'mouche-bebe', 'anneau dentition', 'bavoir', 'goupillon',
+      'trotteur', 'chauffe-biberon', 'tire-lait', 'coussin allaitement', 'matelas à langer',
+      'table à langer', 'pot', 'rehausseur', 'siège auto', 'cosy', 'nacelle', 'gigoteuse',
+      'pyjama', 'body', 'grenouillère', 'chancelière', 'ombrelle', 'protection soleil',
+      'moustiquaire', 'filet', 'barrière', 'tapis de bain', 'trousse toilette', 'thermomètre bain',
+      'sortie de bain', 'cape de bain', 'gant toilette', 'shampoing', 'savon', 'lait corporel',
+      'crème change', 'talc', 'coton-tige', 'coupe-ongle', 'brosse cheveux', 'peigne'
+    ],
+    en: [
+      'baby', 'child', 'childcare', 'diaper', 'stroller', 'bottle', 'chair', 'seat',
+      'auto', 'clothing', 'meal', 'breastfeeding', 'bathtub', 'cloth', 'wipe', 'measuring',
+      'plush', 'playpen', 'crib', 'toy', 'development', 'safety', 'monitor', 'pacifier',
+      'stroller', 'carrier', 'sling', 'sterilizer', 'nasal aspirator',
+      'pram', 'cradle', 'bassinet', 'bouncer', 'play mat', 'mobile', 'night light',
+      'baby monitor', 'thermometer', 'nasal aspirator', 'teething ring', 'bib', 'bottle brush',
+      'walker', 'bottle warmer', 'breast pump', 'nursing pillow', 'changing mat',
+      'changing table', 'potty', 'booster seat', 'car seat', 'infant carrier', 'carrycot', 'sleeping bag',
+      'pajamas', 'bodysuit', 'onesie', 'footmuff', 'parasol', 'sun protection',
+      'mosquito net', 'mesh', 'safety gate', 'bath mat', 'toiletry bag', 'bath thermometer',
+      'hooded towel', 'bath cape', 'washcloth', 'shampoo', 'soap', 'body lotion',
+      'diaper cream', 'talcum powder', 'cotton swab', 'nail clipper', 'hairbrush', 'comb',
+      'high chair', 'baby food', 'formula', 'sippy cup', 'teether', 'diaper pail'
+    ]
+  },
+
+  'Cuisine': {
+    fr: [
+      'casserole', 'poele', 'ustensile', 'assiette', 'verre', 'couvert', 'robot',
+      'mixeur', 'blender', 'four', 'micro onde', 'cafetiere', 'bouilloire', 'plat',
+      'cuisine', 'culinaire', 'batterie', 'cocotte', 'marmite', 'passoire',
+      'cuiseur', 'autocuiseur', 'mijoteuse', 'crêpière', 'gaufrier', 'sauteuse',
+      'thermostat', 'induction', 'plaque', 'cuisson', 'vitrocéramique', 'gaz',
+      'barbecue', 'plancha', 'grill', 'raclette', 'fondue', 'pierrade', 'wok',
+      'couteau', 'économe', 'mandoline', 'hachoir', 'fouet', 'spatule', 'louche',
+      'écumoire', 'presse-agrumes', 'centrifugeuse', 'presse-ail', 'balance',
+      'doseur', 'minuteur', 'thermomètre', 'moule', 'ramequin', 'plaque pâtisserie',
+      'rouleau', 'emporte-pièce', 'poche à douille', 'spatule pâtisserie', 'pinceau',
+      'saladier', 'bol', 'cuillère bois', 'cuillère silicone', 'passoire', 'chinois',
+      'entonnoir', 'râpe', 'zesteur', 'vide-pomme', 'casse-noix', 'ouvre-boîte'
+    ],
+    en: [
+      'pot', 'pan', 'utensil', 'plate', 'glass', 'cutlery', 'robot',
+      'mixer', 'blender', 'oven', 'microwave', 'coffee maker', 'kettle', 'dish',
+      'kitchen', 'culinary', 'cookware', 'dutch oven', 'cooking pot', 'colander',
+      'cooker', 'pressure cooker', 'slow cooker', 'crepe maker', 'waffle maker', 'saute pan',
+      'thermostat', 'induction', 'hob', 'cooking', 'ceramic', 'gas',
+      'barbecue', 'griddle', 'grill', 'raclette', 'fondue', 'stone grill', 'wok',
+      'knife', 'peeler', 'mandoline', 'chopper', 'whisk', 'spatula', 'ladle',
+      'skimmer', 'citrus juicer', 'juicer', 'garlic press', 'scale',
+      'measuring cup', 'timer', 'thermometer', 'mold', 'ramekin', 'baking sheet',
+      'rolling pin', 'cookie cutter', 'piping bag', 'pastry spatula', 'brush',
+      'salad bowl', 'bowl', 'wooden spoon', 'silicone spoon', 'strainer', 'conical strainer',
+      'funnel', 'grater', 'zester', 'apple corer', 'nutcracker', 'can opener',
+      'cutting board', 'knife set', 'measuring spoons', 'baking dish', 'muffin tin'
+    ]
+  },
+
+  'Décoration': {
+    fr: [
+      'decoration', 'deco', 'cadre', 'miroir', 'vase', 'bougie', 'horloge', 'tapis',
+      'coussin', 'rideau', 'store', 'sticker', 'poster', 'tableau', 'statue',
+      'photophore', 'paillasson', 'panneau', 'tenture', 'bibelot', 'suspension',
+      'lustre', 'applique', 'lampadaire', 'lampion', 'guirlande', 'ampoule',
+      'abat-jour', 'plafonnier', 'éclairage', 'ambiance', 'décor', 'intérieur',
+      'extérieur', 'jardin', 'terrasse', 'balcon', 'plante', 'artificielle',
+      'paravent', 'séparateur', 'cloison', 'étagère', 'bibliothèque', 'meuble',
+      'table', 'chaise', 'fauteuil', 'canapé', 'pouf', 'banc', 'commode',
+      'console', 'vitrine', 'buffet', 'patère', 'porte-manteau', 'luminaire',
+      'plaid', 'jeté de lit', 'nappe', 'chemin de table', 'set de table',
+      'bougeoir', 'chandelier', 'lanterne', 'mobile', 'carillon', 'porte-photo',
+      'papier peint', 'sticker mural', 'peinture décorative', 'fresque', 'murale'
+    ],
+    en: [
+      'decoration', 'decor', 'frame', 'mirror', 'vase', 'candle', 'clock', 'rug',
+      'cushion', 'curtain', 'blind', 'sticker', 'poster', 'painting', 'statue',
+      'candle holder', 'doormat', 'sign', 'tapestry', 'ornament', 'pendant',
+      'chandelier', 'sconce', 'floor lamp', 'lantern', 'garland', 'bulb',
+      'lampshade', 'ceiling light', 'lighting', 'ambiance', 'decor', 'interior',
+      'exterior', 'garden', 'terrace', 'balcony', 'plant', 'artificial',
+      'screen', 'separator', 'partition', 'shelf', 'bookcase', 'furniture',
+      'table', 'chair', 'armchair', 'sofa', 'pouf', 'bench', 'dresser',
+      'console', 'display cabinet', 'buffet', 'coat hook', 'coat rack', 'light fixture',
+      'throw', 'bedspread', 'tablecloth', 'table runner', 'placemat',
+      'candle holder', 'chandelier', 'lantern', 'mobile', 'wind chime', 'photo frame',
+      'wallpaper', 'wall sticker', 'decorative paint', 'fresco', 'mural',
+      'throw pillow', 'area rug', 'wall art', 'ceramic vase', 'decorative bowl'
+    ]
+  },
+
+  'Électroménager': {
+    fr: [
+      'electromenager', 'refrigerateur', 'frigo', 'lave', 'vaisselle', 'linge',
+      'seche', 'cuisiniere', 'congelateur', 'aspirateur', 'robot', 'climatiseur',
+      'ventilateur', 'micro ondes', 'plaque', 'hotte', 'four', 'grille-pain',
+      'mixeur', 'blender', 'batteur', 'centrifugeuse', 'machine à café', 'expresso',
+      'cafetière', 'bouilloire', 'friteuse', 'multicuiseur', 'rice cooker', 'crêpière',
+      'gaufrier', 'appareil raclette', 'appareil fondue', 'yaourtière', 'sorbetière',
+      'machine à pain', 'extracteur de jus', 'déshydrateur', 'cave à vin', 'cellier',
+      'réfrigérateur américain', 'combiné réfrigérateur-congélateur', 'congélateur armoire',
+      'congélateur coffre', 'lave-vaisselle encastrable', 'lave-vaisselle pose libre',
+      'lave-linge hublot', 'lave-linge top', 'sèche-linge pompe à chaleur', 'sèche-linge condensation',
+      'cuisinière induction', 'cuisinière vitrocéramique', 'cuisinière gaz', 'four encastrable',
+      'four combiné', 'four vapeur', 'four micro-ondes', 'plaque induction', 'plaque vitrocéramique'
+    ],
+    en: [
+      'appliance', 'refrigerator', 'fridge', 'dishwasher', 'washing machine',
+      'dryer', 'stove', 'freezer', 'vacuum', 'robot', 'air conditioner',
+      'fan', 'microwave', 'cooktop', 'hood', 'oven', 'toaster',
+      'mixer', 'blender', 'beater', 'juicer', 'coffee machine', 'espresso machine',
+      'coffee maker', 'kettle', 'deep fryer', 'multi-cooker', 'rice cooker', 'crepe maker',
+      'waffle maker', 'raclette grill', 'fondue set', 'yogurt maker', 'ice cream maker',
+      'bread machine', 'juice extractor', 'food dehydrator', 'wine cooler', 'cellar',
+      'american refrigerator', 'fridge-freezer', 'upright freezer',
+      'chest freezer', 'built-in dishwasher', 'freestanding dishwasher',
+      'front-loading washing machine', 'top-loading washing machine', 'heat pump dryer', 'condenser dryer',
+      'induction cooker', 'ceramic cooker', 'gas cooker', 'built-in oven',
+      'combination oven', 'steam oven', 'microwave oven', 'induction hob', 'ceramic hob',
+      'slow cooker', 'food processor', 'stand mixer', 'hand mixer', 'electric kettle'
+    ]
+  },
+
+  'Électronique et Informatique': {
+    fr: [
+      'ordinateur', 'pc', 'portable', 'tablette', 'smartphone', 'telephone', 'ecran',
+      'moniteur', 'clavier', 'souris', 'casque', 'enceinte', 'imprimante', 'scanner',
+      'webcam', 'microphone', 'disque', 'memoire', 'ram', 'processeur', 'carte graphique',
+      'stockage', 'accessoire', 'cable', 'chargeur', 'batterie', 'reseau', 'routeur',
+      'modem', 'switch', 'connectique', 'adaptateur', 'hub', 'usb', 'hdmi', 'bluetooth',
+      'informatique', 'bureautique', 'serveur', 'nas', 'stockage réseau', 'disque dur',
+      'SSD', 'clé USB', 'carte SD', 'lecteur', 'graveur', 'DVD', 'Blu-ray', 'tour',
+      'boîtier', 'alimentation', 'refroidissement', 'ventilateur', 'watercooling',
+      'carte mère', 'écran tactile', 'écran led', 'écran oled', 'ultra HD', '4K', '8K',
+      'smart TV', 'télévision', 'home cinéma', 'barre de son', 'caisson de basse',
+      'ampli', 'tuner', 'récepteur', 'décodeur', 'satellite', 'console de jeu',
+      'manette', 'appareil photo', 'caméscope', 'drone', 'GPS', 'montres connectées'
+    ],
+    en: [
+      'computer', 'pc', 'laptop', 'tablet', 'smartphone', 'phone', 'screen',
+      'monitor', 'keyboard', 'mouse', 'headset', 'speaker', 'printer', 'scanner',
+      'webcam', 'microphone', 'disk', 'memory', 'ram', 'processor', 'graphics card',
+      'storage', 'accessory', 'cable', 'charger', 'battery', 'network', 'router',
+      'modem', 'switch', 'connectivity', 'adapter', 'hub', 'usb', 'hdmi', 'bluetooth',
+      'computing', 'office equipment', 'server', 'nas', 'network storage', 'hard drive',
+      'SSD', 'USB drive', 'SD card', 'reader', 'burner', 'DVD', 'Blu-ray', 'tower',
+      'case', 'power supply', 'cooling', 'fan', 'watercooling',
+      'motherboard', 'touchscreen', 'led screen', 'oled screen', 'ultra HD', '4K', '8K',
+      'smart TV', 'television', 'home theater', 'soundbar', 'subwoofer',
+      'amplifier', 'tuner', 'receiver', 'decoder', 'satellite', 'game console',
+      'controller', 'camera', 'camcorder', 'drone', 'GPS', 'smartwatch',
+      'desktop computer', 'all-in-one', 'CPU', 'SSD drive', 'mechanical keyboard'
+    ]
+  },
   
-  'Instruments de Musique': [
-    // Français
+  'Épicerie et Alimentation': {
+    fr: [
+      'nourriture', 'aliment', 'epicerie', 'boisson', 'the', 'cafe', 'infusion', 'snack',
+      'conserve', 'pate', 'riz', 'cereale', 'chocolat', 'bonbon', 'confiserie', 'huile',
+      'vinaigre', 'epice', 'condiment', 'farine', 'sucre', 'sel', 'bio', 'vegan',
+      'vegetarien', 'sans gluten', 'lactose', 'dietetique', 'boulangerie', 'patisserie',
+      'viennoiserie', 'baguette', 'pain', 'croissant', 'brioche', 'fruit', 'legume',
+      'produit laitier', 'fromage', 'yaourt', 'beurre', 'creme', 'lait', 'oeuf',
+      'viande', 'boeuf', 'poulet', 'porc', 'agneau', 'charcuterie', 'jambon', 'saucisson',
+      'poisson', 'fruit de mer', 'crevette', 'saumon', 'thon', 'pates alimentaires',
+      'ravioli', 'spaghetti', 'tagliatelle', 'sauce', 'tomate', 'pesto', 'soupe', 'bouillon',
+      'surgelé', 'dessert', 'gateau', 'tarte', 'compote', 'confiture', 'miel', 'sirop',
+      'aperitif', 'chips', 'olive', 'noix', 'amande', 'pistache', 'cacahuete', 'raisin sec',
+      'muesli', 'avoine', 'quinoa', 'couscous', 'biscuit', 'gaufre', 'crepe', 'moutarde',
+      'ketchup', 'mayonnaise', 'soja', 'tofu', 'seitan', 'legumineuse', 'lentille', 'pois chiche',
+      'haricot', 'feve', 'semoule', 'boulgour'
+    ],
+    en: [
+      'food', 'grocery', 'beverage', 'tea', 'coffee', 'infusion', 'snack',
+      'canned', 'pasta', 'rice', 'cereal', 'chocolate', 'candy', 'confectionery', 'oil',
+      'vinegar', 'spice', 'condiment', 'flour', 'sugar', 'salt', 'organic', 'vegan',
+      'vegetarian', 'gluten free', 'lactose', 'diet', 'bakery', 'pastry',
+      'bread', 'baguette', 'croissant', 'brioche', 'fruit', 'vegetable',
+      'dairy', 'cheese', 'yogurt', 'butter', 'cream', 'milk', 'egg',
+      'meat', 'beef', 'chicken', 'pork', 'lamb', 'deli', 'ham', 'salami',
+      'fish', 'seafood', 'shrimp', 'salmon', 'tuna', 'noodle',
+      'ravioli', 'spaghetti', 'tagliatelle', 'sauce', 'tomato', 'pesto', 'soup', 'broth',
+      'frozen', 'dessert', 'cake', 'pie', 'compote', 'jam', 'honey', 'syrup',
+      'appetizer', 'chips', 'olive', 'nut', 'almond', 'pistachio', 'peanut', 'raisin',
+      'muesli', 'oat', 'quinoa', 'couscous', 'cookie', 'waffle', 'pancake', 'mustard',
+      'ketchup', 'mayonnaise', 'soy', 'tofu', 'seitan', 'legume', 'lentil', 'chickpea',
+      'bean', 'broad bean', 'semolina', 'bulgur', 'smoothie', 'granola', 'cracker', 'pickle',
+      'relish', 'chutney', 'cornflakes', 'bagel', 'muffin', 'sausage', 'bacon', 'jerky'
+    ]
+  },
+    
+  'Films et Séries TV': {
+    fr: [
+      'film', 'serie', 'dvd', 'blu-ray', 'bluray', 'coffret', 'edition', 'collector',
+      'limitee', 'integrale', 'saison', 'episode', 'box', 'set', 'cinema', 'television',
+      'documentaire', 'animation', 'comedie', 'action', 'thriller', 'horreur', 'fantastique',
+      'science-fiction', 'drame', 'romance', 'biopic', 'historique', 'aventure', 'western',
+      'policier', 'guerre', 'musical', 'jeunesse', 'familial', 'comedie musicale', 'dessin anime',
+      'super-heros', 'manga', 'anime', 'court-metrage', 'realisateur', 'acteur', 'actrice',
+      'producteur', 'scenario', 'bande-son', 'musique', 'soundtrack', 'adaptation', 'remake',
+      'prequel', 'sequel', 'spin-off', 'trilogie', 'saga', 'univers', 'franchise', 'sitcom',
+      'telenovela', 'feuilleton', 'mini-serie', 'docu-serie', 'tele-realite', 'talk-show',
+      'emission', 'jeu televise', 'telefilm', 'direct-to-video', 'inédit', 'sous-titre',
+      'doublage', 'version originale', 'VOST', 'VF', 'montage', 'format', 'widescreen',
+      '4K', 'HDR', 'UHD', 'streaming', 'VOD', 'plateforme', 'abonnement', 'diffusion',
+      'avant-premiere', 'critique', 'festival', 'ceremonie', 'prix', 'oscar', 'cesar',
+      'nomination', 'blockbuster', 'independant', 'court-metrage', 'long-metrage', 'camera',
+      'tournage', 'post-production', 'effets speciaux', 'CGI'
+    ],
+    en: [
+      'movie', 'series', 'dvd', 'blu-ray', 'bluray', 'box set', 'edition', 'collector',
+      'limited', 'complete', 'season', 'episode', 'box', 'set', 'cinema', 'television',
+      'documentary', 'animation', 'comedy', 'action', 'thriller', 'horror', 'fantasy',
+      'sci-fi', 'drama', 'romance', 'biopic', 'historical', 'adventure', 'western',
+      'crime', 'war', 'musical', 'youth', 'family', 'cartoon', 'anime',
+      'superhero', 'manga', 'short film', 'director', 'actor', 'actress',
+      'producer', 'screenplay', 'soundtrack', 'music', 'adaptation', 'remake',
+      'prequel', 'sequel', 'spin-off', 'trilogy', 'saga', 'universe', 'franchise', 'sitcom',
+      'soap opera', 'mini-series', 'docuseries', 'reality show', 'talk show',
+      'program', 'game show', 'TV movie', 'direct-to-video', 'exclusive', 'subtitle',
+      'dubbing', 'original version', 'subbed', 'dubbed', 'edit', 'format', 'widescreen',
+      '4K', 'HDR', 'UHD', 'streaming', 'VOD', 'platform', 'subscription', 'broadcast',
+      'premiere', 'review', 'festival', 'ceremony', 'award', 'oscar', 'golden globe',
+      'nomination', 'blockbuster', 'indie', 'short', 'feature film', 'camera',
+      'filming', 'post-production', 'special effects', 'CGI', 'rotten tomatoes', 'imdb',
+      'metacritic', 'director cut', 'extended cut', 'theatrical release', 'cast', 'plot',
+      'screenplay', 'screenwriter', 'cinematography', 'binge-watch', 'cliffhanger', 'pilot'
+    ]
+  },
+    
+  'Fournitures de Bureau': {
+    fr: [
+      'papier', 'stylo', 'crayon', 'feutre', 'marqueur', 'surligneur', 'gomme', 'taille-crayon',
+      'classeur', 'chemise', 'dossier', 'reliure', 'agenda', 'cahier', 'bloc', 'post-it',
+      'trombonne', 'agrafe', 'ciseaux', 'calculatrice', 'ruban', 'adhesif', 'etiquette',
+      'pince', 'perforateur', 'agrafeuse', 'pochette', 'intercalaire', 'separateur', 'carnet',
+      'repertoire', 'calendrier', 'ephemeride', 'semainier', 'memo', 'pense-bete', 'tableau',
+      'paperboard', 'punaise', 'aimant', 'veleda', 'effaceur', 'feuille', 'ramette', 'copie',
+      'bristol', 'carton', 'cartonné', 'plastifie', 'transparent', 'pochette plastique',
+      'protege-document', 'porte-vue', 'sous-main', 'tapis de souris', 'corbeille', 'poubelle',
+      'boite archive', 'destructeur', 'dechiqueteuse', 'devidoir', 'scotch', 'colle', 'baton de colle',
+      'correcteur', 'blanc correcteur', 'encre', 'cartouche', 'toner', 'imprimante', 'photocopie',
+      'scanner', 'tampon', 'encrier', 'enveloppe', 'timbre', 'courrier', 'lettre', 'colis',
+      'expediteur', 'destinataire', 'entete', 'papier a lettre', 'carte de visite', 'badge',
+      'porte-nom', 'attache parisienne', 'elastique', 'pince-notes', 'marque-page', 'regle',
+      'equerre', 'rapporteur', 'compas', 'formulaire', 'registre', 'signature', 'parapheur',
+      'trieur', 'bannette', 'porte-document', 'ardoise', 'craie', 'planche a pince'
+    ],
+    en: [
+      'paper', 'pen', 'pencil', 'marker', 'highlighter', 'eraser', 'sharpener',
+      'binder', 'folder', 'binding', 'agenda', 'notebook', 'pad', 'post-it',
+      'paperclip', 'staple', 'scissors', 'calculator', 'tape', 'adhesive', 'label',
+      'clip', 'hole punch', 'stapler', 'pocket', 'divider', 'separator', 'notepad',
+      'directory', 'calendar', 'daily calendar', 'weekly planner', 'memo', 'reminder', 'board',
+      'flipchart', 'thumbtack', 'magnet', 'whiteboard marker', 'eraser', 'sheet', 'ream', 'copy',
+      'index card', 'cardboard', 'cardstock', 'laminated', 'transparent', 'sheet protector',
+      'display book', 'desk pad', 'mouse pad', 'wastebasket', 'trash bin',
+      'archive box', 'shredder', 'dispenser', 'scotch tape', 'glue', 'glue stick',
+      'correction fluid', 'white-out', 'ink', 'cartridge', 'toner', 'printer', 'photocopy',
+      'scanner', 'stamp', 'ink pad', 'envelope', 'postage stamp', 'mail', 'letter', 'package',
+      'sender', 'recipient', 'letterhead', 'writing paper', 'business card', 'badge',
+      'name tag', 'paper fastener', 'rubber band', 'binder clip', 'bookmark', 'ruler',
+      'set square', 'protractor', 'compass', 'form', 'register', 'signature', 'signature book',
+      'sorter', 'letter tray', 'document holder', 'blackboard', 'chalk', 'clipboard',
+      'address book', 'desk organizer', 'staple remover', 'three-hole punch', 'document case',
+      'sticky note', 'memo pad', 'file cabinet', 'desk drawer', 'push pin', 'paper weight',
+      'pen holder', 'pencil cup', 'tape measure', 'calculator tape', 'envelope sealer'
+    ]
+  },
+  
+  'Instruments de Musique': {
+   fr: [
     'instrument', 'musique', 'guitare', 'piano', 'clavier', 'batterie', 'percussion',
     'violon', 'flute', 'saxophone', 'trompette', 'harmonica', 'micro', 'ampli',
     'amplificateur', 'pedales', 'effet', 'accessoire', 'cable', 'mediator', 'accordeur',
@@ -404,9 +416,9 @@ export const categoryKeywords = {
     'ocarina', 'cor', 'cornet', 'bugle', 'trombone', 'tuba', 'euphonium', 'accordeon',
     'bandoneon', 'harmonica chromatique', 'melodica', 'orgue', 'orgue electronique',
     'pedalier', 'diapason', 'solfege', 'theorie musicale', 'tablature', 'enceinte', 'retour',
-    'sono', 'equalizer', 'reverb', 'delay', 'distortion', 'chorus', 'boite a rythme',
-    
-    // Anglais
+    'sono', 'equalizer', 'reverb', 'delay', 'distortion', 'chorus', 'boite a rythme'
+    ],
+    en: [
     'instrument', 'music', 'guitar', 'piano', 'keyboard', 'drums', 'percussion',
     'violin', 'flute', 'saxophone', 'trumpet', 'harmonica', 'microphone', 'amp',
     'amplifier', 'pedals', 'effect', 'accessory', 'cable', 'pick', 'tuner',
@@ -425,10 +437,11 @@ export const categoryKeywords = {
     'sound system', 'equalizer', 'reverb', 'delay', 'distortion', 'chorus', 'drum machine',
     'audio interface', 'DAW', 'preamp', 'condenser microphone', 'dynamic microphone', 'pop filter',
     'capo', 'slide', 'guitar strap', 'violin chin rest', 'rosin', 'woodwind', 'brass'
-  ],
-  
-  'Jardin': [
-    // Français
+    ]
+  },
+
+  'Jardin': {
+   fr: [
     'jardin', 'plante', 'jardinage', 'exterieur', 'terrasse', 'balcon', 'outil',
     'tondeuse', 'arrosage', 'pelle', 'rateau', 'taille', 'haie', 'barbecue',
     'parasol', 'salon jardin', 'serre', 'pot', 'semence', 'graines', 'bulbe',
@@ -443,9 +456,9 @@ export const categoryKeywords = {
     'treillage', 'pergola', 'tonnelle', 'kiosque', 'gloriette', 'cabane', 'abri', 'cloture',
     'grillage', 'palissade', 'bordure', 'dalles', 'pave', 'gravier', 'ecorce', 'paillis',
     'rocaille', 'bassin', 'fontaine', 'pompe', 'eclairage', 'deco', 'statue', 'mobilier',
-    'chaise', 'table', 'banc', 'hamac', 'balancelle', 'store', 'bain de soleil', 'transat',
-    
-    // Anglais
+    'chaise', 'table', 'banc', 'hamac', 'balancelle', 'store', 'bain de soleil', 'transat'
+    ],
+    en: [
     'garden', 'plant', 'gardening', 'outdoor', 'patio', 'balcony', 'tool',
     'lawn mower', 'watering', 'shovel', 'rake', 'trim', 'hedge', 'barbecue',
     'umbrella', 'garden furniture', 'greenhouse', 'pot', 'seed', 'seeds', 'bulb',
@@ -463,10 +476,11 @@ export const categoryKeywords = {
     'chair', 'table', 'bench', 'hammock', 'swing', 'awning', 'sun lounger', 'deck chair',
     'garden hose reel', 'kneeling pad', 'garden gloves', 'topiary', 'bird feeder', 'bird bath',
     'cold frame', 'propagator', 'weed barrier', 'rain barrel', 'landscape fabric'
-  ],
+      ]
+    },
   
-  'Jeux Vidéo et Consoles': [
-    // Français
+  'Jeux Vidéo et Consoles': {
+   fr: [
     'jeu', 'video', 'console', 'manette', 'accessoire', 'playstation', 'xbox',
     'nintendo', 'switch', 'pc', 'gamer', 'gaming', 'arcade', 'simulation',
     'action', 'aventure', 'rpg', 'sport', 'course', 'combat', 'plateforme',
@@ -482,9 +496,9 @@ export const categoryKeywords = {
     'patch', 'mise a jour', 'dlc', 'extension', 'season pass', 'free-to-play', 'premium',
     'abonnement', 'boutique', 'microtransaction', 'skin', 'cosmetique', 'emote', 'buff',
     'nerf', 'spawn', 'respawn', 'hitbox', 'lag', 'ping', 'serveur', 'connexion',
-    'fps', 'performance', 'chargement', 'streaming', 'cross-play', 'cross-platform',
-    
-    // Anglais
+    'fps', 'performance', 'chargement', 'streaming', 'cross-play', 'cross-platform'
+    ],
+    en: [
     'game', 'video', 'console', 'controller', 'accessory', 'playstation', 'xbox',
     'nintendo', 'switch', 'pc', 'gamer', 'gaming', 'arcade', 'simulation',
     'action', 'adventure', 'rpg', 'sports', 'racing', 'fighting', 'platform',
@@ -503,10 +517,11 @@ export const categoryKeywords = {
     'fps', 'performance', 'loading', 'streaming', 'cross-play', 'cross-platform',
     'early access', 'beta', 'alpha', 'mod', 'modding', 'lootbox', 'achievement', 'trophy',
     'esports', 'streamer', 'twitch', 'youtube', 'gaming chair', 'monitor', 'gaming mouse'
-  ],
+    ]
+  },
     
-  'Jouets et Jeux': [
-    // Français
+  'Jouets et Jeux': {
+   fr: [
     'jouet', 'jeu', 'puzzle', 'peluche', 'poupee', 'figurine', 'construction',
     'lego', 'playmobil', 'educatif', 'eveil', 'exterieur', 'plein air', 'voiture',
     'telecommande', 'drone', 'societe', 'carte', 'plateau', 'echec', 'dessin',
@@ -521,9 +536,9 @@ export const categoryKeywords = {
     'robot', 'transformers', 'action man', 'super-heros', 'marvel', 'dc', 'star wars',
     'pokemon', 'cartes', 'collection', 'album', 'vignette', 'autocollant', 'tampon',
     'pate a modeler', 'argile', 'poterie', 'perle', 'bracelet', 'bijou', 'kit', 'scientifique',
-    'experience', 'microscope', 'telescope', 'espace', 'astronomie', 'chimie', 'nature',
-    
-    // Anglais
+    'experience', 'microscope', 'telescope', 'espace', 'astronomie', 'chimie', 'nature'
+    ],
+    en: [
     'toy', 'game', 'puzzle', 'plush', 'doll', 'figure', 'building',
     'lego', 'playmobil', 'educational', 'development', 'outdoor', 'car',
     'remote control', 'drone', 'board game', 'card', 'chess', 'drawing',
@@ -541,10 +556,11 @@ export const categoryKeywords = {
     'experiment', 'microscope', 'telescope', 'space', 'astronomy', 'chemistry', 'nature',
     'puppet', 'finger puppet', 'stuffed animal', 'teddy bear', 'board game', 'monopoly',
     'scrabble', 'jenga', 'dice', 'playing cards', 'craft kit', 'jigsaw puzzle', 'rubik cube'
-  ],
+    ]
+  },
 
-  'Literie': [
-    // Français
+  'Literie': {
+   fr: [
     'lit', 'matelas', 'sommier', 'drap', 'couette', 'oreiller', 'couverture',
     'housse', 'traversin', 'taie', 'alese', 'surmatelas', 'couvre lit', 'plaid',
     'edredon', 'duvet', 'protege matelas', 'parure de lit', 'ensemble', 'drap housse',
@@ -563,9 +579,9 @@ export const categoryKeywords = {
     'impermeable', 'respirant', 'garnissage', 'fibres', 'tissage', 'percale', 'satin',
     'flanelle', 'jersey', 'coton', 'lin', 'bambou', 'soie', 'microfibre', 'fil',
     'densite', 'grammage', 'epaisseur', 'confort', 'ferme', 'moelleux', 'gonflant',
-    'doudou', 'polochon',
-    
-    // Anglais
+    'doudou', 'polochon'
+    ],
+    en: [
     'bed', 'mattress', 'box spring', 'sheet', 'duvet', 'pillow', 'blanket',
     'cover', 'bolster', 'pillowcase', 'pad', 'topper', 'bedspread', 'throw',
     'quilt', 'comforter', 'protector', 'bed set', 'ensemble', 'fitted sheet',
@@ -586,10 +602,11 @@ export const categoryKeywords = {
     'density', 'weight', 'thickness', 'comfort', 'firm', 'soft', 'fluffy',
     'comfort object', 'body pillow', 'mattress foundation', 'platform bed', 'adjustable bed',
     'sleep number', 'tempur-pedic', 'casper', 'purple', 'nectar', 'sleep mask', 'bed runner'
-  ],
+    ]
+  },
 
-  'Logiciels': [
-    // Français
+  'Logiciels': {
+   fr: [
     'logiciel', 'software', 'programme', 'application', 'suite', 'antivirus',
     'securite', 'bureautique', 'word', 'excel', 'office', 'windows', 'macos',
     'adobe', 'photoshop', 'illustrator', 'indesign', 'premiere', 'montage',
@@ -608,9 +625,9 @@ export const categoryKeywords = {
     'lightroom', 'after effects', 'final cut', 'pro tools', 'ableton', 'cubase',
     'logic pro', 'fl studio', 'garageband', 'imovie', 'filmora', 'davinci resolve',
     'autocad', 'sketchup', 'cinema 4d', 'maya', 'blender', 'revit', 'archicad',
-    'comptabilite', 'gestion', 'erp', 'crm', 'sage', 'ciel', 'ebp', 'sap',
-    
-    // Anglais
+    'comptabilite', 'gestion', 'erp', 'crm', 'sage', 'ciel', 'ebp', 'sap'
+    ],
+    en: [
     'software', 'program', 'application', 'suite', 'antivirus',
     'security', 'office', 'word', 'excel', 'windows', 'macos',
     'adobe', 'photoshop', 'illustrator', 'indesign', 'premiere', 'editing',
@@ -632,10 +649,11 @@ export const categoryKeywords = {
     'accounting', 'management', 'erp', 'crm', 'sage', 'quickbooks', 'xero', 'sap',
     'developer tools', 'IDE', 'visual studio', 'xcode', 'android studio', 'eclipse',
     'intellij', 'jetbrains', 'git', 'github', 'gitlab', 'bitbucket', 'jira', 'slack'
-  ],
+    ]
+  },
 
-  'Luminaire': [
-    // Français
+  'Luminaire': {
+   fr: [
     'lampe', 'luminaire', 'eclairage', 'lumiere', 'applique', 'plafonnier', 'ampoule',
     'suspension', 'spot', 'lustre', 'lampadaire', 'veilleuse', 'guirlande', 'led',
     'lanterne', 'abat jour', 'halogene', 'lampe de bureau', 'lampe de chevet', 'liseuse',
@@ -653,9 +671,9 @@ export const categoryKeywords = {
     'telecommande', 'detecteur', 'capteur mouvement', 'crepusculaire', 'minuterie', 'rgb',
     'multicolore', 'connecte', 'intelligent', 'bluetooth', 'wifi', 'domotique', 'philips hue',
     'filament', 'Edison', 'retro', 'vintage', 'globe', 'flamme', 'spot', 'dichroique',
-    'culot', 'douille', 'suspension', 'rosace', 'cable', 'fil', 'cordon', 'chaine',
-    
-    // Anglais
+    'culot', 'douille', 'suspension', 'rosace', 'cable', 'fil', 'cordon', 'chaine'
+    ],
+    en: [
     'lamp', 'light', 'lighting', 'fixture', 'sconce', 'ceiling light', 'bulb',
     'pendant', 'spotlight', 'chandelier', 'floor lamp', 'night light', 'string lights', 'led',
     'lantern', 'lampshade', 'halogen', 'desk lamp', 'bedside lamp', 'reading lamp',
@@ -675,10 +693,11 @@ export const categoryKeywords = {
     'filament', 'Edison', 'retro', 'vintage', 'globe', 'flame', 'spot', 'dichroic',
     'base', 'socket', 'suspension', 'canopy', 'cable', 'wire', 'cord', 'chain',
     'downlight', 'uplighter', 'tiffany lamp', 'task light', 'light fitting', 'light fixture'
-  ],
+    ]
+  },
 
-  'Mode et Vêtements': [
-    // Français
+  'Mode et Vêtements': {
+   fr: [
     'vetement', 'habillement', 'mode', 'homme', 'femme', 'enfant', 'tshirt',
     'chemise', 'pantalon', 'jean', 'robe', 'jupe', 'manteau', 'veste', 'blouson',
     'pull', 'sweat', 'gilet', 'sous-vetement', 'chaussette', 'collant',
@@ -697,9 +716,9 @@ export const categoryKeywords = {
     'peignoir', 'doudou', 'grenouillère', 'body bébé', 'bavoir', 'barboteuse',
     'maillot de corps', 'sac', 'sac à main', 'pochette', 'cartable', 'besace',
     'sacoche', 'sac à dos', 'valise', 'portefeuille', 'porte-monnaie', 'bijou',
-    'montre', 'bracelet', 'collier', 'bague', 'boucle d\'oreille', 'lunettes',
-    
-    // Anglais
+    'montre', 'bracelet', 'collier', 'bague', 'boucle d\'oreille', 'lunettes'
+    ],
+    en: [
     'clothing', 'fashion', 'men', 'women', 'child', 'tshirt',
     'shirt', 'pants', 'jeans', 'dress', 'skirt', 'coat', 'jacket',
     'sweater', 'sweatshirt', 'cardigan', 'underwear', 'sock', 'tights',
@@ -720,10 +739,11 @@ export const categoryKeywords = {
     'pouch', 'backpack', 'suitcase', 'wallet', 'coin purse', 'jewelry',
     'watch', 'bracelet', 'necklace', 'ring', 'earring', 'glasses',
     'hoodie', 'crop top', 'maxi dress', 'mini skirt', 'pleated skirt', 'denim jacket'
-  ],
+    ]
+  },
 
-  'Bijoux et Accessoires': [
-    // Français
+  'Bijoux et Accessoires': {
+   fr: [
     'bijou', 'montre', 'bracelet', 'collier', 'bague', 'boucle', 'oreille',
     'pendentif', 'chaine', 'jonc', 'gourmette', 'diamant', 'or', 'argent',
     'plaque', 'perle', 'swarovski', 'cristal', 'acier', 'titane', 'cuir',
@@ -739,9 +759,9 @@ export const categoryKeywords = {
     'corail', 'ambre', 'porcelaine', 'résine', 'bois', 'corne', 'os', 'ivoire',
     'écaille', 'plume', 'bijou ethnique', 'bijou fantaisie', 'bijou artisanal', 'bijou vintage',
     'bijou contemporain', 'bijou antique', 'accessoire cheveux', 'pince', 'barrette',
-    'épingle à cheveux', 'headband', 'bandeau', 'serre-tête', 'bijou de tête', 'ornement',
-    
-    // Anglais
+    'épingle à cheveux', 'headband', 'bandeau', 'serre-tête', 'bijou de tête', 'ornement'
+    ],
+    en: [
     'jewelry', 'watch', 'bracelet', 'necklace', 'ring', 'earring',
     'pendant', 'chain', 'bangle', 'id bracelet', 'diamond', 'gold', 'silver',
     'plated', 'pearl', 'swarovski', 'crystal', 'steel', 'titanium', 'leather',
@@ -759,10 +779,11 @@ export const categoryKeywords = {
     'contemporary jewelry', 'antique jewelry', 'hair accessory', 'hair clip', 'barrette',
     'hairpin', 'headband', 'hair band', 'head piece', 'hair ornament', 'embellishment',
     'cocktail ring', 'promise ring', 'toe ring', 'belly button ring', 'gemstone', 'birthstone'
-  ],
+    ]
+  },
 
-  'Chaussures': [
-    // Français
+  'Chaussures': {
+   fr: [
     'chaussure', 'basket', 'sneaker', 'botte', 'bottine', 'escarpin', 'mocassin',
     'sandale', 'ballerine', 'derby', 'richelieu', 'slip-on', 'tong', 'mule',
     'sabot', 'semelle', 'lacet', 'talon', 'compense', 'plateforme', 'sport',
@@ -779,9 +800,9 @@ export const categoryKeywords = {
     'babouche', 'espadrille', 'cuir', 'daim', 'nubuck', 'toile', 'synthétique',
     'textile', 'mesh', 'gore-tex', 'imperméable', 'membrane', 'respirant', 'amorti',
     'confort', 'orthopédique', 'semelle intérieure', 'voûte plantaire', 'talon aiguille',
-    'talon bloc', 'talon kitten', 'talon bottier', 'stiletto', 'compensé', 'corde',
-    
-    // Anglais
+    'talon bloc', 'talon kitten', 'talon bottier', 'stiletto', 'compensé', 'corde'
+    ],
+    en: [
     'shoe', 'sneaker', 'boot', 'pump', 'loafer',
     'sandal', 'ballet flat', 'derby', 'oxford', 'slip-on', 'flip-flop', 'mule',
     'clog', 'insole', 'lace', 'heel', 'wedge', 'platform', 'sport',
@@ -800,10 +821,11 @@ export const categoryKeywords = {
     'comfort', 'orthopedic', 'insole', 'arch support', 'stiletto heel',
     'block heel', 'kitten heel', 'cuban heel', 'stiletto', 'wedge', 'rope',
     'high-top', 'low-top', 'moccasin', 'boat shoe', 'driving shoe', 'penny loafer'
-  ],
+    ]
+  },
 
-  'Musique et CD': [
-    // Français
+  'Musique et CD': {
+   fr: [
     'musique', 'cd', 'vinyle', 'album', 'single', 'compilation', 'coffret',
     'edition', 'limitee', 'collector', 'box', 'set', 'pop', 'rock', 'metal',
     'jazz', 'classique', 'rap', 'hip-hop', 'electro', 'blues', 'reggae',
@@ -821,9 +843,9 @@ export const categoryKeywords = {
     'tropical', 'latino', 'salsa', 'merengue', 'bachata', 'tango', 'flamenco',
     'oriental', 'raï', 'afro', 'celte', 'reggaeton', 'ska', 'dub', 'zouk',
     'K-pop', 'J-pop', 'chansons de Noël', 'musique religieuse', 'musique sacrée',
-    'hymne', 'baroque', 'renaissance', 'médiéval', 'contemporain', 'avant-garde',
-    
-    // Anglais
+    'hymne', 'baroque', 'renaissance', 'médiéval', 'contemporain', 'avant-garde'
+    ],
+    en: [
     'music', 'cd', 'vinyl', 'album', 'single', 'compilation', 'box set',
     'edition', 'limited', 'collector', 'box', 'set', 'pop', 'rock', 'metal',
     'jazz', 'classical', 'rap', 'hip-hop', 'electronic', 'blues', 'reggae',
@@ -843,10 +865,11 @@ export const categoryKeywords = {
     'K-pop', 'J-pop', 'Christmas songs', 'religious music', 'sacred music',
     'hymn', 'baroque', 'renaissance', 'medieval', 'contemporary', 'avant-garde',
     'streaming', 'digital download', 'deluxe edition', 'remastered', 'anniversary edition'
-  ],
+    ]
+  },
 
-  'Outils et Bricolage': [
-    // Français
+  'Outils et Bricolage': {
+   fr: [
     'outil', 'bricolage', 'tournevis', 'marteau', 'perceuse', 'visseuse', 'scie',
     'ponceuse', 'meuleuse', 'cle', 'pince', 'niveau', 'metre', 'equerre', 'etabli',
     'compresseur', 'visserie', 'clouterie', 'quincaillerie', 'fixation', 'joint',
@@ -866,9 +889,9 @@ export const categoryKeywords = {
     'mèche', 'embout', 'fraise', 'disque', 'lame', 'abrasif', 'papier de verre',
     'lime', 'râpe', 'colle', 'adhésif', 'ruban', 'isolant', 'mousse expansive',
     'silicone', 'mastic', 'enduit', 'primaire', 'vernis', 'lasure', 'teinte',
-    'diluant', 'décapant', 'solvant', 'huile', 'graisse', 'lubrifiant', 'antirouille',
-    
-    // Anglais
+    'diluant', 'décapant', 'solvant', 'huile', 'graisse', 'lubrifiant', 'antirouille'
+    ],
+    en: [
     'tool', 'diy', 'screwdriver', 'hammer', 'drill', 'driver', 'saw',
     'sander', 'grinder', 'wrench', 'pliers', 'level', 'tape measure', 'square', 'workbench',
     'compressor', 'screws', 'nails', 'hardware', 'fastener', 'seal',
@@ -889,44 +912,46 @@ export const categoryKeywords = {
     'file', 'rasp', 'glue', 'adhesive', 'tape', 'insulation', 'expanding foam',
     'silicone', 'putty', 'filler', 'primer', 'varnish', 'wood stain', 'tint',
     'thinner', 'stripper', 'solvent', 'oil', 'grease', 'lubricant', 'rust inhibitor'
-  ],
+    ]
+  },
 
-  'Photographie': [
-    // Français 
-    "appareil photo", "objectif", "boitier", "trépied", "capteur", "flash", "numérique", 
-    "argentique", "hybride", "téléobjectif", "grandangle", "macro", "photographie", 
-    "compact", "pellicule", "focale", "mise au point", "viseur", "exposition", 
-    "obturateur", "diaphragme", "ouverture", "sac photo", "réflecteur", "filtre",
-    "papier photo", "impression photo", "tirage photo", "encre photo", "brillant", "mat",
-    "reflex", "bridge", "stabilisateur", "collimateur", "balance des blancs", "cadrage",
-    "profondeur de champ", "bokeh", "contre-jour", "portrait", "paysage", "studio",
-    "lumière continue", "déclencheur", "retardateur", "pied", "trépied", "monopode",
-    "correcteur", "photosensible", "chimie photo", "développeur", "fixateur", "bain d'arrêt",
-    "agrandisseur", "chambre noire", "polaroid", "instantané", "lomographie", "carte mémoire",
-    "stockage", "batterie", "chargeur", "logiciel retouche", "lightroom", "photoshop",
-    "raw", "jpeg", "plein format", "aps-c", "recadrage", "résolution", "pixel", "mode rafale",
-    "flash cobra", "diffuseur", "pare-soleil", "bonnette", "filtre polarisant", "filtre nd",
+  'Photographie': {
+   fr: [ 
+    'appareil photo', 'objectif', 'boitier', 'trépied', 'capteur', 'flash', 'numérique', 
+    'argentique', 'hybride', 'téléobjectif', 'grandangle', 'macro', 'photographie', 
+    'compact', 'pellicule', 'focale', 'mise au point', 'viseur', 'exposition', 
+    'obturateur', 'diaphragme', 'ouverture', 'sac photo', 'réflecteur', 'filtre',
+    'papier photo', 'impression photo', 'tirage photo', 'encre photo', 'brillant', 'mat',
+    'reflex', 'bridge', 'stabilisateur', 'collimateur', 'balance des blancs', 'cadrage',
+    'profondeur de champ', 'bokeh', 'contre-jour', 'portrait', 'paysage', 'studio',
+    'lumière continue', 'déclencheur', 'retardateur', 'pied', 'trépied', 'monopode',
+    'correcteur', 'photosensible', 'chimie photo', 'développeur', 'fixateur', 'bain arrêt',
+    'agrandisseur', 'chambre noire', 'polaroid', 'instantané', 'lomographie', 'carte mémoire',
+    'stockage', 'batterie', 'chargeur', 'logiciel retouche', 'lightroom', 'photoshop',
+    'raw', 'jpeg', 'plein format', 'aps-c', 'recadrage', 'résolution', 'pixel', 'mode rafale',
+    'flash cobra', 'diffuseur', 'pare-soleil', 'bonnette', 'filtre polarisant', 'filtre nd',
       
     // Anglais
-    "camera", "dslr", "lens", "mirrorless", "telephoto", "stabilizer", 
-    "photography", "fisheye", "viewfinder", "shutter", "aperture", 
-    "iso", "camera bag", "lightroom", "photoshop", "monopod", "bracketing", 
-    "hdr", "panorama", "timelapse", "megapixels", "lens hood", "prime lens", 
-    "landscape", "portrait", "photo paper", "printing", "glossy", "matte", 
-    "photo ink", "photo print", "epson photo", "canon photo", "full frame",
-    "crop sensor", "zoom lens", "wide angle", "focal length", "depth of field",
-    "exposure triangle", "white balance", "raw format", "jpeg", "histogram",
-    "light meter", "flash sync", "hotshoe", "memory card", "sd card", "compact flash",
-    "tripod head", "ball head", "gimbal", "polarizing filter", "neutral density",
-    "graduated filter", "color correction", "macro photography", "street photography",
-    "wildlife photography", "studio strobe", "softbox", "beauty dish", "snoot",
-    "umbrella", "backdrop", "light stand", "tethering", "focus stacking", "bracketing",
-    "time-lapse", "intervalometer", "golden hour", "blue hour", "composition",
-    "rule of thirds", "leading lines", "symmetry", "framing", "spot metering"
-  ],
+    'camera', 'dslr', 'lens', 'mirrorless', 'telephoto', 'stabilizer', 
+    'photography', 'fisheye', 'viewfinder', 'shutter', 'aperture', 
+    'iso', 'camera bag', 'lightroom', 'photoshop', 'monopod', 'bracketing', 
+    'hdr', 'panorama', 'timelapse', 'megapixels', 'lens hood', 'prime lens', 
+    'landscape', 'portrait', 'photo paper', 'printing', 'glossy', 'matte', 
+    'photo ink', 'photo print', 'epson photo', 'canon photo', 'full frame',
+    'crop sensor', 'zoom lens', 'wide angle', 'focal length', 'depth of field',
+    'exposure triangle', 'white balance', 'raw format', 'jpeg', 'histogram',
+    'light meter', 'flash sync', 'hotshoe', 'memory card', 'sd card', 'compact flash',
+    'tripod head', 'ball head', 'gimbal', 'polarizing filter', 'neutral density',
+    'graduated filter', 'color correction', 'macro photography', 'street photography',
+    'wildlife photography', 'studio strobe', 'softbox', 'beauty dish', 'snoot',
+    'umbrella', 'backdrop', 'light stand', 'tethering', 'focus stacking', 'bracketing',
+    'time-lapse', 'intervalometer', 'golden hour', 'blue hour', 'composition',
+    'rule of thirds', 'leading lines', 'symmetry', 'framing', 'spot metering'
+    ]
+  },
 
-  'Produits Ménagers': [
-    // Français
+  'Produits Ménagers': {
+   fr: [
     'nettoyage', 'entretien', 'menager', 'savon', 'lessive', 'detergent', 'desinfectant',
     'aspirateur', 'balai', 'serpillere', 'chiffon', 'produit', 'vaisselle', 'rangement',
     'nettoyant', 'desodorisant', 'antipoussiere', 'brosse', 'eponge', 'vitre', 'sol',
@@ -947,9 +972,9 @@ export const categoryKeywords = {
     'container', 'poubelle', 'collecteur', 'tri', 'compost', 'recyclage', 'déchet',
     'ordure', 'lingette', 'torchon', 'lavette', 'microfibre', 'gant', 'éponge',
     'grattoir', 'raclette', 'balai', 'balai-brosse', 'balai espagnol', 'pelle', 'balayette',
-    'plumeau', 'manche télescopique', 'tête de loup', 'brosse WC', 'balai WC',
-    
-    // Anglais
+    'plumeau', 'manche télescopique', 'tête de loup', 'brosse WC', 'balai WC'
+    ],
+    en: [
     'cleaning', 'maintenance', 'household', 'soap', 'laundry', 'detergent', 'disinfectant',
     'vacuum', 'broom', 'mop', 'cloth', 'product', 'dishwashing', 'storage',
     'cleaner', 'deodorizer', 'duster', 'brush', 'sponge', 'window', 'floor',
@@ -971,10 +996,11 @@ export const categoryKeywords = {
     'garbage', 'wipe', 'dish towel', 'dishcloth', 'microfiber', 'glove', 'sponge',
     'scraper', 'squeegee', 'broom', 'scrub brush', 'push broom', 'dustpan', 'hand brush',
     'feather duster', 'telescopic handle', 'cobweb duster', 'toilet brush', 'toilet cleaner'
-  ],
+    ]
+  },
 
-  'Quincaillerie': [
-    // Français
+  'Quincaillerie': {
+   fr: [
     'outil', 'bricolage', 'vis', 'clou', 'perceuse', 'tournevis', 'marteau',
     'pince', 'scie', 'ponceuse', 'peinture', 'colle', 'echelle', 'escabeau',
     'rangement', 'boite', 'caisse', 'etabli', 'accessoire', 'boulon', 'écrou',
@@ -992,9 +1018,9 @@ export const categoryKeywords = {
     'protection', 'gant', 'lunette', 'casque', 'masque', 'bouchon oreille',
     'genouillère', 'ceinture', 'harnais', 'chaussure sécurité', 'vêtement travail',
     'mesure', 'règle', 'mètre', 'niveau', 'fil à plomb', 'équerre', 'compas',
-    'jauge', 'calibre', 'rapporteur', 'gabarit', 'pochoir', 'trace', 'marqueur',
-    
-    // Anglais
+    'jauge', 'calibre', 'rapporteur', 'gabarit', 'pochoir', 'trace', 'marqueur'
+    ],
+    en: [
     'tool', 'diy', 'screw', 'nail', 'drill', 'screwdriver', 'hammer',
     'pliers', 'saw', 'sander', 'paint', 'glue', 'ladder', 'step ladder',
     'storage', 'box', 'crate', 'workbench', 'accessory', 'bolt', 'nut',
@@ -1014,10 +1040,11 @@ export const categoryKeywords = {
     'measurement', 'ruler', 'tape measure', 'level', 'plumb line', 'square', 'compass',
     'gauge', 'caliper', 'protractor', 'template', 'stencil', 'marking', 'marker',
     'hardware store', 'joinery', 'fasteners', 'woodworking', 'anchors', 'trowel'
-  ],
+    ]
+  },
 
-  'Salle de bain': [
-    // Français
+  'Salle de bain': {
+   fr: [
     'bain', 'douche', 'lavabo', 'robinet', 'toilette', 'wc', 'serviette',
     'tapis bain', 'armoire toilette', 'brosse dent', 'savon', 'salle eau',
     'sanitaire', 'baignoire', 'vasque', 'miroir', 'porte serviette', 
@@ -1037,9 +1064,9 @@ export const categoryKeywords = {
     'éponge', 'gant toilette', 'serviette main', 'serviette bain', 'peignoir', 'drap bain',
     'tapis contour WC', 'produit nettoyant', 'gel douche', 'shampoing', 'après-shampoing',
     'dentifrice', 'bain moussant', 'sel de bain', 'cosmétique', 'soin', 'maquillage',
-    'rasoir', 'mousse à raser', 'after-shave', 'parfum', 'déodorant', 'coton-tige',
-    
-    // Anglais
+    'rasoir', 'mousse à raser', 'after-shave', 'parfum', 'déodorant', 'coton-tige'
+    ],
+    en: [
     'bath', 'shower', 'sink', 'faucet', 'tap', 'toilet', 'towel',
     'bath mat', 'medicine cabinet', 'toothbrush', 'soap', 'bathroom',
     'sanitary', 'bathtub', 'basin', 'mirror', 'towel rack',
@@ -1061,10 +1088,11 @@ export const categoryKeywords = {
     'toothpaste', 'bubble bath', 'bath salt', 'cosmetic', 'skincare', 'makeup',
     'razor', 'shaving foam', 'after-shave', 'perfume', 'deodorant', 'cotton swab',
     'plunger', 'toilet plunger', 'bathroom accessories', 'shower caddy', 'steam shower'
-  ],
+    ]
+  },
 
-  'Santé et Soins personnels': [
-    // Français
+  'Santé et Soins personnels': {
+   fr: [
     'sante', 'soin', 'personnel', 'hygiene', 'medicament', 'vitamine', 'complement',
     'alimentaire', 'parapharmacie', 'brosse', 'dent', 'dentifrice', 'savon',
     'gel', 'douche', 'shampooing', 'deodorant', 'rasoir', 'mousse', 'creme',
@@ -1083,9 +1111,9 @@ export const categoryKeywords = {
     'vernis', 'dissolvant', 'manucure', 'pédicure', 'pince à épiler', 'coton-tige',
     'mouchoir', 'lingette', 'coupe-faim', 'minceur', 'drainage', 'cellulite', 'relaxant',
     'sommeil', 'stress', 'anxiété', 'énergie', 'vitalité', 'mémoire', 'concentration',
-    'articulation', 'muscle', 'circulation', 'digestion', 'transit', 'immunité',
-    
-    // Anglais
+    'articulation', 'muscle', 'circulation', 'digestion', 'transit', 'immunité'
+    ],
+    en: [
     'health', 'care', 'personal', 'hygiene', 'medicine', 'vitamin', 'supplement',
     'dietary', 'pharmacy', 'brush', 'tooth', 'toothpaste', 'soap',
     'gel', 'shower', 'shampoo', 'deodorant', 'razor', 'foam', 'cream',
@@ -1106,10 +1134,11 @@ export const categoryKeywords = {
     'sleep', 'stress', 'anxiety', 'energy', 'vitality', 'memory', 'concentration',
     'joint', 'muscle', 'circulation', 'digestion', 'transit', 'immunity',
     'first aid kit', 'sunscreen', 'sunblock', 'moisturizer', 'body wash', 'conditioner'
-  ],
+    ]
+  },
 
-  'Sports et Plein air': [
-    // Français
+  'Sports et Plein air': {
+   fr: [
     'sport', 'plein air', 'fitness', 'musculation', 'velo', 'course', 'running',
     'natation', 'randonnee', 'camping', 'peche', 'chasse', 'ski', 'snowboard',
     'tennis', 'football', 'basketball', 'rugby', 'golf', 'equitation', 'yoga',
@@ -1129,9 +1158,9 @@ export const categoryKeywords = {
     'tapis de course', 'appareil abdominaux', 'banc de musculation', 'cage à squat',
     'barre de traction', 'trampoline', 'plein air', 'bivouac', 'tente', 'sac de couchage',
     'matelas gonflable', 'réchaud', 'gourde', 'thermos', 'lampe frontale', 'boussole',
-    'GPS', 'jumelles', 'longue-vue', 'drone', 'caméra sportive', 'montre connectée',
-    
-    // Anglais
+    'GPS', 'jumelles', 'longue-vue', 'drone', 'caméra sportive', 'montre connectée'
+    ],
+    en: [
     'sports', 'outdoors', 'fitness', 'bodybuilding', 'bike', 'run', 'running',
     'swimming', 'hiking', 'camping', 'fishing', 'hunting', 'ski', 'snowboard',
     'tennis', 'soccer', 'basketball', 'rugby', 'golf', 'horse riding', 'yoga',
@@ -1153,18 +1182,50 @@ export const categoryKeywords = {
     'air mattress', 'stove', 'water bottle', 'thermos', 'headlamp', 'compass',
     'GPS', 'binoculars', 'spotting scope', 'drone', 'action camera', 'smartwatch',
     'backpack', 'trekking pole', 'sport bottle', 'protein shaker', 'fitness tracker'
-  ],
+    ]
+  },
 
-  'Livres': [
-    // Français
+  // Les livres sont traités par ISBN mais on pourrait passer au travers
+  // Ou bien on pourrait avoir des articles en rapport avec la lecture
+  'Accessoires de lecture': {
+   fr: [
     'livre', 'roman', 'bande dessinee', 'bd', 'manga', 'biographie', 'autobiographie',
     'encyclopedie', 'dictionnaire', 'guide', 'recit', 'essai', 'nouvelle', 'conte',
     'poesie', 'revue', 'magazine', 'journal', 'album', 'partition', 'manuel', 'scolaire',
-    // Anglais
+    'marque-page', 'signet', 'liseuse', 'kindle', 'kobo', 'e-reader', 'tablette', 
+    'support livre', 'bibliotheque', 'etagere livres', 'lampe lecture', 'loupe lecture',
+    'pupitre', 'lutrin', 'reliure', 'pochette livre', 'housse liseuse', 'protection kindle',
+    'papier', 'cahier', 'carnet', 'stylo', 'crayon', 'libraire', 'librairie', 'bibliotheque',
+    'litterature', 'fiction', 'thriller', 'polar', 'fantastique', 'science-fiction', 
+    'romance', 'collection', 'edition', 'tome', 'volume', 'serie', 'saga', 'trilogie',
+    'poche', 'grand format', 'broche', 'relie', 'couverture', 'jaquette', 'auteur',
+    'editeur', 'publication', 'parution', 'nouveaute', 'bestseller', 'classique',
+    'annales', 'reference', 'etude', 'apprentissage', 'sciences', 'histoire', 'geographie',
+    'art', 'cuisine', 'voyage', 'tourisme', 'pratique', 'sante', 'bien-etre', 'psychologie',
+    'developpement personnel', 'coffret', 'numismatique', 'coin', 'philatelie', 'timbre',
+    'collection', 'porte-livre', 'tourne-page', 'repose-livre', 'etui', 'organiseur',
+    'reliure', 'intercalaire', 'onglet', 'adhesif', 'protege-livre'
+    ],
+    en: [
     'book', 'novel', 'comic', 'comics', 'manga', 'biography', 'autobiography',
     'encyclopedia', 'dictionary', 'guide', 'story', 'essay', 'short story', 'tale',
-    'poetry', 'magazine', 'journal', 'album', 'sheet music', 'textbook', 'educational'
-  ]
+    'poetry', 'magazine', 'journal', 'album', 'sheet music', 'textbook', 'educational',
+    'bookmark', 'e-reader', 'kindle', 'kobo', 'tablet', 'reading light', 'book stand',
+    'bookshelf', 'book holder', 'reading glasses', 'magnifier', 'book weight', 'book cover',
+    'e-reader case', 'kindle cover', 'kobo case', 'book sleeve', 'reading lamp', 'book rest',
+    'book easel', 'book binding', 'binding machine', 'reading pillow', 'page turner',
+    'bookend', 'library', 'bookstore', 'literature', 'fiction', 'mystery', 'thriller',
+    'fantasy', 'science fiction', 'romance', 'collection', 'edition', 'volume', 'series',
+    'saga', 'trilogy', 'paperback', 'hardcover', 'dust jacket', 'cover', 'author',
+    'publisher', 'publication', 'release', 'new release', 'bestseller', 'classic',
+    'study guide', 'reference', 'learning', 'academic', 'science', 'history', 'geography',
+    'art', 'cooking', 'travel', 'health', 'well-being', 'psychology', 'self-help',
+    'box set', 'collection', 'numismatics', 'philately', 'book light', 'page holder',
+    'book lamp', 'reading tracker', 'book clip', 'page marker', 'book divider', 'tab',
+    'sticky note', 'book protector', 'reading stand', 'book cart', 'book caddy',
+    'reading chair', 'book tote', 'library card', 'book repair', 'page reinforcement'
+    ]
+  }
 };
 
 // Correspondance entre catégories en français et anglais
@@ -1200,7 +1261,7 @@ export const categoryMapping = {
   'Salle de bain': 'Bathroom',
   'Santé et Soins personnels': 'Health & Personal Care',
   'Sports et Plein air': 'Sports & Outdoors',
-  'Livres': 'Books',
+  'Accessoires de lecture': 'Books & Reading Accessories',
   'default': 'default'
 };
 
@@ -1380,34 +1441,42 @@ const TfIdfClassifier = {
 }
 
 // Fonction pour récupérer les mots-clés combinés avec gestion d'erreur améliorée
-async function getCombinedKeywords() {
+async function getCombinedKeywords(lang = 'fr') {
   try {
     // Récupérer les mots-clés personnalisés depuis le stockage
     const result = await browser.storage.local.get('userCategoryKeywords');
     const userKeywords = result.userCategoryKeywords || {};
     
     // Créer une copie des mots-clés par défaut
-    const combinedKeywords = structuredClone(categoryKeywords);
+    const combinedKeywords = {};
     
-    // Fusionner avec les mots-clés personnalisés
-    Object.entries(userKeywords).forEach(([category, keywords]) => {
-      if (!combinedKeywords[category]) {
-        combinedKeywords[category] = [];
+    // Construire les mots-clés en fonction de la langue
+    Object.entries(categoryKeywords).forEach(([category, keywordsByLang]) => {
+      // Initialiser le tableau pour cette catégorie
+      combinedKeywords[category] = [];
+      
+      // Ajouter les mots-clés par défaut pour la langue spécifiée
+      if (keywordsByLang[lang] && Array.isArray(keywordsByLang[lang])) {
+        combinedKeywords[category] = [...keywordsByLang[lang]];
       }
       
-      // Ajouter les mots-clés français et anglais
-      if (keywords.fr && Array.isArray(keywords.fr)) {
-        combinedKeywords[category] = [...combinedKeywords[category], ...keywords.fr];
-      }
-      if (keywords.en && Array.isArray(keywords.en)) {
-        combinedKeywords[category] = [...combinedKeywords[category], ...keywords.en];
+      // Ajouter les mots-clés personnalisés pour la langue spécifiée
+      if (userKeywords[category] && userKeywords[category][lang] && Array.isArray(userKeywords[category][lang])) {
+        combinedKeywords[category] = [...combinedKeywords[category], ...userKeywords[category][lang]];
       }
     });
     
     return combinedKeywords;
   } catch (error) {
     console.error('DansMaZone: Erreur lors du chargement des mots-clés personnalisés', error);
-    return categoryKeywords; // Fallback aux mots-clés par défaut
+    
+    // Fallback aux mots-clés par défaut pour la langue spécifiée
+    const defaultKeywords = {};
+    Object.entries(categoryKeywords).forEach(([category, keywordsByLang]) => {
+      defaultKeywords[category] = keywordsByLang[lang] || [];
+    });
+    
+    return defaultKeywords;
   }
 }
 
@@ -1417,13 +1486,18 @@ async function getCombinedKeywords() {
  */
 export async function classifyPage(combinedSites) {
   try {
-    // Obtenir les mots-clés combinés (par défaut + personnalisés)
-    const combinedKeywords = await getCombinedKeywords();
+    // Détecter la langue de la page
+    const lang = detectLanguage();
+    console.info('DansMaZone: Langue détectée:', lang);
+    
+    // Obtenir les mots-clés combinés pour la langue détectée
+    const combinedKeywords = await getCombinedKeywords(lang);
     
     // Extraire le texte de la page
     const productText = extractProductText();
     
     // Préparer les données TF-IDF (avec mise en cache)
+    // Remarque: preparedData est maintenant spécifique à la langue
     if (!preparedData) {
       preparedData = TfIdfClassifier.prepare(combinedKeywords);
     }
@@ -1439,7 +1513,6 @@ export async function classifyPage(combinedSites) {
     console.info('DansMaZone: Category detected:', category);
     
     // Gérer la traduction si nécessaire
-    const lang = detectLanguage();
     if (lang === 'en' && category !== 'default') {
       // Convertir en anglais si nécessaire
       const enCategory = categoryMapping[category] || category;
