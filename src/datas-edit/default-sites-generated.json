@@ -199,20 +199,20 @@
       "name": "Jean Coutu",
       "urls": {
         "fr": "https://www.jeancoutu.com/magasiner/recherche?filter=##QUERY##",
-        "en": "https://www.jeancoutu.com/shop/search?filter=##QUERY##"
+        "en": "https://www.jeancoutu.com/en/shop/search?filter=##QUERY##"
       },
       "validation": {
         "fr": {
           "status": "invalid",
           "code": 403,
-          "timestamp": 1743696928013,
+          "timestamp": 1743722471023,
           "error": "Access forbidden (403)"
         },
         "en": {
           "status": "invalid",
-          "code": 404,
-          "timestamp": 1743696928140,
-          "error": "Page not found (404)"
+          "code": 403,
+          "timestamp": 1743722471027,
+          "error": "Access forbidden (403)"
         }
       }
     },
@@ -305,21 +305,21 @@
     {
       "name": "Clément",
       "urls": {
-        "fr": "https://www.clement.ca/recherche?q=##QUERY##",
-        "en": "https://www.clement.ca/recherche?q=##QUERY##"
+        "fr": "https://www.clement.ca/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.clement.ca/en/catalogsearch/result/?q=##QUERY##"
       },
       "validation": {
         "fr": {
-          "status": "invalid",
-          "code": 404,
-          "timestamp": 1743696929503,
-          "error": "Page not found (404)"
+          "status": "valid",
+          "code": 200,
+          "timestamp": 1743722302494,
+          "error": null
         },
         "en": {
-          "status": "invalid",
-          "code": 404,
-          "timestamp": 1743696929545,
-          "error": "Page not found (404)"
+          "status": "valid",
+          "code": 200,
+          "timestamp": 1743722302518,
+          "error": null
         }
       }
     },
@@ -555,27 +555,6 @@
           "code": 403,
           "timestamp": 1743696931623,
           "error": "Access forbidden (403)"
-        }
-      }
-    },
-    {
-      "name": "Anamaria Dessin",
-      "urls": {
-        "fr": "https://anamariedessin.ca/fr/search?q=##QUERY##",
-        "en": "https://anamariedessin.ca/en/search?q=##QUERY##"
-      },
-      "validation": {
-        "fr": {
-          "status": "invalid",
-          "code": "NETWORK_ERROR",
-          "timestamp": 1743696931685,
-          "error": "No response received from server"
-        },
-        "en": {
-          "status": "invalid",
-          "code": "NETWORK_ERROR",
-          "timestamp": 1743696931690,
-          "error": "No response received from server"
         }
       }
     },

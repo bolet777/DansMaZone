@@ -1,6 +1,6 @@
 {
   "name": "dansmazone",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Extension pour chercher sur Amazon et acheter localement.",
   "author": "Bolet <info@dansmazone.ca> (https://dAnsMAZONe.ca)",
   "license": "MIT",
@@ -22,6 +22,7 @@
     "build:firefox": "cross-env NODE_ENV=production TARGET=firefox webpack",
     "build:edge": "cross-env NODE_ENV=production TARGET=edge webpack",
     "edit-sites": "cd src/datas-edit/url-checker && npm start",
+    "edit-sites:dev": "nodemon --config nodemon.edit-sites.json",
     "edit-sites:install": "cd src/datas-edit/url-checker && npm install"
   },
   "browserslist": [
@@ -56,6 +57,7 @@
     "jest": "^29.7.0",
     "json-loader": "^0.5.7",
     "mini-css-extract-plugin": "^2.9.2",
+    "nodemon": "^3.1.9",
     "npm-run-all": "^4.1.5",
     "raw-loader": "^4.0.2",
     "rimraf": "^5.0.5",

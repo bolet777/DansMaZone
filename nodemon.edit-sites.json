@@ -1,0 +1,6 @@
+{
+  "watch": ["src/datas-edit/url-checker/server.js", "src/datas-edit/url-checker/url-validator.js"],
+  "ignore": ["node_modules"],
+  "ext": "js,json",
+  "exec": "node src/datas-edit/url-checker/server.js"
+}

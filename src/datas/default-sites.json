@@ -199,20 +199,20 @@
       "name": "Jean Coutu",
       "urls": {
         "fr": "https://www.jeancoutu.com/magasiner/recherche?filter=##QUERY##",
-        "en": "https://www.jeancoutu.com/shop/search?filter=##QUERY##"
+        "en": "https://www.jeancoutu.com/en/shop/search?filter=##QUERY##"
       },
       "validation": {
         "fr": {
           "status": "invalid",
           "code": 403,
-          "timestamp": 1743696928013,
+          "timestamp": 1743722471023,
           "error": "Access forbidden (403)"
         },
         "en": {
           "status": "invalid",
-          "code": 404,
-          "timestamp": 1743696928140,
-          "error": "Page not found (404)"
+          "code": 403,
+          "timestamp": 1743722471027,
+          "error": "Access forbidden (403)"
         }
       }
     },
@@ -305,21 +305,21 @@
     {
       "name": "Clément",
       "urls": {
-        "fr": "https://www.clement.ca/recherche?q=##QUERY##",
-        "en": "https://www.clement.ca/recherche?q=##QUERY##"
+        "fr": "https://www.clement.ca/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.clement.ca/en/catalogsearch/result/?q=##QUERY##"
       },
       "validation": {
         "fr": {
-          "status": "invalid",
-          "code": 404,
-          "timestamp": 1743696929503,
-          "error": "Page not found (404)"
+          "status": "valid",
+          "code": 200,
+          "timestamp": 1743722302494,
+          "error": null
         },
         "en": {
-          "status": "invalid",
-          "code": 404,
-          "timestamp": 1743696929545,
-          "error": "Page not found (404)"
+          "status": "valid",
+          "code": 200,
+          "timestamp": 1743722302518,
+          "error": null
         }
       }
     },
@@ -555,27 +555,6 @@
           "code": 403,
           "timestamp": 1743696931623,
           "error": "Access forbidden (403)"
-        }
-      }
-    },
-    {
-      "name": "Anamaria Dessin",
-      "urls": {
-        "fr": "https://anamariedessin.ca/fr/search?q=##QUERY##",
-        "en": "https://anamariedessin.ca/en/search?q=##QUERY##"
-      },
-      "validation": {
-        "fr": {
-          "status": "invalid",
-          "code": "NETWORK_ERROR",
-          "timestamp": 1743696931685,
-          "error": "No response received from server"
-        },
-        "en": {
-          "status": "invalid",
-          "code": "NETWORK_ERROR",
-          "timestamp": 1743696931690,
-          "error": "No response received from server"
         }
       }
     },
@@ -816,6 +795,10 @@
   "Décoration": [
     {
       "name": "La Baie",
+      "urls": {
+        "fr": "https://www.thebay.com/search?q=##QUERY##",
+        "en": "https://www.thebay.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -829,14 +812,14 @@
           "timestamp": 1743696934150,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://www.thebay.com/search?q=##QUERY##",
-        "en": "https://www.thebay.com/search?q=##QUERY##"
       }
     },
     {
       "name": "Bouclair",
+      "urls": {
+        "fr": "https://www.bouclair.com/fr/recherche?q=##QUERY##",
+        "en": "https://www.bouclair.com/en/recherche?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -850,14 +833,14 @@
           "timestamp": 1743696934250,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.bouclair.com/fr/recherche?q=##QUERY##",
-        "en": "https://www.bouclair.com/en/recherche?q=##QUERY##"
       }
     },
     {
       "name": "Simons",
+      "urls": {
+        "fr": "https://www.simons.ca/fr/recherche?q=##QUERY##",
+        "en": "https://www.simons.ca/en/recherche?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -871,14 +854,14 @@
           "timestamp": 1743696934340,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://www.simons.ca/fr/recherche?q=##QUERY##",
-        "en": "https://www.simons.ca/en/recherche?q=##QUERY##"
       }
     },
     {
       "name": "nüspace",
+      "urls": {
+        "fr": "https://www.nuspace.ca/search?q=##QUERY##",
+        "en": "https://www.nuspace.ca/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -892,16 +875,16 @@
           "timestamp": 1743696934495,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.nuspace.ca/search?q=##QUERY##",
-        "en": "https://www.nuspace.ca/search?q=##QUERY##"
       }
     }
   ],
   "Électroménager": [
     {
       "name": "Canadian Appliance Source",
+      "urls": {
+        "fr": "https://www.canadianappliance.ca/s.php?keywords=##QUERY##",
+        "en": "https://www.canadianappliance.ca/s.php?keywords=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -915,14 +898,14 @@
           "timestamp": 1743696935101,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://www.canadianappliance.ca/s.php?keywords=##QUERY##",
-        "en": "https://www.canadianappliance.ca/s.php?keywords=##QUERY##"
       }
     },
     {
       "name": "Corbeil Électroménagers",
+      "urls": {
+        "fr": "https://www.corbeilelectro.com/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.corbeilelectro.com/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -936,14 +919,14 @@
           "timestamp": 1743696935213,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.corbeilelectro.com/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.corbeilelectro.com/en/catalogsearch/result/?q=##QUERY##"
       }
     },
     {
       "name": "Germain Larivière",
+      "urls": {
+        "fr": "https://www.germainlariviere.com/a/search?type=product&q=##QUERY##",
+        "en": "https://www.germainlariviere.com/a/search?type=product&q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -957,14 +940,14 @@
           "timestamp": 1743696935224,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.germainlariviere.com/a/search?type=product&q=##QUERY##",
-        "en": "https://www.germainlariviere.com/a/search?type=product&q=##QUERY##"
       }
     },
     {
       "name": "Brault & Martineau",
+      "urls": {
+        "fr": "https://www.braultetmartineau.com/search?q=##QUERY##",
+        "en": "https://www.braultetmartineau.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -978,16 +961,16 @@
           "timestamp": 1743696936789,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.braultetmartineau.com/search?q=##QUERY##",
-        "en": "https://www.braultetmartineau.com/search?q=##QUERY##"
       }
     }
   ],
   "Électronique et Informatique": [
     {
       "name": "Canada Computers",
+      "urls": {
+        "fr": "https://www.canadacomputers.com/qc/recherche?s=##QUERY##",
+        "en": "https://www.canadacomputers.com/qc/recherche?s=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1001,14 +984,14 @@
           "timestamp": 1743696937069,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.canadacomputers.com/qc/recherche?s=##QUERY##",
-        "en": "https://www.canadacomputers.com/qc/recherche?s=##QUERY##"
       }
     },
     {
       "name": "London Drugs",
+      "urls": {
+        "fr": "https://www.londondrugs.com/search?q=##QUERY##",
+        "en": "https://www.londondrugs.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1022,14 +1005,14 @@
           "timestamp": 1743696937099,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.londondrugs.com/search?q=##QUERY##",
-        "en": "https://www.londondrugs.com/search?q=##QUERY##"
       }
     },
     {
       "name": "Shopper+",
+      "urls": {
+        "fr": "https://shopperplus.com/fr/search?q=##QUERY##",
+        "en": "https://shopperplus.com/en/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1043,14 +1026,14 @@
           "timestamp": 1743696937563,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://shopperplus.com/fr/search?q=##QUERY##",
-        "en": "https://shopperplus.com/en/search?q=##QUERY##"
       }
     },
     {
       "name": "Hamster",
+      "urls": {
+        "fr": "https://www.hamster.ca/recherche-produits?qs=##QUERY##",
+        "en": "https://www.hamster.ca/recherche-produits?qs=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1064,14 +1047,14 @@
           "timestamp": 1743696937949,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://www.hamster.ca/recherche-produits?qs=##QUERY##",
-        "en": "https://www.hamster.ca/recherche-produits?qs=##QUERY##"
       }
     },
     {
       "name": "AliExpress",
+      "urls": {
+        "fr": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##",
+        "en": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1085,16 +1068,16 @@
           "timestamp": 1743696938918,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##",
-        "en": "https://www.aliexpress.com/wholesale?SearchText=##QUERY##"
       }
     }
   ],
   "Épicerie et Alimentation": [
     {
       "name": "IGA",
+      "urls": {
+        "fr": "https://www.iga.net/fr/recherche?search=##QUERY##",
+        "en": "https://www.iga.net/en/recherche?search=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1108,14 +1091,14 @@
           "timestamp": 1743696940877,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.iga.net/fr/recherche?search=##QUERY##",
-        "en": "https://www.iga.net/en/recherche?search=##QUERY##"
       }
     },
     {
       "name": "Metro",
+      "urls": {
+        "fr": "https://www.metro.ca/search?filter=##QUERY##",
+        "en": "https://www.metro.ca/search?filter=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1129,14 +1112,14 @@
           "timestamp": 1743696941377,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.metro.ca/search?filter=##QUERY##",
-        "en": "https://www.metro.ca/search?filter=##QUERY##"
       }
     },
     {
       "name": "Provigo",
+      "urls": {
+        "fr": "https://www.provigo.ca/search?search-bar=##QUERY##",
+        "en": "https://www.provigo.ca/search?search-bar=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1150,16 +1133,16 @@
           "timestamp": 1743696941785,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.provigo.ca/search?search-bar=##QUERY##",
-        "en": "https://www.provigo.ca/search?search-bar=##QUERY##"
       }
     }
   ],
   "Films et Séries TV": [
     {
       "name": "Archambault",
+      "urls": {
+        "fr": "https://www.archambault.ca/films-musique-et-spectacles?q=##QUERY##",
+        "en": "https://www.archambault.ca/films-musique-et-spectacles?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1173,14 +1156,14 @@
           "timestamp": 1743696942067,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.archambault.ca/films-musique-et-spectacles?q=##QUERY##",
-        "en": "https://www.archambault.ca/films-musique-et-spectacles?q=##QUERY##"
       }
     },
     {
       "name": "Renaud-Bray",
+      "urls": {
+        "fr": "https://www.renaud-bray.com/Recherche.aspx?q=##QUERY##",
+        "en": "https://www.renaud-bray.com/Recherche.aspx?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1194,14 +1177,14 @@
           "timestamp": 1743696942150,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.renaud-bray.com/Recherche.aspx?q=##QUERY##",
-        "en": "https://www.renaud-bray.com/Recherche.aspx?q=##QUERY##"
       }
     },
     {
       "name": "Sunrise Records",
+      "urls": {
+        "fr": "https://www.sunriserecords.com/search?q=##QUERY##",
+        "en": "https://www.sunriserecords.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1215,16 +1198,16 @@
           "timestamp": 1743696942281,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.sunriserecords.com/search?q=##QUERY##",
-        "en": "https://www.sunriserecords.com/search?q=##QUERY##"
       }
     }
   ],
   "Fournitures de Bureau": [
     {
       "name": "Hamster",
+      "urls": {
+        "fr": "https://www.hamster.ca/recherche-produits?qs=##QUERY##",
+        "en": "https://www.hamster.ca/recherche-produits?qs=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1238,14 +1221,14 @@
           "timestamp": 1743696942656,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.hamster.ca/recherche-produits?qs=##QUERY##",
-        "en": "https://www.hamster.ca/recherche-produits?qs=##QUERY##"
       }
     },
     {
       "name": "DeSerres",
+      "urls": {
+        "fr": "https://www.deserres.ca/fr/search?q=##QUERY##",
+        "en": "https://www.deserres.ca/en/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1259,16 +1242,16 @@
           "timestamp": 1743696943608,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.deserres.ca/fr/search?q=##QUERY##",
-        "en": "https://www.deserres.ca/en/search?q=##QUERY##"
       }
     }
   ],
   "Instruments de Musique": [
     {
       "name": "Archambault",
+      "urls": {
+        "fr": "https://www.archambault.ca/instruments-et-musique-en-feuille?q=##QUERY##",
+        "en": "https://www.archambault.ca/instruments-et-musique-en-feuille?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1282,14 +1265,14 @@
           "timestamp": 1743696943950,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.archambault.ca/instruments-et-musique-en-feuille?q=##QUERY##",
-        "en": "https://www.archambault.ca/instruments-et-musique-en-feuille?q=##QUERY##"
       }
     },
     {
       "name": "Steve's Music Store",
+      "urls": {
+        "fr": "https://www.stevesmusic.com/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.stevesmusic.com/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1303,14 +1286,14 @@
           "timestamp": 1743696944062,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.stevesmusic.com/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.stevesmusic.com/en/catalogsearch/result/?q=##QUERY##"
       }
     },
     {
       "name": "Italmelodie",
+      "urls": {
+        "fr": "https://www.italmelodie.com/fr/recherche?s=##QUERY##",
+        "en": "https://www.italmelodie.com/en/recherche?s=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1324,16 +1307,16 @@
           "timestamp": 1743696944499,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.italmelodie.com/fr/recherche?s=##QUERY##",
-        "en": "https://www.italmelodie.com/en/recherche?s=##QUERY##"
       }
     }
   ],
   "Jardin": [
     {
       "name": "Jardin Jasmin",
+      "urls": {
+        "fr": "https://jardinjasmin.com/?s=##QUERY##",
+        "en": "https://jardinjasmin.com/?s=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1347,14 +1330,14 @@
           "timestamp": 1743696944937,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://jardinjasmin.com/?s=##QUERY##",
-        "en": "https://jardinjasmin.com/?s=##QUERY##"
       }
     },
     {
       "name": "Pépinière Jasmin",
+      "urls": {
+        "fr": "https://pepinierejasmin.com/?s=##QUERY##",
+        "en": "https://pepinierejasmin.com/?s=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1368,14 +1351,14 @@
           "timestamp": 1743696944971,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://pepinierejasmin.com/?s=##QUERY##",
-        "en": "https://pepinierejasmin.com/?s=##QUERY##"
       }
     },
     {
       "name": "Jardins de Métis",
+      "urls": {
+        "fr": "https://jardinsdemetis.com/?s=##QUERY##",
+        "en": "https://jardinsdemetis.com/?s=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1389,14 +1372,14 @@
           "timestamp": 1743696945095,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://jardinsdemetis.com/?s=##QUERY##",
-        "en": "https://jardinsdemetis.com/?s=##QUERY##"
       }
     },
     {
       "name": "Jardins St-Léon",
+      "urls": {
+        "fr": "https://jardinsstleon.com/?s=##QUERY##",
+        "en": "https://jardinsstleon.com/?s=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1410,16 +1393,16 @@
           "timestamp": 1743696945315,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://jardinsstleon.com/?s=##QUERY##",
-        "en": "https://jardinsstleon.com/?s=##QUERY##"
       }
     }
   ],
   "Jeux Vidéo et Consoles": [
     {
       "name": "GameStop",
+      "urls": {
+        "fr": "https://www.gamestop.ca/SearchResult/QuickSearch?q=##QUERY##",
+        "en": "https://www.gamestop.ca/SearchResult/QuickSearch?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1433,14 +1416,14 @@
           "timestamp": 1743696945507,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://www.gamestop.ca/SearchResult/QuickSearch?q=##QUERY##",
-        "en": "https://www.gamestop.ca/SearchResult/QuickSearch?q=##QUERY##"
       }
     },
     {
       "name": "Microplay",
+      "urls": {
+        "fr": "https://www.microplay.com/recherche?controller=search&s=##QUERY##",
+        "en": "https://www.microplay.com/recherche?controller=search&s=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1454,16 +1437,16 @@
           "timestamp": 1743696946222,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.microplay.com/recherche?controller=search&s=##QUERY##",
-        "en": "https://www.microplay.com/recherche?controller=search&s=##QUERY##"
       }
     }
   ],
   "Jouets et Jeux": [
     {
       "name": "Renaud-Bray",
+      "urls": {
+        "fr": "https://www.renaud-bray.com/Jeux.aspx?q=##QUERY##",
+        "en": "https://www.renaud-bray.com/Jeux.aspx?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1477,14 +1460,14 @@
           "timestamp": 1743696946407,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.renaud-bray.com/Jeux.aspx?q=##QUERY##",
-        "en": "https://www.renaud-bray.com/Jeux.aspx?q=##QUERY##"
       }
     },
     {
       "name": "Boutique Griffon",
+      "urls": {
+        "fr": "https://www.boutiquegriffon.ca/search?q=##QUERY##",
+        "en": "https://www.boutiquegriffon.ca/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1498,16 +1481,16 @@
           "timestamp": 1743696946621,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://www.boutiquegriffon.ca/search?q=##QUERY##",
-        "en": "https://www.boutiquegriffon.ca/search?q=##QUERY##"
       }
     }
   ],
   "Literie": [
     {
       "name": "Dormez-Vous",
+      "urls": {
+        "fr": "https://fr.dormezvous.com/search.php?search_query=##QUERY##",
+        "en": "https://fr.dormezvous.com/search.php?search_query=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1521,14 +1504,14 @@
           "timestamp": 1743696946692,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://fr.dormezvous.com/search.php?search_query=##QUERY##",
-        "en": "https://fr.dormezvous.com/search.php?search_query=##QUERY##"
       }
     },
     {
       "name": "Linen Chest",
+      "urls": {
+        "fr": "https://www.linenchest.com/fr_ca/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.linenchest.com/en_ca/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1542,14 +1525,14 @@
           "timestamp": 1743696947476,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.linenchest.com/fr_ca/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.linenchest.com/en_ca/catalogsearch/result/?q=##QUERY##"
       }
     },
     {
       "name": "Rose Bonbon",
+      "urls": {
+        "fr": "https://rosebonbon.ca/search?type=product&q=##QUERY##",
+        "en": "https://rosebonbon.ca/search?type=product&q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1563,14 +1546,14 @@
           "timestamp": 1743696947560,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://rosebonbon.ca/search?type=product&q=##QUERY##",
-        "en": "https://rosebonbon.ca/search?type=product&q=##QUERY##"
       }
     },
     {
       "name": "Brunelli",
+      "urls": {
+        "fr": "https://www.brunelli.ca/recherche-produits?qs=##QUERY##",
+        "en": "https://www.brunelli.ca/recherche-produits?qs=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1584,16 +1567,16 @@
           "timestamp": 1743696947850,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.brunelli.ca/recherche-produits?qs=##QUERY##",
-        "en": "https://www.brunelli.ca/recherche-produits?qs=##QUERY##"
       }
     }
   ],
   "Livres": [
     {
       "name": "Librairies Locales Québécoises",
+      "urls": {
+        "fr": "https://www.leslibraires.ca/catalogue?s=##ISBN##",
+        "en": "https://www.leslibraires.ca/catalogue?s=##ISBN##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1607,10 +1590,6 @@
           "timestamp": 1743696947956,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.leslibraires.ca/catalogue?s=##ISBN##",
-        "en": "https://www.leslibraires.ca/catalogue?s=##ISBN##"
       }
     },
     {
@@ -1638,6 +1617,10 @@
   "Logiciels": [
     {
       "name": "Bureau en Gros",
+      "urls": {
+        "fr": "https://www.bureauengros.com/search?query=##QUERY##%20logiciel",
+        "en": "https://www.bureauengros.com/search?query=##QUERY##%20logiciel"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1651,16 +1634,16 @@
           "timestamp": 1743696948116,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.bureauengros.com/search?query=##QUERY##%20logiciel",
-        "en": "https://www.bureauengros.com/search?query=##QUERY##%20logiciel"
       }
     }
   ],
   "Luminaire": [
     {
       "name": "Union Lighting",
+      "urls": {
+        "fr": "https://unionlighting.com/search?##QUERY##",
+        "en": "https://unionlighting.com/search?##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1674,14 +1657,14 @@
           "timestamp": 1743696948348,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://unionlighting.com/search?##QUERY##",
-        "en": "https://unionlighting.com/search?##QUERY##"
       }
     },
     {
       "name": "Luminaire Authentik",
+      "urls": {
+        "fr": "https://luminaireauthentik.com/search?type=product&q=##QUERY##",
+        "en": "https://luminaireauthentik.com/search?type=product&q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1695,14 +1678,14 @@
           "timestamp": 1743696948567,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://luminaireauthentik.com/search?type=product&q=##QUERY##",
-        "en": "https://luminaireauthentik.com/search?type=product&q=##QUERY##"
       }
     },
     {
       "name": "Lumenco",
+      "urls": {
+        "fr": "https://lumenco.ca/search?type=product&q=##QUERY##",
+        "en": "https://lumenco.ca/search?type=product&q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1716,14 +1699,14 @@
           "timestamp": 1743696948681,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://lumenco.ca/search?type=product&q=##QUERY##",
-        "en": "https://lumenco.ca/search?type=product&q=##QUERY##"
       }
     },
     {
       "name": "Luminaire Urbain",
+      "urls": {
+        "fr": "https://luminaireurbain.com/search?type=product&q=##QUERY##",
+        "en": "https://luminaireurbain.com/search?type=product&q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1737,16 +1720,16 @@
           "timestamp": 1743696948688,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://luminaireurbain.com/search?type=product&q=##QUERY##",
-        "en": "https://luminaireurbain.com/search?type=product&q=##QUERY##"
       }
     }
   ],
   "Maison": [
     {
       "name": "Signé Local",
+      "urls": {
+        "fr": "https://www.signelocal.com/pages/search-results-page?q=##QUERY##",
+        "en": "https://www.signelocal.com/pages/search-results-page?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1760,14 +1743,14 @@
           "timestamp": 1743696948851,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.signelocal.com/pages/search-results-page?q=##QUERY##",
-        "en": "https://www.signelocal.com/pages/search-results-page?q=##QUERY##"
       }
     },
     {
       "name": "Bouclair",
+      "urls": {
+        "fr": "https://www.bouclair.com/fr/recherche?q=##QUERY##",
+        "en": "https://www.bouclair.com/en/recherche?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1781,14 +1764,14 @@
           "timestamp": 1743696949271,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.bouclair.com/fr/recherche?q=##QUERY##",
-        "en": "https://www.bouclair.com/en/recherche?q=##QUERY##"
       }
     },
     {
       "name": "Simons",
+      "urls": {
+        "fr": "https://www.simons.ca/fr/recherche?q=##QUERY##",
+        "en": "https://www.simons.ca/en/recherche?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1802,16 +1785,16 @@
           "timestamp": 1743696949689,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://www.simons.ca/fr/recherche?q=##QUERY##",
-        "en": "https://www.simons.ca/en/recherche?q=##QUERY##"
       }
     }
   ],
   "Mobilier": [
     {
       "name": "Maison Corbeil",
+      "urls": {
+        "fr": "https://www.corbeilelectro.com/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.corbeilelectro.com/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1825,14 +1808,14 @@
           "timestamp": 1743696949814,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.corbeilelectro.com/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.corbeilelectro.com/en/catalogsearch/result/?q=##QUERY##"
       }
     },
     {
       "name": "EQ3",
+      "urls": {
+        "fr": "https://www.eq3.com/ca/fr/search/##QUERY##",
+        "en": "https://www.eq3.com/ca/en/search/##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1846,14 +1829,14 @@
           "timestamp": 1743696949827,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.eq3.com/ca/fr/search/##QUERY##",
-        "en": "https://www.eq3.com/ca/en/search/##QUERY##"
       }
     },
     {
       "name": "Nuspace",
+      "urls": {
+        "fr": "https://www.nuspace.ca/search?q=##QUERY##",
+        "en": "https://www.nuspace.ca/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1867,16 +1850,16 @@
           "timestamp": 1743696950007,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.nuspace.ca/search?q=##QUERY##",
-        "en": "https://www.nuspace.ca/search?q=##QUERY##"
       }
     }
   ],
   "Mode et Vêtements": [
     {
       "name": "Simons",
+      "urls": {
+        "fr": "https://www.simons.ca/fr/recherche?q=##QUERY##",
+        "en": "https://www.simons.ca/en/recherche?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1890,14 +1873,14 @@
           "timestamp": 1743696950245,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://www.simons.ca/fr/recherche?q=##QUERY##",
-        "en": "https://www.simons.ca/en/recherche?q=##QUERY##"
       }
     },
     {
       "name": "La Baie",
+      "urls": {
+        "fr": "https://www.thebay.com/search?q=##QUERY##",
+        "en": "https://www.thebay.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -1911,14 +1894,14 @@
           "timestamp": 1743696950367,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://www.thebay.com/search?q=##QUERY##",
-        "en": "https://www.thebay.com/search?q=##QUERY##"
       }
     },
     {
       "name": "Sports Experts",
+      "urls": {
+        "fr": "https://www.sportsexperts.ca/fr-CA/search?q=##QUERY##",
+        "en": "https://www.sportsexperts.ca/fr-CA/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1932,10 +1915,6 @@
           "timestamp": 1743696951017,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.sportsexperts.ca/fr-CA/search?q=##QUERY##",
-        "en": "https://www.sportsexperts.ca/fr-CA/search?q=##QUERY##"
       }
     },
     {
@@ -1961,6 +1940,10 @@
     },
     {
       "name": "Frank and Oak",
+      "urls": {
+        "fr": "https://www.frankandoak.com/search?q=##QUERY##",
+        "en": "https://www.frankandoak.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1974,14 +1957,14 @@
           "timestamp": 1743696951866,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.frankandoak.com/search?q=##QUERY##",
-        "en": "https://www.frankandoak.com/search?q=##QUERY##"
       }
     },
     {
       "name": "Boutique 1861",
+      "urls": {
+        "fr": "https://1861.ca/search?q=##QUERY##",
+        "en": "https://1861.ca/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -1995,14 +1978,14 @@
           "timestamp": 1743696951943,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://1861.ca/search?q=##QUERY##",
-        "en": "https://1861.ca/search?q=##QUERY##"
       }
     },
     {
       "name": "La Canadienne",
+      "urls": {
+        "fr": "https://www.lacanadienne.com/search?q=##QUERY##",
+        "en": "https://www.lacanadienne.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2016,14 +1999,14 @@
           "timestamp": 1743696952994,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.lacanadienne.com/search?q=##QUERY##",
-        "en": "https://www.lacanadienne.com/search?q=##QUERY##"
       }
     },
     {
       "name": "M0851",
+      "urls": {
+        "fr": "https://www.m0851.com/search?q=##QUERY##",
+        "en": "https://www.m0851.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2037,14 +2020,14 @@
           "timestamp": 1743696953242,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.m0851.com/search?q=##QUERY##",
-        "en": "https://www.m0851.com/search?q=##QUERY##"
       }
     },
     {
       "name": "Reitmans",
+      "urls": {
+        "fr": "https://www.reitmans.com/fr/search?q=##QUERY##",
+        "en": "https://www.reitmans.com/en/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2058,16 +2041,16 @@
           "timestamp": 1743696953898,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.reitmans.com/fr/search?q=##QUERY##",
-        "en": "https://www.reitmans.com/en/search?q=##QUERY##"
       }
     }
   ],
   "Musique et CD": [
     {
       "name": "Archambault",
+      "urls": {
+        "fr": "https://www.archambault.ca/musique?q=##QUERY##",
+        "en": "https://www.archambault.ca/musique?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2081,14 +2064,14 @@
           "timestamp": 1743696954253,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.archambault.ca/musique?q=##QUERY##",
-        "en": "https://www.archambault.ca/musique?q=##QUERY##"
       }
     },
     {
       "name": "Renaud-Bray",
+      "urls": {
+        "fr": "https://www.renaud-bray.com/Musique_Produit.aspx?q=##QUERY##",
+        "en": "https://www.renaud-bray.com/Musique_Produit.aspx?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2102,14 +2085,14 @@
           "timestamp": 1743696954657,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.renaud-bray.com/Musique_Produit.aspx?q=##QUERY##",
-        "en": "https://www.renaud-bray.com/Musique_Produit.aspx?q=##QUERY##"
       }
     },
     {
       "name": "Sunrise Records",
+      "urls": {
+        "fr": "https://www.sunriserecords.com/search?q=##QUERY##",
+        "en": "https://www.sunriserecords.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2123,16 +2106,16 @@
           "timestamp": 1743696954790,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.sunriserecords.com/search?q=##QUERY##",
-        "en": "https://www.sunriserecords.com/search?q=##QUERY##"
       }
     }
   ],
   "Outils et Bricolage": [
     {
       "name": "RONA",
+      "urls": {
+        "fr": "https://www.rona.ca/fr/recherche?query=##QUERY##",
+        "en": "https://www.rona.ca/en/recherche?query=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2146,14 +2129,14 @@
           "timestamp": 1743696955346,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://www.rona.ca/fr/recherche?query=##QUERY##",
-        "en": "https://www.rona.ca/en/recherche?query=##QUERY##"
       }
     },
     {
       "name": "BMR",
+      "urls": {
+        "fr": "https://www.bmr.ca/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.bmr.ca/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2167,14 +2150,14 @@
           "timestamp": 1743696955499,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.bmr.ca/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.bmr.ca/en/catalogsearch/result/?q=##QUERY##"
       }
     },
     {
       "name": "Home Depot",
+      "urls": {
+        "fr": "https://www.homedepot.ca/fr/recherche.html?q=##QUERY##",
+        "en": "https://www.homedepot.ca/en/recherche.html?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2188,16 +2171,16 @@
           "timestamp": 1743696957243,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://www.homedepot.ca/fr/recherche.html?q=##QUERY##",
-        "en": "https://www.homedepot.ca/en/recherche.html?q=##QUERY##"
       }
     }
   ],
   "Photographie": [
     {
       "name": "Gosselin Photo",
+      "urls": {
+        "fr": "https://gosselinphoto.ca/fr/search?query=##QUERY##",
+        "en": "https://gosselinphoto.ca/en/search?query=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2211,14 +2194,14 @@
           "timestamp": 1743696958195,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://gosselinphoto.ca/fr/search?query=##QUERY##",
-        "en": "https://gosselinphoto.ca/en/search?query=##QUERY##"
       }
     },
     {
       "name": "Camtec Photo",
+      "urls": {
+        "fr": "https://www.camtecphoto.com/fr/search?search=##QUERY##",
+        "en": "https://www.camtecphoto.com/en/search?search=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2232,14 +2215,14 @@
           "timestamp": 1743696958453,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.camtecphoto.com/fr/search?search=##QUERY##",
-        "en": "https://www.camtecphoto.com/en/search?search=##QUERY##"
       }
     },
     {
       "name": "Photo Service",
+      "urls": {
+        "fr": "https://photoservice.ca/magasin?query=##QUERY##",
+        "en": "https://photoservice.ca/magasin?query=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2253,14 +2236,14 @@
           "timestamp": 1743696959362,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://photoservice.ca/magasin?query=##QUERY##",
-        "en": "https://photoservice.ca/magasin?query=##QUERY##"
       }
     },
     {
       "name": "Royal Photo",
+      "urls": {
+        "fr": "https://royalphoto.com/magasin?query=##QUERY##",
+        "en": "https://royalphoto.com/magasin?query=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2274,14 +2257,14 @@
           "timestamp": 1743696959483,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://royalphoto.com/magasin?query=##QUERY##",
-        "en": "https://royalphoto.com/magasin?query=##QUERY##"
       }
     },
     {
       "name": "Excellent Photo",
+      "urls": {
+        "fr": "https://excellentphoto.ca/fr/pages/search-results-page?q=##QUERY##",
+        "en": "https://excellentphoto.ca/en/pages/search-results-page?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2295,14 +2278,14 @@
           "timestamp": 1743696959518,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://excellentphoto.ca/fr/pages/search-results-page?q=##QUERY##",
-        "en": "https://excellentphoto.ca/en/pages/search-results-page?q=##QUERY##"
       }
     },
     {
       "name": "Studio Argentique",
+      "urls": {
+        "fr": "https://studioargentique.ca/fr/search?q=##QUERY##",
+        "en": "https://studioargentique.ca/en/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2316,16 +2299,16 @@
           "timestamp": 1743696960071,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://studioargentique.ca/fr/search?q=##QUERY##",
-        "en": "https://studioargentique.ca/en/search?q=##QUERY##"
       }
     }
   ],
   "Produits Ménagers": [
     {
       "name": "Attitude Living",
+      "urls": {
+        "fr": "https://ca.attitudeliving.com/collections/all-products?productType=##QUERY##",
+        "en": "https://ca.attitudeliving.com/collections/all-products?productType=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2339,14 +2322,14 @@
           "timestamp": 1743696960378,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://ca.attitudeliving.com/collections/all-products?productType=##QUERY##",
-        "en": "https://ca.attitudeliving.com/collections/all-products?productType=##QUERY##"
       }
     },
     {
       "name": "Planette",
+      "urls": {
+        "fr": "https://planette.ca/search?type=product&q=##QUERY##",
+        "en": "https://planette.ca/search?type=product&q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2360,16 +2343,16 @@
           "timestamp": 1743696960689,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://planette.ca/search?type=product&q=##QUERY##",
-        "en": "https://planette.ca/search?type=product&q=##QUERY##"
       }
     }
   ],
   "Quincaillerie": [
     {
       "name": "RONA",
+      "urls": {
+        "fr": "https://www.rona.ca/fr/recherche?query=##QUERY##",
+        "en": "https://www.rona.ca/en/recherche?query=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2383,14 +2366,14 @@
           "timestamp": 1743696961109,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://www.rona.ca/fr/recherche?query=##QUERY##",
-        "en": "https://www.rona.ca/en/recherche?query=##QUERY##"
       }
     },
     {
       "name": "BMR",
+      "urls": {
+        "fr": "https://www.bmr.ca/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.bmr.ca/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2404,14 +2387,14 @@
           "timestamp": 1743696961225,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.bmr.ca/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.bmr.ca/en/catalogsearch/result/?q=##QUERY##"
       }
     },
     {
       "name": "Canac",
+      "urls": {
+        "fr": "https://www.canac.ca/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.canac.ca/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2425,14 +2408,14 @@
           "timestamp": 1743696961307,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.canac.ca/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.canac.ca/en/catalogsearch/result/?q=##QUERY##"
       }
     },
     {
       "name": "Gagnon et Fils",
+      "urls": {
+        "fr": "https://gagnonlgq.com/search?type=product%2Cpage%2Carticle&q=##QUERY##",
+        "en": "https://gagnonlgq.com/search?type=product%2Cpage%2Carticle&q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2446,14 +2429,14 @@
           "timestamp": 1743696963669,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://gagnonlgq.com/search?type=product%2Cpage%2Carticle&q=##QUERY##",
-        "en": "https://gagnonlgq.com/search?type=product%2Cpage%2Carticle&q=##QUERY##"
       }
     },
     {
       "name": "Patrick Morin",
+      "urls": {
+        "fr": "https://www.patrickmorin.com/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.patrickmorin.com/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2467,16 +2450,16 @@
           "timestamp": 1743696964092,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.patrickmorin.com/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.patrickmorin.com/en/catalogsearch/result/?q=##QUERY##"
       }
     }
   ],
   "Salle de bain": [
     {
       "name": "Bain Dépôt",
+      "urls": {
+        "fr": "https://www.baindepot.com/search.html?query=##QUERY##",
+        "en": "https://www.baindepot.com/search.html?query=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2490,14 +2473,14 @@
           "timestamp": 1743696964735,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.baindepot.com/search.html?query=##QUERY##",
-        "en": "https://www.baindepot.com/search.html?query=##QUERY##"
       }
     },
     {
       "name": "BMR",
+      "urls": {
+        "fr": "https://www.bmr.ca/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.bmr.ca/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2511,14 +2494,14 @@
           "timestamp": 1743696965013,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.bmr.ca/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.bmr.ca/en/catalogsearch/result/?q=##QUERY##"
       }
     },
     {
       "name": "Entrepôt de la Réno",
+      "urls": {
+        "fr": "https://entrepotdelareno.com/search?q=##QUERY##",
+        "en": "https://entrepotdelareno.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2532,14 +2515,14 @@
           "timestamp": 1743696965624,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://entrepotdelareno.com/search?q=##QUERY##",
-        "en": "https://entrepotdelareno.com/search?q=##QUERY##"
       }
     },
     {
       "name": "Mondial",
+      "urls": {
+        "fr": "https://mondial.ca/?s=##QUERY##&post_type=product",
+        "en": "https://mondial.ca/?s=##QUERY##&post_type=product"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2553,14 +2536,14 @@
           "timestamp": 1743696965900,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://mondial.ca/?s=##QUERY##&post_type=product",
-        "en": "https://mondial.ca/?s=##QUERY##&post_type=product"
       }
     },
     {
       "name": "Vanico Maronyx",
+      "urls": {
+        "fr": "https://vanico.com/fr/recherche?controller=search&s=##QUERY##",
+        "en": "https://vanico.com/en/recherche?controller=search&s=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2574,16 +2557,16 @@
           "timestamp": 1743696967227,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://vanico.com/fr/recherche?controller=search&s=##QUERY##",
-        "en": "https://vanico.com/en/recherche?controller=search&s=##QUERY##"
       }
     }
   ],
   "Santé et Soins personnels": [
     {
       "name": "Brunet",
+      "urls": {
+        "fr": "https://www.brunet.ca/fr/recherche.html?text=##QUERY##",
+        "en": "https://www.brunet.ca/en/recherche.html?text=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2597,10 +2580,6 @@
           "timestamp": 1743696967319,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.brunet.ca/fr/recherche.html?text=##QUERY##",
-        "en": "https://www.brunet.ca/en/recherche.html?text=##QUERY##"
       }
     },
     {
@@ -2647,6 +2626,10 @@
     },
     {
       "name": "Uniprix",
+      "urls": {
+        "fr": "https://www.uniprix.com/fr/recherche?query=##QUERY##",
+        "en": "https://www.uniprix.com/en/recherche?query=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2660,16 +2643,16 @@
           "timestamp": 1743696968106,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.uniprix.com/fr/recherche?query=##QUERY##",
-        "en": "https://www.uniprix.com/en/recherche?query=##QUERY##"
       }
     }
   ],
   "Sports et Plein air": [
     {
       "name": "Sports Experts",
+      "urls": {
+        "fr": "https://www.sportsexperts.ca/fr-CA/search?q=##QUERY##",
+        "en": "https://www.sportsexperts.ca/fr-CA/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2683,14 +2666,14 @@
           "timestamp": 1743696968337,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.sportsexperts.ca/fr-CA/search?q=##QUERY##",
-        "en": "https://www.sportsexperts.ca/fr-CA/search?q=##QUERY##"
       }
     },
     {
       "name": "Atmosphère",
+      "urls": {
+        "fr": "https://www.atmosphere.ca/en/search-results.html?q=##QUERY##",
+        "en": "https://www.atmosphere.ca/en/search-results.html?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2704,14 +2687,14 @@
           "timestamp": 1743696968585,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.atmosphere.ca/en/search-results.html?q=##QUERY##",
-        "en": "https://www.atmosphere.ca/en/search-results.html?q=##QUERY##"
       }
     },
     {
       "name": "La Cordée",
+      "urls": {
+        "fr": "https://www.lacordee.com/fr/recherche?q=##QUERY##",
+        "en": "https://www.lacordee.com/en/recherche?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2725,14 +2708,14 @@
           "timestamp": 1743696968783,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.lacordee.com/fr/recherche?q=##QUERY##",
-        "en": "https://www.lacordee.com/en/recherche?q=##QUERY##"
       }
     },
     {
       "name": "SAIL",
+      "urls": {
+        "fr": "https://www.sail.ca/fr/catalogsearch/result/?q=##QUERY##",
+        "en": "https://www.sail.ca/en/catalogsearch/result/?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2746,16 +2729,16 @@
           "timestamp": 1743696969127,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.sail.ca/fr/catalogsearch/result/?q=##QUERY##",
-        "en": "https://www.sail.ca/en/catalogsearch/result/?q=##QUERY##"
       }
     }
   ],
   "Vêtements": [
     {
       "name": "Boutique 1861",
+      "urls": {
+        "fr": "https://1861.ca/search?q=##QUERY##",
+        "en": "https://1861.ca/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2769,14 +2752,14 @@
           "timestamp": 1743696969272,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://1861.ca/search?q=##QUERY##",
-        "en": "https://1861.ca/search?q=##QUERY##"
       }
     },
     {
       "name": "La Canadienne",
+      "urls": {
+        "fr": "https://www.lacanadienne.com/search?q=##QUERY##",
+        "en": "https://www.lacanadienne.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2790,14 +2773,14 @@
           "timestamp": 1743696969273,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.lacanadienne.com/search?q=##QUERY##",
-        "en": "https://www.lacanadienne.com/search?q=##QUERY##"
       }
     },
     {
       "name": "La Baie",
+      "urls": {
+        "fr": "https://www.thebay.com/search?q=##QUERY##",
+        "en": "https://www.thebay.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2811,14 +2794,14 @@
           "timestamp": 1743696970678,
           "error": "No response received from server"
         }
-      },
-      "urls": {
-        "fr": "https://www.thebay.com/search?q=##QUERY##",
-        "en": "https://www.thebay.com/search?q=##QUERY##"
       }
     },
     {
       "name": "Frank and Oak",
+      "urls": {
+        "fr": "https://www.frankandoak.com/search?q=##QUERY##",
+        "en": "https://www.frankandoak.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "valid",
@@ -2832,14 +2815,14 @@
           "timestamp": 1743696971772,
           "error": null
         }
-      },
-      "urls": {
-        "fr": "https://www.frankandoak.com/search?q=##QUERY##",
-        "en": "https://www.frankandoak.com/search?q=##QUERY##"
       }
     },
     {
       "name": "M0851",
+      "urls": {
+        "fr": "https://www.m0851.com/search?q=##QUERY##",
+        "en": "https://www.m0851.com/search?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2853,14 +2836,14 @@
           "timestamp": 1743696972496,
           "error": "Page not found (404)"
         }
-      },
-      "urls": {
-        "fr": "https://www.m0851.com/search?q=##QUERY##",
-        "en": "https://www.m0851.com/search?q=##QUERY##"
       }
     },
     {
       "name": "Simons",
+      "urls": {
+        "fr": "https://www.simons.ca/fr/recherche?q=##QUERY##",
+        "en": "https://www.simons.ca/en/recherche?q=##QUERY##"
+      },
       "validation": {
         "fr": {
           "status": "invalid",
@@ -2874,10 +2857,6 @@
           "timestamp": 1743696973027,
           "error": "Access forbidden (403)"
         }
-      },
-      "urls": {
-        "fr": "https://www.simons.ca/fr/recherche?q=##QUERY##",
-        "en": "https://www.simons.ca/en/recherche?q=##QUERY##"
       }
     }
   ],

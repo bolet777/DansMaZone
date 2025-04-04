@@ -56,6 +56,7 @@ Browser extension that suggests local Canadian alternatives to Amazon products b
 - Development: `npm run dev` (Chrome) or `npm run dev:chrome|firefox|edge`
 - Linting: `npm run lint` (check) or `npm run lint:fix` (auto-fix)
 - Formatting: `npm run format` (check) or `npm run format:fix` (auto-fix)
+- Site Editor: `npm run edit-sites` (production) or `npm run edit-sites:dev` (development with auto-reload)
 
 
 ## Chargez l'extension non empaquetée :
