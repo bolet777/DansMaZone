@@ -55,10 +55,9 @@ function calculateSiteRelevance(site, searchTerm, productDetails) {
 }
 ```
 
-
 **Améliorer l'algorithme de classification**
-   - Remplacer l'approche actuelle par une méthode plus sophistiquée comme TF-IDF pour le matching de mots-clés.
-
+   - L'algorithme pourrait bénéficier d'une approche d'apprentissage automatique supervisée
+   - Considérer l'utilisation de modèles pré-entraînés ou d'APIs d'IA pour la classification
 
 **Implémenter le caching des sites**
    - Utiliser l'API LRU-Cache pour stocker les sites fréquemment consultés.
