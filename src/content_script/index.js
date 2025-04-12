@@ -281,9 +281,7 @@ function getProductDetails() {
   return searchQuery.trim();
 }
 
-// Dans la fonction addLinkButtons - plus besoin du paramètre container
-// Dans la fonction addLinkButtons - plus besoin du paramètre container
-function addLinkButtons(sites, searchTerm, detectedCategory) { // Ajout du paramètre detectedCategory
+function addLinkButtons(sites, searchTerm, detectedCategory) {
   // Vérifier si sites est bien un tableau
   if (!Array.isArray(sites)) {
     console.error('DansMaZone: sites n\'est pas un tableau valide', sites);
@@ -377,8 +375,15 @@ function addLinkButtons(sites, searchTerm, detectedCategory) { // Ajout du param
       
       const button = document.createElement('a');
       button.href = url;
-      button.target = "_blank";
+      button.target = "_blank";  // Ceci devrait déjà ouvrir dans un nouvel onglet
       button.classList.add('dmz-sidebar-button');
+      
+      // Ajouter un gestionnaire d'événements explicite pour s'assurer qu'il s'ouvre dans un nouvel onglet
+      button.addEventListener('click', (e) => {
+        e.preventDefault(); // Empêcher le comportement par défaut
+        window.open(url, '_blank'); // Ouvrir explicitement dans un nouvel onglet
+        return false; // Empêcher la propagation de l'événement
+      });
       
       const siteName = document.createElement('span');
       siteName.textContent = site.name;
