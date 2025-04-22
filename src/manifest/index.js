@@ -1,3 +1,5 @@
+// src/manifest/index.js avec modification pour la compatibilité Firefox
+
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -53,9 +55,17 @@ const manifestInput = {
     '*://*.amazon.ca/*'
   ],
 
-  background: {
-    service_worker: 'background.js'
-  },
+  // Background: doit être différent selon le navigateur cible
+  ...(process.env.TARGET === 'firefox' ? {
+    background: {
+      scripts: ['background.js'],
+      type: 'module'
+    }
+  } : {
+    background: {
+      service_worker: 'background.js'
+    }
+  }),
 
   // Content Security Policy V3
   content_security_policy: process.env.NODE_ENV === 'development' ? developmentCSP : productionCSP,

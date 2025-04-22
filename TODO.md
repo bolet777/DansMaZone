@@ -17,43 +17,37 @@
 - url de recherche FR et EN
 - ajouter des specialités et des marque par category-sites
 
-```
-// Dans category-sites.js
-{
-  name: 'Boutique Planète Bébé',
-  url: 'https://www.boutiqueplanetebebe.com/search?q=##QUERY##',
-  specialties: ['bio', 'écologique', 'zéro déchet'],
-  brands: ['Charlie Banana', 'AppleCheeks']
-}
+Phase préparatoire
 
-// Dans index.js, calculer un score de pertinence
-function calculateSiteRelevance(site, searchTerm, productDetails) {
-  let score = 1;
-  
-  // Booste le score si le site est spécialisé dans des termes pertinents
-  if (site.specialties) {
-    for (const specialty of site.specialties) {
-      if (searchTerm.toLowerCase().includes(specialty.toLowerCase())) {
-        score += 2;
-      }
-    }
-  }
-  
-  // Booste si le site vend spécifiquement cette marque
-  if (site.brands && productDetails.manufacturer) {
-    if (site.brands.some(brand => 
-        productDetails.manufacturer.toLowerCase().includes(brand.toLowerCase()))) {
-      score += 3;
-    }
-  }
-  
-  // Booste les sites déjà utilisés (stockés dans préférences)
-  const visitCount = getVisitCount(site.name);
-  score += Math.min(visitCount * 0.5, 2); // Max +2 pour les sites fréquents
-  
-  return score;
-}
-```
+Créer le fichier brands.json avec quelques marques majeures
+Générer les identifiants uniques selon l'approche choisie
+Ajouter quelques références dans default-sites.json pour tester
+
+
+Implémentation du chargement
+
+Adapter la fonction initSites() pour charger brands.json
+Créer une fonction de mapping entre identifiants et objets marques
+Tester le chargement et le mapping
+
+
+Amélioration de l'algorithme de détection
+
+Enrichir getProductDetails() pour mieux extraire le fabricant
+Ajouter une logique de correspondance entre fabricant et marques
+
+
+Adaptation de l'interface d'options
+
+Ajouter des composants UI pour la gestion des marques
+Mettre en place l'autocomplétion ou la sélection dans des listes
+
+
+Finalisation
+
+Tests et débogage
+Enrichissement du fichier brands.json avec plus de marques
+Documentation des nouveaux mécanismes
 
 **Améliorer l'algorithme de classification**
    - L'algorithme pourrait bénéficier d'une approche d'apprentissage automatique supervisée
