@@ -1,0 +1,36 @@
+{
+  "preprocessText": [
+    {
+      "name": "Texte simple avec accents",
+      "input": "Caméra numérique",
+      "expected": ["camera", "numerique"]
+    },
+    {
+      "name": "Texte vide",
+      "input": "",
+      "expected": []
+    },
+    {
+      "name": "Texte avec caractères spéciaux",
+      "input": "Téléphone à écran tactile ! 12.3",
+      "expected": ["telephone", "ecran", "tactile"]
+    }
+  ],
+  "productCategories": [
+    {
+      "name": "Livre de Naomi Klein",
+      "url": "https://www.amazon.ca/-/fr/Doppelganger-Trip-into-Mirror-World/dp/1039006914/",
+      "expectedCategory": "Livres"
+    },
+    {
+      "name": "Carte mémoire Lexar",
+      "url": "https://www.amazon.ca/-/fr/Lexar-Carte-m%C3%A9moire-microSDXC-adaptateur/dp/B08XQ7R3GC/",
+      "expectedCategory": "Électronique et Informatique"
+    },
+    {
+      "name": "Casque audio",
+      "url": "https://www.amazon.ca/-/fr/Bluetooth-d%C3%A9cibels-Microphone-Compatible-Smartphone/dp/B09WMQCM2Y/",
+      "expectedCategory": "Électronique et Informatique"
+    }
+  ]
+}
