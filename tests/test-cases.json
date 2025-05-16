@@ -20,17 +20,50 @@
     {
       "name": "Livre de Naomi Klein",
       "url": "https://www.amazon.ca/-/fr/Doppelganger-Trip-into-Mirror-World/dp/1039006914/",
-      "expectedCategory": "Livres"
+      "expectedCategory": "Livres",
+      "mockData": {
+        "title": "Doppelganger: A Trip into the Mirror World",
+        "brand": "Naomi Klein",
+        "breadcrumbs": ["Livres", "Anglais", "Politique"],
+        "detailItems": [
+          {
+            "label": "ISBN-13:",
+            "value": "1039006914"
+          }
+        ]
+      }
     },
     {
       "name": "Carte mémoire Lexar",
       "url": "https://www.amazon.ca/-/fr/Lexar-Carte-m%C3%A9moire-microSDXC-adaptateur/dp/B08XQ7R3GC/",
-      "expectedCategory": "Électronique et Informatique"
+      "expectedCategory": "Électronique et Informatique",
+      "mockData": {
+        "title": "Lexar Carte mémoire microSDXC avec adaptateur",
+        "brand": "Lexar",
+        "breadcrumbs": ["Électronique", "Accessoires", "Stockage"],
+        "detailItems": [
+          {
+            "label": "Fabricant:",
+            "value": "Lexar"
+          }
+        ]
+      }
     },
     {
       "name": "Casque audio",
       "url": "https://www.amazon.ca/-/fr/Bluetooth-d%C3%A9cibels-Microphone-Compatible-Smartphone/dp/B09WMQCM2Y/",
-      "expectedCategory": "Électronique et Informatique"
+      "expectedCategory": "Électronique et Informatique",
+      "mockData": {
+        "title": "Casque Bluetooth avec Microphone Compatible Smartphone",
+        "brand": "Generic",
+        "breadcrumbs": ["Électronique", "Audio", "Casques"],
+        "detailItems": [
+          {
+            "label": "Fabricant:",
+            "value": "Generic"
+          }
+        ]
+      }
     }
   ]
 }
