@@ -509,111 +509,68 @@ function initializeExtension() {
     const timestamp = new Date().toISOString();
     console.log(`DansMaZone: Initialisation démarrée à ${timestamp}`);
     
-    // Utilisez MutationObserver pour détecter quand le titre du produit est chargé
-    const observer = new MutationObserver((mutations, obs) => {
-      try {
-        const productTitle = document.getElementById('productTitle');
-        
-        if (productTitle) {
-          console.log('DansMaZone: Product title found, initializing extension');
-          start();
-          obs.disconnect(); // Arrêter d'observer une fois le titre trouvé
-        }
-      } catch (observerError) {
-        console.error('DansMaZone: Erreur dans l\'observateur de mutations', observerError);
-        // En cas d'erreur dans l'observateur, on essaie quand même de démarrer
-        try {
-          start();
-        } catch (startError) {
-          handleError(startError, 'démarrage de l\'extension depuis l\'observateur', false, true);
-        }
-        obs.disconnect();
-      }
-    });
+    // On vérifie d'abord si on est sur une page produit
+    const isProductPage = window.location.href.includes('/dp/') || 
+                         window.location.href.includes('/gp/product/');
     
-    // Commencer l'observation si le document est chargé
-    if (document.body) {
-      // Observer seulement le contenu principal au lieu du body entier pour de meilleures performances
-      const mainContent = document.getElementById('dp') || document.getElementById('ppd') || document.body;
-      
-      if (mainContent) {
-        observer.observe(mainContent, { childList: true, subtree: true });
-        console.log('DansMaZone: Observateur démarré sur', mainContent.id || 'body');
-      } else {
-        observer.observe(document.body, { childList: true, subtree: true });
-      }
-      
-      // Timeout de sécurité pour s'assurer que l'extension démarre même si le titre n'est jamais trouvé
-      setTimeout(() => {
-        if (!document.getElementById('productTitle')) {
-          console.log('DansMaZone: Timeout reached, starting anyway');
-          
-          // Vérifier si nous sommes vraiment sur une page produit avant de démarrer
-          const isProductPage = window.location.href.includes('/dp/') || 
-                              window.location.href.includes('/gp/product/');
-          
-          if (isProductPage) {
-            try {
-              start();
-            } catch (timeoutStartError) {
-              handleError(timeoutStartError, 'démarrage après timeout', true, false);
-              
-              // Tentative de récupération minimale
-              fallbackInitialization();
-            }
-          } else {
-            console.log('DansMaZone: No product page detected, extension not started');
-          }
-          
-          observer.disconnect();
-        }
-      }, 5000); // 5 secondes de timeout
-    } else {
-      // Si le document n'est pas encore prêt, attendre le DOMContentLoaded
-      console.log('DansMaZone: Document not ready, waiting for DOMContentLoaded');
-      
-      document.addEventListener('DOMContentLoaded', () => {
-        try {
-          const mainContent = document.getElementById('dp') || document.getElementById('ppd') || document.body;
-          
-          if (mainContent) {
-            observer.observe(mainContent, { childList: true, subtree: true });
-            console.log('DansMaZone: Observateur démarré sur', mainContent.id || 'body', 'après DOMContentLoaded');
-          } else {
-            observer.observe(document.body, { childList: true, subtree: true });
-          }
-          
-          // Aussi démarrer un timeout ici
-          setTimeout(() => {
-            if (!document.getElementById('productTitle')) {
-              console.log('DansMaZone: Timeout reached after DOMContentLoaded, starting anyway');
-              
-              // Vérifier si nous sommes vraiment sur une page produit
-              const isProductPage = window.location.href.includes('/dp/') || 
-                                  window.location.href.includes('/gp/product/');
-              
-              if (isProductPage) {
-                try {
-                  start();
-                } catch (domTimeoutError) {
-                  handleError(domTimeoutError, 'démarrage après DOMContentLoaded timeout', true, false);
-                  
-                  // Tentative de récupération minimale
-                  fallbackInitialization();
-                }
-              }
-              
-              observer.disconnect();
-            }
-          }, 5000);
-        } catch (domContentError) {
-          handleError(domContentError, 'initialisation après DOMContentLoaded', true, true);
-        }
-      });
+    if (!isProductPage) {
+      console.log('DansMaZone: Pas sur une page produit, extension non activée');
+      return;
     }
+
+    // Fonction qui démarre l'extension de manière garantie
+    const startExtension = () => {
+      try {
+        console.log('DansMaZone: Démarrage forcé de l\'extension');
+        start();
+      } catch (err) {
+        console.error('DansMaZone: Erreur lors du démarrage forcé:', err);
+        fallbackInitialization();
+      }
+    };
+
+    // Initialiser quand le DOM est prêt
+    if (document.readyState === "loading") {
+      // Attendre que le document soit chargé
+      document.addEventListener('DOMContentLoaded', () => {
+        // Attendre un court délai pour s'assurer que les éléments Amazon sont disponibles
+        // Chrome semble avoir besoin de plus de temps
+        setTimeout(() => {
+          const productTitle = document.getElementById('productTitle');
+          if (productTitle) {
+            console.log('DansMaZone: Élément productTitle trouvé, initialisation');
+            start();
+          } else {
+            console.log('DansMaZone: Élément productTitle non trouvé après délai, démarrage forcé');
+            startExtension();
+          }
+        }, 500); // Délai court mais suffisant pour Chrome
+      });
+    } else {
+      // Le document est déjà chargé
+      setTimeout(() => {
+        const productTitle = document.getElementById('productTitle');
+        if (productTitle) {
+          console.log('DansMaZone: Élément productTitle trouvé, initialisation');
+          start();
+        } else {
+          console.log('DansMaZone: Élément productTitle non trouvé, démarrage forcé');
+          startExtension();
+        }
+      }, 100);
+    }
+
+    // Timeout de sécurité global si rien ne fonctionne
+    setTimeout(() => {
+      if (!document.querySelector('.dmz-sidebar')) {
+        console.log('DansMaZone: Sidebar non détectée après timeout global, démarrage forcé');
+        startExtension();
+      }
+    }, 3000); // Timeout global plus court
+
   } catch (error) {
     // Attraper toute erreur non prévue
-    handleError(error, 'initialisation principale', true, true);
+    console.error('DansMaZone: Erreur critique lors de l\'initialisation:', error);
     
     // Tentative de récupération en dernier recours
     try {

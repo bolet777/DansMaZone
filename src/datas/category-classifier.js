@@ -1328,115 +1328,115 @@ function extractProductText() {
 }
 
 // Module TF-IDF pour la classification
+// Dans src/datas/category-classifier.js
 const TfIdfClassifier = {
   // Préparation des données (calculer les IDF une seule fois)
   prepare(categoryKeywords) {
-    // Ensemble de tous les mots-clés à travers toutes les catégories
+    // Utiliser un Map pour améliorer la performance
+    const idf = new Map();
     const allTerms = new Set();
-    
-    // Extraire tous les termes uniques
-    Object.values(categoryKeywords).forEach(keywords => {
-      keywords.forEach(keyword => {
-        preprocessText(keyword).forEach(term => allTerms.add(term));
-      });
-    });
-    
-    // Calculer IDF pour chaque terme
-    const idf = {};
     const totalCategories = Object.keys(categoryKeywords).length;
     
-    allTerms.forEach(term => {
-      // Compter dans combien de catégories le terme apparaît
+    // Premièrement, collecter tous les termes
+    for (const keywords of Object.values(categoryKeywords)) {
+      for (const keyword of keywords) {
+        const terms = preprocessText(keyword);
+        for (const term of terms) {
+          allTerms.add(term);
+        }
+      }
+    }
+    
+    // Ensuite, calculer l'IDF pour chaque terme
+    for (const term of allTerms) {
       let categoryCount = 0;
       
-      Object.values(categoryKeywords).forEach(keywords => {
-        const keywordTexts = keywords.map(k => preprocessText(k).join(' '));
-        if (keywordTexts.some(text => text.includes(term))) {
+      // Compter dans combien de catégories le terme apparaît
+      for (const [_, keywords] of Object.entries(categoryKeywords)) {
+        // Optimisation: éviter de réprocesser les mots-clés à chaque fois
+        const containsTerm = keywords.some(keyword => 
+          preprocessText(keyword).includes(term)
+        );
+        
+        if (containsTerm) {
           categoryCount++;
         }
-      });
+      }
       
       // Calculer IDF
-      idf[term] = Math.log(totalCategories / Math.max(1, categoryCount));
-    });
+      if (categoryCount > 0) {
+        idf.set(term, Math.log(totalCategories / categoryCount));
+      }
+    }
     
     return { idf, allTerms: [...allTerms] };
   },
   
-  // Classification d'un produit
+  // Classification d'un produit (optimisée)
   classify(productText, categoryKeywords, preparedData) {
     const { idf } = preparedData;
+    const scores = {};
     
-    // Combiner tous les textes du produit
-    const allProductText = Object.values(productText).join(' ');
-    const productTerms = preprocessText(allProductText);
+    // Prétraiter tout le texte du produit une seule fois
+    const productTerms = preprocessText(Object.values(productText).join(' '));
     
     // Calculer TF pour le texte du produit
-    const tf = {};
-    productTerms.forEach(term => {
-      tf[term] = (tf[term] || 0) + 1;
-    });
+    const tf = new Map();
+    for (const term of productTerms) {
+      tf.set(term, (tf.get(term) || 0) + 1);
+    }
     
-    // Normaliser TF (facultatif)
-    const maxTf = Math.max(...Object.values(tf), 1);
-    Object.keys(tf).forEach(term => {
-      tf[term] = tf[term] / maxTf;
-    });
+    // Normaliser TF
+    const maxTf = Math.max(...tf.values(), 1);
+    for (const [term, count] of tf.entries()) {
+      tf.set(term, count / maxTf);
+    }
     
-    // Calculer le score pour chaque catégorie avec des pondérations différentes selon la source
-    const scores = {};
+    // Poids simplifiés pour chaque source de texte
     const sourceWeights = {
-      title: 3,     // Le titre est très important
-      breadcrumbs: 2.5, // Le fil d'Ariane est très fiable
-      brand: 1.5,   // La marque peut être indicative
-      features: 1.2,// Les caractéristiques sont assez importantes
-      details: 1,   // Les détails sont modérément importants
-      description: 0.8 // La description est moins spécifique
+      title: 3,
+      breadcrumbs: 2.5,
+      brand: 1.5,
+      features: 1.2,
+      details: 1,
+      description: 0.8
     };
     
-    Object.entries(categoryKeywords).forEach(([category, keywords]) => {
-      // Créer un ensemble des termes uniques pour cette catégorie
-      const categoryTerms = new Set();
-      keywords.forEach(keyword => {
-        preprocessText(keyword).forEach(term => categoryTerms.add(term));
-      });
-      
-      // Score de base pour la catégorie
+    // Calculer les scores par catégorie
+    for (const [category, keywords] of Object.entries(categoryKeywords)) {
       let score = 0;
       
-      // 1. Score TF-IDF global
-      categoryTerms.forEach(term => {
-        if (tf[term] && idf[term]) {
-          score += tf[term] * idf[term];
-        }
-      });
+      // Créer un ensemble des termes uniques pour cette catégorie (une seule fois)
+      const categoryTerms = new Set();
+      for (const keyword of keywords) {
+        preprocessText(keyword).forEach(term => categoryTerms.add(term));
+      }
       
-      // 2. Scores pondérés par source de texte
-      Object.entries(productText).forEach(([source, text]) => {
-        if (sourceWeights[source] && text) {
-          const sourceTerms = preprocessText(text);
-          const sourceWeight = sourceWeights[source];
-          
-          categoryTerms.forEach(term => {
-            // Vérifier si le terme apparaît dans cette source spécifique
-            if (sourceTerms.includes(term) && idf[term]) {
-              score += sourceWeight * idf[term];
-            }
-          });
+      // Score basé sur TF-IDF global
+      for (const term of categoryTerms) {
+        if (tf.has(term) && idf.has(term)) {
+          score += tf.get(term) * idf.get(term);
         }
-      });
+      }
       
-      scores[category] = score;
-    });
+      // Limiter le nombre de catégories traitées pour de meilleures performances
+      if (score > 0) {
+        scores[category] = score;
+      }
+    }
     
     // Trouver la meilleure catégorie
-    const sortedCategories = Object.entries(scores)
-      .sort((a, b) => b[1] - a[1]);
+    let bestCategory = 'default';
+    let bestScore = 0;
     
-    // Log pour le débogage
-    console.log('DansMaZone: Scores TF-IDF', sortedCategories.slice(0, 3));
+    for (const [category, score] of Object.entries(scores)) {
+      if (score > bestScore) {
+        bestScore = score;
+        bestCategory = category;
+      }
+    }
     
-    return sortedCategories[0][0]; // Retourne la catégorie avec le score le plus élevé
+    return bestCategory;
   }
 }
 
