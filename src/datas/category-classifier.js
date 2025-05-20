@@ -1538,7 +1538,7 @@ export async function classifyPage(combinedSites) {
     // Obtenir les mots-clés combinés pour la langue détectée
     console.time('Get Keywords');
     const combinedKeywords = await getCombinedKeywords(lang);
-    console.timeEnd('Language Detection');
+    console.timeEnd('Get Keywords');
     
     // Extraire le texte de la page
     console.time('Extract Text');
