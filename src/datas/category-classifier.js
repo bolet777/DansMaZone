@@ -1314,114 +1314,135 @@ export function preprocessText(text) {
 
 // Extraction du texte de la page simplifiée
 function extractProductText() {
-  return {
-    title: document.getElementById('productTitle')?.textContent || '',
-    breadcrumbs: Array.from(document.querySelectorAll('#wayfinding-breadcrumbs_feature_div li, .a-breadcrumb li span'))
-      .map(item => item.textContent.trim())
-      .filter(text => text && text !== '›' && !text.includes('Amazon'))
-      .join(' '),
-    description: document.getElementById('productDescription')?.textContent || '',
-    features: document.getElementById('feature-bullets')?.textContent || '',
-    details: document.getElementById('detailBullets_feature_div')?.textContent || '',
-    brand: document.querySelector('.po-brand .po-break-word, #bylineInfo, [id*="brand"]')?.textContent || ''
-  };
+  // Créer un cache pour les sélecteurs DOM
+  const selectors = new Map([
+    ['title', '#productTitle'],
+    ['description', '#productDescription'],
+    ['features', '#feature-bullets'],
+    ['details', '#detailBullets_feature_div'],
+    ['brand', '.po-brand .po-break-word, #bylineInfo, [id*="brand"]']
+  ]);
+
+  const result = {};
+  
+  selectors.forEach((selector, key) => {
+    const element = document.querySelector(selector);
+    result[key] = element ? element.textContent.trim() : '';
+  });
+
+  // Optimiser la récupération des breadcrumbs
+  const breadcrumbs = document.querySelectorAll('#wayfinding-breadcrumbs_feature_div li, .a-breadcrumb li span');
+  result.breadcrumbs = Array.from(breadcrumbs)
+    .map(item => item.textContent.trim())
+    .filter(text => text && text !== '›' && !text.includes('Amazon'))
+    .join(' ');
+
+  return result;
 }
 
 // Module TF-IDF pour la classification
-// Dans src/datas/category-classifier.js
 const TfIdfClassifier = {
-  // Préparation des données (calculer les IDF une seule fois)
+  // Cache global pour les données préparées
+  cache: new Map(),
+  
+  // Préparation des données optimisée
   prepare(categoryKeywords) {
-    // Utiliser un Map pour améliorer la performance
-    const idf = new Map();
-    const allTerms = new Set();
-    const totalCategories = Object.keys(categoryKeywords).length;
+    // Utiliser une clé unique basée sur le nombre de catégories et mots-clés
+    const totalKeywords = Object.values(categoryKeywords)
+      .reduce((sum, keywords) => sum + keywords.length, 0);
+    const cacheKey = `${Object.keys(categoryKeywords).length}_${totalKeywords}`;
     
-    // Premièrement, collecter tous les termes
-    for (const keywords of Object.values(categoryKeywords)) {
+    // Vérifier si les données sont déjà en cache
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey);
+    }
+    
+    console.time('TF-IDF Prepare Optimized');
+    
+    // Prétraiter tous les mots-clés une seule fois
+    const categoryTerms = new Map();
+    const termCategories = new Map();
+    
+    // Collecter tous les termes par catégorie et compter les occurrences
+    for (const [category, keywords] of Object.entries(categoryKeywords)) {
+      const termsForCategory = new Set();
+      
       for (const keyword of keywords) {
         const terms = preprocessText(keyword);
         for (const term of terms) {
-          allTerms.add(term);
+          termsForCategory.add(term);
+          
+          // Compter dans combien de catégories ce terme apparaît
+          if (!termCategories.has(term)) {
+            termCategories.set(term, new Set());
+          }
+          termCategories.get(term).add(category);
         }
       }
+      
+      categoryTerms.set(category, termsForCategory);
     }
     
-    // Ensuite, calculer l'IDF pour chaque terme
-    for (const term of allTerms) {
-      let categoryCount = 0;
-      
-      // Compter dans combien de catégories le terme apparaît
-      for (const [_, keywords] of Object.entries(categoryKeywords)) {
-        // Optimisation: éviter de réprocesser les mots-clés à chaque fois
-        const containsTerm = keywords.some(keyword => 
-          preprocessText(keyword).includes(term)
-        );
-        
-        if (containsTerm) {
-          categoryCount++;
-        }
-      }
-      
-      // Calculer IDF
+    // Calculer l'IDF pour chaque terme en une seule passe
+    const totalCategories = Object.keys(categoryKeywords).length;
+    const idf = new Map();
+    
+    for (const [term, categories] of termCategories.entries()) {
+      const categoryCount = categories.size;
       if (categoryCount > 0) {
         idf.set(term, Math.log(totalCategories / categoryCount));
       }
     }
     
-    return { idf, allTerms: [...allTerms] };
-  },
-  
-  // Classification d'un produit (optimisée)
-  classify(productText, categoryKeywords, preparedData) {
-    const { idf } = preparedData;
-    const scores = {};
-    
-    // Prétraiter tout le texte du produit une seule fois
-    const productTerms = preprocessText(Object.values(productText).join(' '));
-    
-    // Calculer TF pour le texte du produit
-    const tf = new Map();
-    for (const term of productTerms) {
-      tf.set(term, (tf.get(term) || 0) + 1);
-    }
-    
-    // Normaliser TF
-    const maxTf = Math.max(...tf.values(), 1);
-    for (const [term, count] of tf.entries()) {
-      tf.set(term, count / maxTf);
-    }
-    
-    // Poids simplifiés pour chaque source de texte
-    const sourceWeights = {
-      title: 3,
-      breadcrumbs: 2.5,
-      brand: 1.5,
-      features: 1.2,
-      details: 1,
-      description: 0.8
+    const result = {
+      idf,
+      categoryTerms,
+      termCategories,
+      allTerms: Array.from(termCategories.keys())
     };
     
+    console.timeEnd('TF-IDF Prepare Optimized');
+    
+    // Mettre en cache le résultat
+    this.cache.set(cacheKey, result);
+    return result;
+  },
+
+  // Classification d'un produit (optimisée)
+  classify(productText, categoryKeywords, preparedData) {
+    console.time('Classification Optimized');
+    const { idf, categoryTerms } = preparedData;
+    const scores = new Map();
+    
+    // Prétraiter tout le texte du produit une seule fois et le garder sous forme de Set
+    const productTerms = new Set(preprocessText(Object.values(productText).join(' ')));
+    
+    // Poids pour différentes parties du texte
+    const titleTerms = new Set(preprocessText(productText.title || ''));
+    const breadcrumbTerms = new Set(preprocessText(productText.breadcrumbs || ''));
+    const brandTerms = new Set(preprocessText(productText.brand || ''));
+    
     // Calculer les scores par catégorie
-    for (const [category, keywords] of Object.entries(categoryKeywords)) {
+    for (const [category, terms] of categoryTerms.entries()) {
       let score = 0;
       
-      // Créer un ensemble des termes uniques pour cette catégorie (une seule fois)
-      const categoryTerms = new Set();
-      for (const keyword of keywords) {
-        preprocessText(keyword).forEach(term => categoryTerms.add(term));
-      }
-      
-      // Score basé sur TF-IDF global
-      for (const term of categoryTerms) {
-        if (tf.has(term) && idf.has(term)) {
-          score += tf.get(term) * idf.get(term);
+      // Utiliser l'intersection des ensembles pour une recherche plus rapide
+      for (const term of terms) {
+        if (productTerms.has(term) && idf.has(term)) {
+          // Score de base TF-IDF
+          let termScore = idf.get(term);
+          
+          // Bonus pour les termes importants
+          if (titleTerms.has(term)) termScore *= 3;
+          if (breadcrumbTerms.has(term)) termScore *= 2.5;
+          if (brandTerms.has(term)) termScore *= 1.5;
+          
+          score += termScore;
         }
       }
       
-      // Limiter le nombre de catégories traitées pour de meilleures performances
       if (score > 0) {
-        scores[category] = score;
+        scores.set(category, score);
       }
     }
     
@@ -1429,19 +1450,28 @@ const TfIdfClassifier = {
     let bestCategory = 'default';
     let bestScore = 0;
     
-    for (const [category, score] of Object.entries(scores)) {
+    for (const [category, score] of scores.entries()) {
       if (score > bestScore) {
         bestScore = score;
         bestCategory = category;
       }
     }
     
+    console.timeEnd('Classification Optimized');
     return bestCategory;
   }
-}
+};
+
+// Fonction pour récupérer les mots-clés combinés avec gestion d'erreur améliorée
+const keywordsCache = new Map();
 
 // Fonction pour récupérer les mots-clés combinés avec gestion d'erreur améliorée
 async function getCombinedKeywords(lang = 'fr') {
+  const cacheKey = `keywords_${lang}`;
+  if (keywordsCache.has(cacheKey)) {
+    return keywordsCache.get(cacheKey);
+  }
+  
   try {
     // Récupérer les mots-clés personnalisés depuis le stockage
     const result = await browser.storage.local.get('userCategoryKeywords');
@@ -1466,6 +1496,7 @@ async function getCombinedKeywords(lang = 'fr') {
       }
     });
     
+    keywordsCache.set(cacheKey, combinedKeywords);
     return combinedKeywords;
   } catch (error) {
     console.error('DansMaZone: Erreur lors du chargement des mots-clés personnalisés', error);
@@ -1476,6 +1507,8 @@ async function getCombinedKeywords(lang = 'fr') {
       defaultKeywords[category] = keywordsByLang[lang] || [];
     });
     
+    // On garde quand même le résultat en cache pour éviter de refaire des appels qui échouent
+    keywordsCache.set(cacheKey, defaultKeywords);
     return defaultKeywords;
   }
 }
@@ -1484,26 +1517,46 @@ async function getCombinedKeywords(lang = 'fr') {
  * Classifie la page produit Amazon en utilisant l'algorithme TF-IDF
  * @returns {Promise<string>} La catégorie détectée
  */
+const classificationCache = new Map();
+
 export async function classifyPage(combinedSites) {
+  console.time('Total Classification');
+
+  const cacheKey = window.location.pathname;
+  if (classificationCache.has(cacheKey)) {
+    console.timeEnd('Total Classification');
+    return classificationCache.get(cacheKey);
+  }
+
   try {
     // Détecter la langue de la page
+    console.time('Language Detection');
     const lang = detectLanguage();
     console.info('DansMaZone: Langue détectée:', lang);
+    console.timeEnd('Language Detection');
     
     // Obtenir les mots-clés combinés pour la langue détectée
+    console.time('Get Keywords');
     const combinedKeywords = await getCombinedKeywords(lang);
+    console.timeEnd('Language Detection');
     
     // Extraire le texte de la page
+    console.time('Extract Text');
     const productText = extractProductText();
+    console.timeEnd('Extract Text');
     
     // Préparer les données TF-IDF (avec mise en cache)
     // Remarque: preparedData est maintenant spécifique à la langue
+    console.time('TF-IDF Prepare');
     if (!preparedData) {
       preparedData = TfIdfClassifier.prepare(combinedKeywords);
     }
-    
+    console.timeEnd('TF-IDF Prepare');
+
     // Classifier le produit
+    console.time('Classification');
     let category = TfIdfClassifier.classify(productText, combinedKeywords, preparedData);
+    console.timeEnd('Classification');
     
     // Si aucune catégorie n'est trouvée, utiliser 'default'
     if (!category || category === 'Unknown') {
@@ -1519,8 +1572,11 @@ export async function classifyPage(combinedSites) {
       return enCategory;
     }
     
+    classificationCache.set(cacheKey, category);
+    console.timeEnd('Total Classification');
     return category;
   } catch (error) {
+    console.timeEnd('Total Classification');
     console.error('DansMaZone: Error in classifyPage:', error);
     return 'default'; // Retourner la catégorie par défaut en cas d'erreur
   }
