@@ -1,6 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { 
+  preprocessText, 
+  categoryKeywords, 
+  classifyProduct 
+} from './mocks/category-classifier-mock.js';
 
 // Obtenir le chemin du répertoire actuel
 const __filename = fileURLToPath(import.meta.url);
@@ -18,18 +23,6 @@ try {
 } catch (error) {
   console.error(`❌ Erreur lors du chargement des cas de test: ${error.message}`);
   process.exit(1);
-}
-
-// Implémentation de secours pour preprocessText
-function preprocessText(text) {
-  if (!text) return [];
-  return text.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Enlève les accents
-    .replace(/[^\w\s]/g, ' ')                         // Garde uniquement lettres, chiffres et espaces
-    .replace(/\s+/g, ' ')                             // Normalise les espaces
-    .trim()
-    .split(' ')
-    .filter(word => word.length > 2);  // Enlève les mots trop courts
 }
 
 console.log("ℹ️ Utilisation des implémentations de secours pour les tests");
@@ -66,42 +59,6 @@ async function runPreprocessTests() {
   return { passed, total };
 }
 
-// Fonction de classification de produits simulée
-async function mockClassifyPage(testCase) {
-  // Utiliser les mockData si disponibles
-  if (testCase.mockData) {
-    // Logique de classification simple basée sur les données mockées
-    const title = testCase.mockData.title || '';
-    const breadcrumbs = testCase.mockData.breadcrumbs || [];
-    
-    // Vérifier si c'est un livre
-    if (breadcrumbs.includes("Livres") || title.toLowerCase().includes("livre")) {
-      return 'Livres';
-    }
-    
-    // Vérifier si c'est de l'électronique
-    if (breadcrumbs.includes("Électronique") || 
-        title.toLowerCase().includes("carte") || 
-        title.toLowerCase().includes("casque") || 
-        title.toLowerCase().includes("bluetooth")) {
-      return 'Électronique et Informatique';
-    }
-  }
-  
-  // Fallback sur l'URL
-  const url = testCase.url.toLowerCase();
-  if (url.includes('/dp/1039006914') || url.includes('livre') || url.includes('book')) {
-    return 'Livres';
-  }
-  
-  if (url.includes('carte-m') || url.includes('bluetooth') || 
-      url.includes('electronique') || url.includes('electronic')) {
-    return 'Électronique et Informatique';
-  }
-  
-  return 'default';
-}
-
 // Exécuter les tests de classification
 async function runCategoryTests() {
   console.log("\n🧪 TESTS DE CLASSIFICATION DE PRODUITS");
@@ -114,8 +71,8 @@ async function runCategoryTests() {
     console.log(`\nTest: ${testCase.name}`);
     console.log(`URL: ${testCase.url}`);
     
-    // Utiliser la fonction mock pour les tests
-    const detectedCategory = await mockClassifyPage(testCase);
+    // Utiliser la fonction de classification
+    const detectedCategory = classifyProduct(testCase.mockData);
     
     console.log(`Catégorie attendue: ${testCase.expectedCategory}`);
     console.log(`Catégorie détectée: ${detectedCategory}`);

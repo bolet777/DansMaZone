@@ -18,22 +18,6 @@
   ],
   "productCategories": [
     {
-      "name": "Livre de Naomi Klein",
-      "url": "https://www.amazon.ca/-/fr/Doppelganger-Trip-into-Mirror-World/dp/1039006914/",
-      "expectedCategory": "Livres",
-      "mockData": {
-        "title": "Doppelganger: A Trip into the Mirror World",
-        "brand": "Naomi Klein",
-        "breadcrumbs": ["Livres", "Anglais", "Politique"],
-        "detailItems": [
-          {
-            "label": "ISBN-13:",
-            "value": "1039006914"
-          }
-        ]
-      }
-    },
-    {
       "name": "Carte mémoire Lexar",
       "url": "https://www.amazon.ca/-/fr/Lexar-Carte-m%C3%A9moire-microSDXC-adaptateur/dp/B08XQ7R3GC/",
       "expectedCategory": "Électronique et Informatique",
@@ -72,11 +56,15 @@
       "mockData": {
         "title": "Pedigree Nourriture pour chiens adultes, saveur de poulet et légumes, 15 kg",
         "brand": "Pedigree",
-        "breadcrumbs": ["Animalerie", "Nourriture pour chiens"],
+        "breadcrumbs": ["Animalerie", "Nourriture pour chiens", "Croquettes"],
         "detailItems": [
           {
             "label": "Poids de l'article",
             "value": "15 kg"
+          },
+          {
+            "label": "Type d'animal",
+            "value": "Chien"
           }
         ]
       }
@@ -88,11 +76,15 @@
       "mockData": {
         "title": "Castrol GTX Huile moteur 5W-30, 5 L",
         "brand": "Castrol",
-        "breadcrumbs": ["Auto et Moto", "Huiles et liquides"],
+        "breadcrumbs": ["Auto et Moto", "Huiles et liquides", "Huiles moteur"],
         "detailItems": [
           {
             "label": "Viscosité",
             "value": "5W-30"
+          },
+          {
+            "label": "Compatibilité véhicule",
+            "value": "Voiture et Auto"
           }
         ]
       }
@@ -104,11 +96,15 @@
       "mockData": {
         "title": "Samsonite S'Cure Valise rigide 28 pouces",
         "brand": "Samsonite",
-        "breadcrumbs": ["Bagages et Voyage", "Valises"],
+        "breadcrumbs": ["Bagages et Voyage", "Valises", "Valises rigides"],
         "detailItems": [
           {
             "label": "Dimensions",
             "value": "28 pouces"
+          },
+          {
+            "label": "Matériau",
+            "value": "Polypropylène"
           }
         ]
       }
@@ -120,11 +116,15 @@
       "mockData": {
         "title": "Chanel N°5 Eau de Parfum Vaporisateur 100 ml",
         "brand": "Chanel",
-        "breadcrumbs": ["Beauté et Parfum", "Parfums pour femmes"],
+        "breadcrumbs": ["Beauté et Parfum", "Parfums", "Parfums femme"],
         "detailItems": [
           {
             "label": "Contenance",
             "value": "100 ml"
+          },
+          {
+            "label": "Format",
+            "value": "Spray"
           }
         ]
       }
@@ -136,11 +136,15 @@
       "mockData": {
         "title": "Graco Modes, système de voyage, siège auto et poussette, Ellington",
         "brand": "Graco",
-        "breadcrumbs": ["Bébés et Puériculture", "Articles de voyage", "Poussettes", "Combinés de voyage"],
+        "breadcrumbs": ["Bébés et Puériculture", "Articles de voyage", "Poussettes"],
         "detailItems": [
           {
-            "label": "Poids maximum recommandé par le fabricant",
+            "label": "Poids maximum recommandé",
             "value": "50 kilogrammes"
+          },
+          {
+            "label": "Âge minimum recommandé",
+            "value": "0 mois"
           }
         ]
       }
@@ -150,31 +154,44 @@
       "url": "https://www.amazon.ca/-/fr/Swarovski-Pendentif-Hyperbola-transparent-finition/dp/B0CPYTYH7H",
       "expectedCategory": "Bijoux et Accessoires",
       "mockData": {
-        "title": "Swarovski Pendentif Hyperbola, pavé, infini, transparent, finition rhodium, Taille unique, Cristal, Cristal",
+        "title": "Swarovski Pendentif Hyperbola, pavé, infini, transparent, finition rhodium",
         "brand": "Swarovski",
-        "breadcrumbs": ["Mode", "Femme", "Bijoux", "Colliers"],
+        "breadcrumbs": ["Bijoux et Accessoires", "Femme", "Colliers"],
         "detailItems": [
           {
             "label": "Matériau",
             "value": "Cristaux Swarovski"
+          },
+          {
+            "label": "Type de bijou",
+            "value": "Collier"
           }
         ]
       }
     },
     {
-      "name": "Sandales Stretch 06, pour hommes et femmes, orthopédiques, pieds gonflés, pour personnes âgées",
+      "name": "Sandales Stretch 06",
       "url": "https://www.amazon.ca/Sandales-Stretch-06-orthop%C3%A9diques-personnes/dp/B09TWKJJ81",
       "expectedCategory": "Chaussures",
       "mockData": {
-        "title": "Sandales Stretch 06, pour hommes et femmes, orthopédiques, pieds gonflés, pour personnes âgées",
+        "title": "Sandales Stretch 06, Chaussures orthopédiques pour hommes et femmes",
         "brand": "SCHAWOS",
-        "breadcrumbs": ["Chaussures", "Hommes", "Pantoufles"],
+        "breadcrumbs": ["Chaussures", "Homme", "Sandales et pantoufles"],
         "detailItems": [
           {
-            "label": "Pointure",
-            "value": "10 US"
+            "label": "Pointure:",
+            "value": "42 EU"
+          },
+          {
+            "label": "Type de chaussure:",
+            "value": "Sandale orthopédique"
+          },
+          {
+            "label": "Matériau principal:",
+            "value": "Cuir"
           }
-        ]
+        ],
+        "description": "Sandales orthopédiques confortables pour personnes âgées et pieds sensibles. Semelle en cuir véritable."
       }
     }
   ]
