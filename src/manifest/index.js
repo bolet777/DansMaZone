@@ -1,24 +1,60 @@
-// src/manifest/index.js avec modification pour la compatibilité Firefox
+/**
+ * @file src/manifest/index.js
+ * @license GPL-3.0
+ * @copyright DansMaZone.ca
+ * 
+ * Générateur de manifeste multi-navigateurs pour l'extension DansMaZone
+ * 
+ * Ce module génère dynamiquement le fichier manifest.json en adaptant
+ * les propriétés spécifiques à chaque navigateur cible (Chrome, Firefox, 
+ * Edge, Opera). Il gère les différences entre les versions de manifeste,
+ * les permissions, les scripts d'arrière-plan et les politiques de 
+ * sécurité selon l'environnement de développement ou production.
+ * 
+ * Les principales adaptations incluent :
+ * - Background scripts vs service workers (Firefox vs Chrome)
+ * - Propriétés spécifiques aux navigateurs
+ * - Versions minimales requises
+ * - Content Security Policies adaptées
+ */
 
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
+/**
+ * Résolution du chemin du fichier actuel pour les modules ES6
+ */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Lire package.json
+/**
+ * Lecture du package.json pour récupérer la version de l'extension
+ */
 const pkg = JSON.parse(readFileSync(path.join(__dirname, '../../package.json')));
 
-// CSP est géré différemment dans V3
+/**
+ * Content Security Policy pour l'environnement de développement
+ * Autorise 'wasm-unsafe-eval' pour le hot-reload de Webpack
+ */
 const developmentCSP = {
   extension_pages: "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
 };
 
+/**
+ * Content Security Policy pour l'environnement de production
+ * Politique restrictive pour la sécurité maximale
+ */
 const productionCSP = {
   extension_pages: "script-src 'self'; object-src 'self'",
 };
 
+/**
+ * Configuration de base du manifeste WebExtension
+ * Adapté dynamiquement selon le navigateur cible via les variables d'environnement
+ * 
+ * @type {Object} Configuration du manifeste compatible Manifest V3
+ */
 const manifestInput = {
   manifest_version: 3,
   name: '__MSG_extensionName__',
