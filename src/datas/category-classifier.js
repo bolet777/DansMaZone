@@ -19,7 +19,21 @@
  * 5. Sélection de la catégorie avec le score le plus élevé
  */
 
-import browser from 'webextension-polyfill';
+// Import conditionnel simple
+let browser;
+
+if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') {
+  // Environnement de test
+  browser = global.browser;
+} else {
+  // Environnement extension - import normal
+  try {
+    const browserModule = await import('webextension-polyfill');
+    browser = browserModule.default;
+  } catch (error) {
+    console.error('Erreur import webextension-polyfill:', error);
+  }
+}
 
 // Global Maps
 const keywordsCache = new Map();

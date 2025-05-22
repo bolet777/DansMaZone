@@ -24,9 +24,8 @@
     "edit-sites": "cd src/datas-edit/url-checker && npm start",
     "edit-sites:dev": "nodemon --config nodemon.edit-sites.json",
     "edit-sites:install": "cd src/datas-edit/url-checker && npm install",
-    "extract-category-data": "node tests/mocks/category-data-extractor.js",
-    "pretest": "npm run extract-category-data",
-    "test": "node tests/run-tests.js"
+    "test": "NODE_ENV=test node tests/run-tests.js",
+    "test:watch": "NODE_ENV=test node --watch tests/run-tests.js"
   },
   "browserslist": [
     "last 2 Chrome versions",

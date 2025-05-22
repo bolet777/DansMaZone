@@ -114,9 +114,9 @@
       "url": "https://www.amazon.ca/-/fr/Chanel-parfum-flacon-vaporisateur-femme/dp/B000VOJ9BG",
       "expectedCategory": "Beauté et Parfum",
       "mockData": {
-        "title": "Chanel N°5 Eau de Parfum Vaporisateur 100 ml",
+        "title": "Chanel No.5 Eau de parfum en flacon vaporisateur pour femme 50 ml",
         "brand": "Chanel",
-        "breadcrumbs": ["Beauté et Parfum", "Parfums", "Parfums femme"],
+        "breadcrumbs": ["Beauté", "Parfums", "Femme"],
         "detailItems": [
           {
             "label": "Contenance",

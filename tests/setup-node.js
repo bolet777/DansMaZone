@@ -8,6 +8,9 @@ const __dirname = path.dirname(__filename);
 
 // Fonction pour configurer l'environnement de test Node.js
 function setupNodeEnvironment() {
+  // Définir l'environnement de test
+  process.env.NODE_ENV = 'test';
+  
   // Remplacer le module webextension-polyfill par notre mock
   global.browser = browserMock;
   
