@@ -1,8 +1,30 @@
+/**
+ * @file src/options/options.js
+ * @license GPL-3.0
+ * @copyright DansMaZone.ca
+ * 
+ * Script pour la page d'options de l'extension DansMaZone
+ * 
+ * Ce module gère l'interface utilisateur de la page d'options,
+ * permettant à l'utilisateur de configurer ses sites personnalisés, 
+ * gérer les mots-clés pour la détection de catégories, et contribuer
+ * au projet en partageant ses sites. Il assure également la persistance
+ * des préférences utilisateur via l'API de stockage du navigateur.
+ * 
+ * La page offre une interface complète avec des onglets pour :
+ * - Gestion des sites personnalisés (ajout, modification, suppression)
+ * - Personnalisation des mots-clés par catégorie
+ * - Options de contribution au projet
+ */
+
 import browser from 'webextension-polyfill';
 import defaultSites from '../datas/default-sites.json';
 import { categoryKeywords, categoryMapping } from '../datas/category-classifier.js';
 
-// Fonction pour obtenir les traductions
+/**
+ * Obtient les chaînes de traduction nécessaires pour la page d'options
+ * @returns {Object} Dictionnaire des chaînes traduites
+ */
 function getI18nMessages() {
   // Liste des clés de traduction nécessaires pour la page d'options
   const keys = [
@@ -284,7 +306,10 @@ function localizeUI() {
   }
 }
 
-// Initialisation de la page
+/**
+ * Initialise la page d'options en chargeant les préférences et configurant l'interface
+ * @returns {Promise<void>}
+ */
 async function initOptions() {
   try {
     // Afficher la version de l'extension
@@ -378,7 +403,9 @@ async function initOptions() {
   }
 }
 
-// Initialiser les onglets
+/**
+ * Initialise les onglets de la page d'options et gère leur changement
+ */
 function initTabs() {
   try {
     if (!elements.tabs || !elements.tabs.forEach) {
@@ -423,7 +450,10 @@ function initTabs() {
   }
 }
 
-// Charger les sites personnalisés depuis le stockage
+/**
+ * Charge les sites personnalisés depuis le stockage local
+ * @returns {Promise<boolean>} True si le chargement a réussi, sinon False
+ */
 async function loadUserSites() {
     try {
       const result = await browser.storage.local.get('userSites');
@@ -450,7 +480,10 @@ async function loadUserSites() {
     }
   }
 
-// Sauvegarder les sites personnalisés dans le stockage
+/**
+ * Sauvegarde les sites personnalisés dans le stockage local
+ * @returns {Promise<boolean>} True si la sauvegarde a réussi, sinon False
+ */
 async function saveUserSites() {
     try {
       await browser.storage.local.set({ userSites });
@@ -470,7 +503,11 @@ async function saveUserSites() {
     }
   }
 
-// Fonction améliorée pour le tri des catégories avec prise en compte des accents
+/**
+ * Trie les catégories alphabétiquement avec prise en compte des accents
+ * @param {Array<string>} categories - Tableau des catégories à trier
+ * @returns {Array<string>} Tableau des catégories triées
+ */
 function sortCategories(categories) {
     return categories.sort((a, b) => {
       // Utiliser localeCompare avec les options pour les caractères français
@@ -478,7 +515,9 @@ function sortCategories(categories) {
     });
 }
 
-// Remplir les listes déroulantes de catégories
+/**
+ * Remplit les listes déroulantes de catégories avec les données actuelles
+ */
 function populateCategoryDropdowns() {
   // Vider d'abord les listes déroulantes
   elements.categoryFilter.innerHTML = '<option value="all">' + (i18n.allCategories || "Toutes les catégories") + '</option>';
@@ -562,7 +601,9 @@ function autoGenerateEnUrlFromFr(frUrl) {
   return newUrl !== frUrl ? newUrl : frUrl;
 }
 
-// Afficher tous les sites (par défaut + personnalisés)
+/**
+ * Affiche tous les sites (par défaut + personnalisés) dans l'interface
+ */
 function renderSites() {
     // Vider le conteneur
     elements.sitesContainer.innerHTML = '';
@@ -736,7 +777,11 @@ function renderSites() {
   });
 }
 
-// Valider une URL de recherche
+/**
+ * Valide une URL de recherche
+ * @param {string} url - L'URL à valider
+ * @returns {Object} Résultat de la validation (valid, message)
+ */
 function validateSearchUrl(url) {
   // Vérifier si l'URL est valide
   try {
@@ -762,7 +807,12 @@ function validateSearchUrl(url) {
   };
 }
 
-// Tester une URL de recherche
+/**
+ * Teste une URL de recherche en ouvrant un nouvel onglet
+ * @param {string} url - L'URL à tester
+ * @param {string} testTerm - Le terme de recherche à utiliser
+ * @param {string} language - La langue de l'URL (fr ou en)
+ */
 function testSearchUrl(url, testTerm, language = null) {
   // Valider l'URL
   const validation = validateSearchUrl(url);
@@ -785,7 +835,14 @@ function testSearchUrl(url, testTerm, language = null) {
   }
 }
 
-// Ajouter un site personnalisé
+/**
+ * Ajoute ou met à jour un site personnalisé
+ * @param {string} category - La catégorie du site
+ * @param {string} name - Le nom du site
+ * @param {string} urlFr - L'URL de recherche française
+ * @param {string} urlEn - L'URL de recherche anglaise
+ * @returns {Promise<boolean>} True si l'ajout a réussi, sinon False
+ */
 async function addUserSite(category, name, urlFr, urlEn) {
   // Valider les URLs
   const validationFr = validateSearchUrl(urlFr);
@@ -837,8 +894,12 @@ async function addUserSite(category, name, urlFr, urlEn) {
   return false;
 }
 
-// Supprimer un site personnalisé
-// Compléter la fonction deleteUserSite
+/**
+ * Supprime un site personnalisé
+ * @param {string} category - La catégorie du site
+ * @param {string} name - Le nom du site
+ * @returns {Promise<boolean>} True si la suppression a réussi, sinon False
+ */
 async function deleteUserSite(category, name) {
     // Vérifier si la catégorie existe
     if (!userSites[category]) {
@@ -869,7 +930,9 @@ async function deleteUserSite(category, name) {
     return false;
 }
   
-// Fonction pour attacher tous les écouteurs d'événements
+/**
+ * Attache tous les écouteurs d'événements pour l'interface
+ */
 function attachEventListeners() {
     // Écouteur pour la recherche de sites
     elements.siteSearch.addEventListener('input', () => {
@@ -1055,7 +1118,10 @@ function attachEventListeners() {
     });
 }
   
-// Fonction pour exporter les sites et les mots-clés personnalisés
+/**
+ * Exporte les sites personnalisés au format JSON
+ * @param {boolean} forContribution - Si true, exporte dans un format adapté pour la contribution
+ */
 function exportUserSites(forContribution = false) {
     // Préparer les données à exporter
     let dataToExport;
@@ -1110,7 +1176,10 @@ function exportUserSites(forContribution = false) {
     showNotification(i18n.exportSuccess || 'Export réussi!', 'success');
 }
   
-// Fonction modifiée pour importer à la fois les sites et les mots-clés
+/**
+ * Importe des sites personnalisés depuis un fichier JSON
+ * @param {File} file - Le fichier JSON à importer
+ */
 async function importUserSites(file) {
     if (!file) {
       return;
@@ -1252,7 +1321,11 @@ async function importUserSites(file) {
     reader.readAsText(file);
 }
   
-// Fonction pour afficher une notification
+/**
+ * Affiche une notification temporaire à l'utilisateur
+ * @param {string} message - Le message à afficher
+ * @param {string} type - Le type de notification ('success' ou 'error')
+ */
 function showNotification(message, type = 'success') {
     // Créer l'élément de notification
     const notification = document.createElement('div');
@@ -1307,6 +1380,9 @@ function handleError(error, context, notify = true, critical = false) {
     return error;
 }
 
+/**
+ * Configure la fonctionnalité de rapport de bugs
+ */
 function setupBugReporting() {
   // Créer le bouton de rapport de bug
   const bugReportBtn = document.createElement('button');
@@ -1537,13 +1613,18 @@ let userCategoryKeywords = {};
 // Structure pour stocker les mots-clés par défaut
 let defaultCategoryKeywords = {};
 
-// Chargement des mots-clés par défaut
+/**
+ * Charge les mots-clés par défaut
+ */
 function loadDefaultKeywords() {
     // Copier les mots-clés par défaut depuis category-classifier.js
     defaultCategoryKeywords = structuredClone(categoryKeywords);
 }
 
-// Chargement des mots-clés personnalisés
+/**
+ * Charge les mots-clés personnalisés depuis le stockage
+ * @returns {Promise<boolean>} True si le chargement a réussi, sinon False
+ */
 async function loadUserKeywords() {
     try {
         const result = await browser.storage.local.get('userCategoryKeywords');
@@ -1586,7 +1667,10 @@ async function loadUserKeywords() {
     }
 }
 
-// Sauvegarder les mots-clés personnalisés
+/**
+ * Sauvegarde les mots-clés personnalisés dans le stockage
+ * @returns {Promise<boolean>} True si la sauvegarde a réussi, sinon False
+ */
 async function saveUserKeywords() {
     try {
         await browser.storage.local.set({ userCategoryKeywords });
@@ -1597,7 +1681,9 @@ async function saveUserKeywords() {
     }
 }
 
-// Remplir la liste déroulante des catégories pour les mots-clés
+/**
+ * Remplit la liste déroulante des catégories pour les mots-clés
+ */
 function populateKeywordCategoryDropdown() {
     // Vider d'abord la liste
     elements.keywordCategory.innerHTML = '';
@@ -1621,7 +1707,10 @@ function populateKeywordCategoryDropdown() {
     });
 }
 
-// Afficher les mots-clés pour une catégorie
+/**
+ * Affiche les mots-clés pour une catégorie donnée
+ * @param {string} category - La catégorie dont les mots-clés doivent être affichés
+ */
 function renderKeywords(category) {
     // Vider les listes
     elements.frKeywordsList.innerHTML = '';
@@ -1697,7 +1786,13 @@ function renderKeywords(category) {
     });
 }
 
-// Ajouter des mots-clés à une catégorie
+/**
+ * Ajoute des mots-clés à une catégorie
+ * @param {string} category - La catégorie à laquelle ajouter les mots-clés
+ * @param {string} keywordsText - Texte contenant les mots-clés séparés par virgules
+ * @param {string} language - La langue des mots-clés (fr ou en)
+ * @returns {Promise<boolean>} True si l'ajout a réussi, sinon False
+ */
 async function addKeywords(category, keywordsText, language) {
     // S'assurer que la catégorie existe
     if (!userCategoryKeywords[category]) {
@@ -1736,7 +1831,13 @@ async function addKeywords(category, keywordsText, language) {
     return false;
 }
 
-// Supprimer un mot-clé
+/**
+ * Supprime un mot-clé d'une catégorie
+ * @param {string} category - La catégorie dont supprimer le mot-clé
+ * @param {string} keyword - Le mot-clé à supprimer
+ * @param {string} language - La langue du mot-clé (fr ou en)
+ * @returns {Promise<boolean>} True si la suppression a réussi, sinon False
+ */
 async function removeKeyword(category, keyword, language) {
     // Vérifier si la catégorie existe
     if (!userCategoryKeywords[category]) {
@@ -1762,7 +1863,10 @@ async function removeKeyword(category, keyword, language) {
     return false;
 }
 
-// Initialiser la fonctionnalité de mots-clés
+/**
+ * Initialise la fonctionnalité de gestion des mots-clés
+ * @returns {Promise<void>}
+ */
 async function initKeywordsFeature() {
     // Charger les mots-clés par défaut
     loadDefaultKeywords();
@@ -1820,5 +1924,7 @@ function attachKeywordEventListeners() {
         });
 }
  
-// Initialiser la page
+/**
+ * Attache les écouteurs d'événements pour la gestion des mots-clés
+ */
 document.addEventListener('DOMContentLoaded', initOptions);

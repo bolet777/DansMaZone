@@ -1,4 +1,29 @@
+/**
+ * @file src/datas/category-classifier.js
+ * @license GPL-3.0
+ * @copyright DansMaZone.ca
+ * 
+ * Module de classification de produits pour l'extension DansMaZone
+ * 
+ * Ce module fournit les fonctionnalités nécessaires pour analyser et classifier
+ * les produits Amazon dans des catégories spécifiques en utilisant l'algorithme TF-IDF.
+ * Il contient les dictionnaires de mots-clés par catégorie (en français et anglais),
+ * les correspondances entre catégories dans les deux langues, et les fonctions
+ * d'analyse et de classification.
+ * 
+ * Le processus de classification se déroule en plusieurs étapes :
+ * 1. Détection de la langue de la page (FR/EN)
+ * 2. Extraction du texte pertinent de la page produit
+ * 3. Prétraitement du texte (normalisation, suppression des caractères spéciaux)
+ * 4. Calcul des scores TF-IDF pour chaque catégorie
+ * 5. Sélection de la catégorie avec le score le plus élevé
+ */
+
 import browser from 'webextension-polyfill';
+
+// Global Maps
+const keywordsCache = new Map();
+const classificationCache = new Map();
 
 // Liste de mots-clés par catégorie - version bilingue séparée par langue
 export const categoryKeywords = {
@@ -1268,7 +1293,10 @@ export const categoryMapping = {
 // Cache pour les données préparées
 let preparedData = null;
 
-// Détecter la langue de la page Amazon
+/**
+ * Détecte la langue de la page Amazon (français ou anglais) en analysant l'URL et les éléments HTML
+ * @returns {string} Code de langue ('fr' ou 'en')
+ */
 export function detectLanguage() {
   // Basé sur l'URL Amazon.ca
   const url = window.location.href;
@@ -1300,7 +1328,11 @@ export function detectLanguage() {
   return 'en';
 }
 
-// Fonction de préprocesseur de texte unifiée
+/**
+ * Prétraite un texte pour l'analyse TF-IDF en le normalisant et supprimant les caractères non pertinents
+ * @param {string} text - Le texte à prétraiter
+ * @returns {string[]} Tableau des mots prétraités
+ */
 export function preprocessText(text) {
   if (!text) return [];
   return text.toLowerCase()
@@ -1312,7 +1344,10 @@ export function preprocessText(text) {
     .filter(word => word.length > 2);  // Enlève les mots trop courts
 }
 
-// Extraction du texte de la page simplifiée
+/**
+ * Extrait le texte pertinent de la page produit Amazon
+ * @returns {Object} Objet contenant les différentes sections de texte (titre, description, etc.)
+ */
 function extractProductText() {
   // Créer un cache pour les sélecteurs DOM
   const selectors = new Map([
@@ -1340,7 +1375,10 @@ function extractProductText() {
   return result;
 }
 
-// Module TF-IDF pour la classification
+/**
+ * Module TF-IDF pour la classification de produits
+ * Contient des méthodes pour préparer les données et classifier les produits
+ */
 const TfIdfClassifier = {
   // Cache global pour les données préparées
   cache: new Map(),
@@ -1462,10 +1500,11 @@ const TfIdfClassifier = {
   }
 };
 
-// Fonction pour récupérer les mots-clés combinés avec gestion d'erreur améliorée
-const keywordsCache = new Map();
-
-// Fonction pour récupérer les mots-clés combinés avec gestion d'erreur améliorée
+/**
+ * Récupère les mots-clés combinés (par défaut + personnalisés) pour une langue donnée
+ * @param {string} lang - Le code de langue ('fr' ou 'en')
+ * @returns {Promise<Object>} Dictionnaire de mots-clés par catégorie
+ */
 async function getCombinedKeywords(lang = 'fr') {
   const cacheKey = `keywords_${lang}`;
   if (keywordsCache.has(cacheKey)) {
@@ -1517,8 +1556,6 @@ async function getCombinedKeywords(lang = 'fr') {
  * Classifie la page produit Amazon en utilisant l'algorithme TF-IDF
  * @returns {Promise<string>} La catégorie détectée
  */
-const classificationCache = new Map();
-
 export async function classifyPage(combinedSites) {
   console.time('Total Classification');
 

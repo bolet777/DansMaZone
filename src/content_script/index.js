@@ -1,3 +1,17 @@
+/**
+ * @file src/content_script/index.js
+ * @license GPL-3.0
+ * @copyright DansMaZone.ca
+ * 
+ * Script principal d'injection pour l'extension DansMaZone
+ * 
+ * Ce module est responsable de l'analyse des pages produit d'Amazon,
+ * de la détection des catégories de produits et de l'affichage
+ * d'alternatives locales dans un panneau latéral. Il gère également
+ * la détection des ISBN pour les livres et charge les sites personnalisés
+ * configurés par l'utilisateur.
+ */
+
 import browser from 'webextension-polyfill';
 import '../styles/content_script.scss';
 import defaultSites from '../datas/default-sites.json';
@@ -8,7 +22,10 @@ let combinedSites = {};
 // Stockage pour les chaînes de traduction
 let i18nStrings = {};
 
-// Charger les chaînes de traduction
+/**
+ * Charge les chaînes de traduction nécessaires pour l'interface utilisateur
+ * @returns {Promise<boolean>} True si le chargement réussit, sinon False
+ */
 async function loadI18nStrings() {
   try {
     // Liste des clés de traduction nécessaires pour le content script
@@ -44,7 +61,10 @@ async function loadI18nStrings() {
   }
 }
 
-// Fonction pour fusionner les sites par défaut et personnalisés
+/**
+ * Fusionne les sites par défaut avec les sites personnalisés de l'utilisateur
+ * @returns {Promise<boolean>} True si l'initialisation réussit, sinon False
+ */
 async function initSites() {
   try {
     // Copier les sites par défaut
@@ -111,6 +131,10 @@ async function initSites() {
   }
 }
 
+/**
+ * Détecte et extrait l'ISBN d'un livre sur la page produit Amazon
+ * @returns {string|null} L'ISBN détecté ou null si aucun ISBN n'est trouvé
+ */
 function getISBN() {
   // Définir un pattern plus strict pour l'ISBN
   const isbnRegex = /(?:ISBN(?:-13)?:?\s*)?(?=[0-9X]{13}|[0-9X]{10})([0-9]{9}[0-9X]|[0-9]{12}[0-9X])/i;
@@ -226,6 +250,10 @@ function getISBN() {
   return null;
 }
 
+/**
+ * Extrait les détails du produit (nom, fabricant) pour créer un terme de recherche
+ * @returns {string} Terme de recherche optimisé pour les sites externes
+ */
 function getProductDetails() {
   const details = {
     manufacturer: null,
@@ -281,6 +309,12 @@ function getProductDetails() {
   return searchQuery.trim();
 }
 
+/**
+ * Ajoute le panneau latéral avec les liens vers les sites alternatifs
+ * @param {Array} sites - Liste des sites pour la catégorie détectée
+ * @param {string} searchTerm - Terme de recherche à utiliser
+ * @param {string} detectedCategory - Catégorie du produit détectée
+ */
 function addLinkButtons(sites, searchTerm, detectedCategory) {
   // Vérifier si sites est bien un tableau
   if (!Array.isArray(sites)) {
@@ -427,6 +461,11 @@ function addLinkButtons(sites, searchTerm, detectedCategory) {
   }
 }
 
+/**
+ * Trouve les sites correspondant à la catégorie détectée
+ * @param {string} detectedCategory - Catégorie du produit détectée
+ * @returns {Array} Liste des sites pour cette catégorie
+ */
 function findSitesForCategory(detectedCategory) {
   if (!detectedCategory || typeof detectedCategory !== 'string') {
     console.warn('DansMaZone: Catégorie non valide, utilisation de la catégorie par défaut');
@@ -448,6 +487,10 @@ function findSitesForCategory(detectedCategory) {
   return combinedSites['default'] || [];
 }
 
+/**
+ * Point d'entrée principal pour l'analyse et l'affichage des alternatives
+ * Détecte la catégorie du produit et affiche les sites correspondants
+ */
 async function start() {
   console.log('DansMaZone: Starting extension initialization');
   
@@ -502,7 +545,10 @@ async function start() {
   }
 }
 
-// Fonction pour s'assurer que l'extension s'exécute après que le contenu soit chargé
+/**
+ * Initialise l'extension au chargement de la page
+ * Assure que l'extension fonctionne même si le DOM est chargé de manière asynchrone
+ */
 function initializeExtension() {
   try {
     // Crée un log avec un timestamp pour faciliter le débogage
@@ -673,6 +719,7 @@ function fallbackInitialization() {
  * @param {string} context - Le contexte dans lequel l'erreur s'est produite
  * @param {boolean} notify - Si true, montre une notification à l'utilisateur
  * @param {boolean} critical - Si true, considère l'erreur comme critique
+ * @returns {Error} L'erreur originale pour permettre le chaînage
  */
 function handleError(error, context, notify = true, critical = false) {
   // Log l'erreur dans la console avec son contexte
