@@ -7,8 +7,9 @@ import './setup-node.js'; // Configuration de l'environnement de test
 // Importer directement depuis le fichier source
 import { 
   preprocessText, 
-  categoryKeywords, 
-  categoryMapping 
+  categoryKeywords,
+  classifyPage,
+  extractProductText
 } from '../src/datas/category-classifier.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,54 +28,95 @@ try {
   process.exit(1);
 }
 
-// Classification simple pour les tests (version synchrone)
-function classifyProduct(productData, lang = 'fr') {
-  const keywords = {};
-  
-  Object.entries(categoryKeywords).forEach(([category, keywordsByLang]) => {
-    keywords[category] = keywordsByLang[lang] || [];
-  });
-  
-  const productText = {
-    title: productData.title || '',
-    breadcrumbs: Array.isArray(productData.breadcrumbs) ? 
-      productData.breadcrumbs.join(' ') : 
-      (productData.breadcrumbs || ''),
-    brand: productData.brand || '',
-    features: productData.features || '',
-    details: productData.details || '',
-    description: productData.description || ''
+// Fonction pour mocker le DOM avec les données de test
+function setupMockDOM(productData) {
+  // Mock querySelector pour les éléments principaux
+  global.document.querySelector = (selector) => {
+    switch(selector) {
+      case '#productTitle':
+        return productData.title ? { textContent: productData.title } : null;
+      case '#productDescription':
+        return productData.description ? { textContent: productData.description } : null;
+      case '#feature-bullets':
+        return productData.features ? { textContent: productData.features } : null;
+      case '#detailBullets_feature_div':
+        return productData.details ? { textContent: productData.details } : null;
+      case '.po-brand .po-break-word, #bylineInfo, [id*="brand"]':
+        return productData.brand ? { textContent: productData.brand } : null;
+      default:
+        return null;
+    }
   };
   
-  const allText = Object.values(productText).join(' ').toLowerCase();
-  const textTerms = preprocessText(allText);
-  
-  let bestCategory = 'default';
-  let bestScore = 0;
-  
-  for (const [category, categoryKeywords] of Object.entries(keywords)) {
-    let score = 0;
-    
-    for (const keyword of categoryKeywords) {
-      const keywordTerms = preprocessText(keyword);
-      for (const term of keywordTerms) {
-        if (textTerms.includes(term)) {
-          score += 1;
-          // Bonus pour titre et breadcrumbs
-          if (preprocessText(productText.title).includes(term)) score += 2;
-          if (preprocessText(productText.breadcrumbs).includes(term)) score += 1.5;
-        }
-      }
+  // Mock querySelectorAll pour les breadcrumbs
+  global.document.querySelectorAll = (selector) => {
+    if (selector.includes('breadcrumb')) {
+      if (!productData.breadcrumbs) return [];
+      
+      const breadcrumbs = Array.isArray(productData.breadcrumbs) ? 
+        productData.breadcrumbs : 
+        productData.breadcrumbs.split(' ').filter(x => x.trim());
+      
+      return breadcrumbs.map(text => ({ textContent: text.trim() }));
     }
-    
-    if (score > bestScore) {
-      bestScore = score;
-      bestCategory = category;
-    }
-  }
+    return [];
+  };
   
-  return bestCategory;
+  // Mock window.location pour éviter les erreurs de cache
+  global.window.location = { 
+    pathname: '/test-' + Math.random(),
+    href: 'https://www.amazon.ca/test'
+  };
 }
+
+// Nouvelle fonction classifyProduct qui utilise le vrai code de production
+async function classifyProduct(testCase, lang = 'fr') {
+  // Simuler la page avec l'URL
+  global.window.location = { 
+    pathname: new URL(testCase.url).pathname,
+    href: testCase.url
+  };
+  
+  // Mock minimal du DOM avec juste le titre
+  global.document.querySelector = (selector) => {
+    if (selector === '#productTitle') {
+      return { textContent: testCase.name };
+    }
+    return null;
+  };
+  global.document.querySelectorAll = () => [];
+  
+  // Utiliser les vraies fonctions
+  const combinedKeywords = {}; // ... comme avant
+  const result = await classifyPage(combinedKeywords);
+  return result;
+}
+
+
+
+async function classifyProduct_OLD(productData, lang = 'fr') {
+  // Configurer le DOM mock avec les données de test
+  setupMockDOM(productData);
+  
+  // Construire les mots-clés comme le fait getCombinedKeywords dans l'extension
+  const combinedKeywords = {};
+  Object.entries(categoryKeywords).forEach(([category, keywordsByLang]) => {
+    combinedKeywords[category] = keywordsByLang[lang] || [];
+  });
+  
+  // Remplacer temporairement getCombinedKeywords
+  global.getCombinedKeywords = () => Promise.resolve(combinedKeywords);
+  
+  try {
+    // Utiliser directement la vraie fonction classifyPage
+    const result = await classifyPage(combinedKeywords);
+    return result;
+  } finally {
+    // Restaurer le mock par défaut
+    global.getCombinedKeywords = () => Promise.resolve({});
+  }
+}
+
 
 // Tests
 function runTest(name, actual, expected) {
@@ -118,7 +160,7 @@ async function runCategoryTests() {
     console.log(`\nTest: ${testCase.name}`);
     console.log(`URL: ${testCase.url}`);
     
-    const detectedCategory = classifyProduct(testCase.mockData);
+    const detectedCategory = await classifyProduct(testCase);
     
     console.log(`Catégorie attendue: ${testCase.expectedCategory}`);
     console.log(`Catégorie détectée: ${detectedCategory}`);

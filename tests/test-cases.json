@@ -19,180 +19,48 @@
   "productCategories": [
     {
       "name": "Carte mémoire Lexar",
-      "url": "https://www.amazon.ca/-/fr/Lexar-Carte-m%C3%A9moire-microSDXC-adaptateur/dp/B08XQ7R3GC/",
-      "expectedCategory": "Électronique et Informatique",
-      "mockData": {
-        "title": "Lexar Carte mémoire microSDXC avec adaptateur",
-        "brand": "Lexar",
-        "breadcrumbs": ["Électronique", "Accessoires", "Stockage"],
-        "detailItems": [
-          {
-            "label": "Fabricant:",
-            "value": "Lexar"
-          }
-        ]
-      }
+      "url": "https://www.amazon.ca/-/fr/dp/B08XQ7R3GC/",
+      "expectedCategory": "Électronique et Informatique"
     },
     {
       "name": "Casque audio",
-      "url": "https://www.amazon.ca/-/fr/Bluetooth-d%C3%A9cibels-Microphone-Compatible-Smartphone/dp/B09WMQCM2Y/",
-      "expectedCategory": "Électronique et Informatique",
-      "mockData": {
-        "title": "Casque Bluetooth avec Microphone Compatible Smartphone",
-        "brand": "Generic",
-        "breadcrumbs": ["Électronique", "Audio", "Casques"],
-        "detailItems": [
-          {
-            "label": "Fabricant:",
-            "value": "Generic"
-          }
-        ]
-      }
+      "url": "https://www.amazon.ca/-/fr/dp/B0F2N1YCQ3",
+      "expectedCategory": "Électronique et Informatique"
     },
     {
       "name": "Nourriture pour chien Pedigree",
       "url": "https://www.amazon.ca/-/fr/dp/B0769CJSV3",
-      "expectedCategory": "Animalerie",
-      "mockData": {
-        "title": "Pedigree Nourriture pour chiens adultes, saveur de poulet et légumes, 15 kg",
-        "brand": "Pedigree",
-        "breadcrumbs": ["Animalerie", "Nourriture pour chiens", "Croquettes"],
-        "detailItems": [
-          {
-            "label": "Poids de l'article",
-            "value": "15 kg"
-          },
-          {
-            "label": "Type d'animal",
-            "value": "Chien"
-          }
-        ]
-      }
+      "expectedCategory": "Animalerie"
     },
     {
       "name": "Huile moteur Castrol GTX",
       "url": "https://www.amazon.ca/dp/B00ICSWGJ0",
-      "expectedCategory": "Auto et Moto",
-      "mockData": {
-        "title": "Castrol GTX Huile moteur 5W-30, 5 L",
-        "brand": "Castrol",
-        "breadcrumbs": ["Auto et Moto", "Huiles et liquides", "Huiles moteur"],
-        "detailItems": [
-          {
-            "label": "Viscosité",
-            "value": "5W-30"
-          },
-          {
-            "label": "Compatibilité véhicule",
-            "value": "Voiture et Auto"
-          }
-        ]
-      }
+      "expectedCategory": "Auto et Moto"
     },
     {
       "name": "Samsonite Valise SCURE Spinner Large",
-      "url": "https://www.amazon.ca/-/fr/Samsonite-Valise-SCURE-Spinner-Checked/dp/B00IOXA6WW",
-      "expectedCategory": "Bagages et Voyage",
-      "mockData": {
-        "title": "Samsonite S'Cure Valise rigide 28 pouces",
-        "brand": "Samsonite",
-        "breadcrumbs": ["Bagages et Voyage", "Valises", "Valises rigides"],
-        "detailItems": [
-          {
-            "label": "Dimensions",
-            "value": "28 pouces"
-          },
-          {
-            "label": "Matériau",
-            "value": "Polypropylène"
-          }
-        ]
-      }
+      "url": "https://www.amazon.ca/-/fr/dp/B00IOXA6WW",
+      "expectedCategory": "Bagages et Voyage"
     },
     {
       "name": "Parfum Chanel N°5",
-      "url": "https://www.amazon.ca/-/fr/Chanel-parfum-flacon-vaporisateur-femme/dp/B000VOJ9BG",
-      "expectedCategory": "Beauté et Parfum",
-      "mockData": {
-        "title": "Chanel No.5 Eau de parfum en flacon vaporisateur pour femme 50 ml",
-        "brand": "Chanel",
-        "breadcrumbs": ["Beauté", "Parfums", "Femme"],
-        "detailItems": [
-          {
-            "label": "Contenance",
-            "value": "100 ml"
-          },
-          {
-            "label": "Format",
-            "value": "Spray"
-          }
-        ]
-      }
+      "url": "https://www.amazon.ca/-/fr/dp/B000VOJ9BG",
+      "expectedCategory": "Beauté et Parfum"
     },
     {
       "name": "Poussette Graco Modes",
-      "url": "https://www.amazon.ca/-/fr/Graco-syst%C3%A8me-voyage-poussette-Ellington/dp/B08VG8BBX4",
-      "expectedCategory": "Bébés et Puériculture",
-      "mockData": {
-        "title": "Graco Modes, système de voyage, siège auto et poussette, Ellington",
-        "brand": "Graco",
-        "breadcrumbs": ["Bébés et Puériculture", "Articles de voyage", "Poussettes"],
-        "detailItems": [
-          {
-            "label": "Poids maximum recommandé",
-            "value": "50 kilogrammes"
-          },
-          {
-            "label": "Âge minimum recommandé",
-            "value": "0 mois"
-          }
-        ]
-      }
+      "url": "https://www.amazon.ca/-/fr/dp/B08VG8BBX4",
+      "expectedCategory": "Bébés et Puériculture"
     },
     {
       "name": "Collier Swarovski Hyperbola",
-      "url": "https://www.amazon.ca/-/fr/Swarovski-Pendentif-Hyperbola-transparent-finition/dp/B0CPYTYH7H",
-      "expectedCategory": "Bijoux et Accessoires",
-      "mockData": {
-        "title": "Swarovski Pendentif Hyperbola, pavé, infini, transparent, finition rhodium",
-        "brand": "Swarovski",
-        "breadcrumbs": ["Bijoux et Accessoires", "Femme", "Colliers"],
-        "detailItems": [
-          {
-            "label": "Matériau",
-            "value": "Cristaux Swarovski"
-          },
-          {
-            "label": "Type de bijou",
-            "value": "Collier"
-          }
-        ]
-      }
+      "url": "https://www.amazon.ca/-/fr/dp/B0CPYTYH7H",
+      "expectedCategory": "Bijoux et Accessoires"
     },
     {
       "name": "Sandales Stretch 06",
-      "url": "https://www.amazon.ca/Sandales-Stretch-06-orthop%C3%A9diques-personnes/dp/B09TWKJJ81",
-      "expectedCategory": "Chaussures",
-      "mockData": {
-        "title": "Sandales Stretch 06, Chaussures orthopédiques pour hommes et femmes",
-        "brand": "SCHAWOS",
-        "breadcrumbs": ["Chaussures", "Homme", "Sandales et pantoufles"],
-        "detailItems": [
-          {
-            "label": "Pointure:",
-            "value": "42 EU"
-          },
-          {
-            "label": "Type de chaussure:",
-            "value": "Sandale orthopédique"
-          },
-          {
-            "label": "Matériau principal:",
-            "value": "Cuir"
-          }
-        ],
-        "description": "Sandales orthopédiques confortables pour personnes âgées et pieds sensibles. Semelle en cuir véritable."
-      }
+      "url": "https://www.amazon.ca/-/fr/dp/B09TWKJJ81",
+      "expectedCategory": "Chaussures"
     }
   ]
 }

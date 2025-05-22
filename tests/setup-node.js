@@ -19,16 +19,6 @@ function setupNodeEnvironment() {
     global.document = {
       querySelector: () => null,
       querySelectorAll: () => [],
-      getElementById: () => null,
-      createElement: (tag) => ({
-        className: '',
-        style: {},
-        appendChild: () => {},
-        addEventListener: () => {}
-      }),
-      body: {
-        appendChild: () => {}
-      },
       documentElement: {
         lang: 'fr'
       }
@@ -61,6 +51,9 @@ function setupNodeEnvironment() {
       }
     };
   }
+
+  // Mock pour la fonctions getCombinedKeywords
+  global.getCombinedKeywords = () => Promise.resolve({});
   
   console.log("✅ Environnement Node.js configuré pour les tests");
 }

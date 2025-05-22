@@ -1362,7 +1362,7 @@ export function preprocessText(text) {
  * Extrait le texte pertinent de la page produit Amazon
  * @returns {Object} Objet contenant les différentes sections de texte (titre, description, etc.)
  */
-function extractProductText() {
+export function extractProductText() {
   // Créer un cache pour les sélecteurs DOM
   const selectors = new Map([
     ['title', '#productTitle'],
