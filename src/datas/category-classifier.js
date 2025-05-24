@@ -39,6 +39,15 @@ if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') {
 const keywordsCache = new Map();
 const classificationCache = new Map();
 
+// Pondération des mots-clés par catégorie
+const SCORE_MULTIPLIERS = {
+  TITLE: 4,
+  BREADCRUMBS: 5,
+  BRAND: 2,
+  DESCRIPTION: 1.2
+};
+
+
 // Liste de mots-clés par catégorie - version bilingue séparée par langue
 export const categoryKeywords = {
   'Animalerie': {
@@ -520,39 +529,38 @@ export const categoryKeywords = {
   
   'Jeux Vidéo et Consoles': {
     fr: [
-      'jeu vidéo', 'video game', 'console jeu', 'manette jeu', 'accessoire gaming', 'playstation', 'xbox',
-      'nintendo', 'nintendo switch', 'pc gaming', 'gamer', 'gaming', 'jeu arcade', 'jeu simulation',
-      'jeu action', 'jeu aventure', 'jeu rpg', 'jeu sport', 'jeu course', 'jeu combat', 'jeu plateforme',
-      'jeu strategie', 'jeu fps', 'jeu mmorpg', 'casque vr', 'realite virtuelle', 'casque gaming', 'joystick',
-      'volant gaming', 'pedalier gaming', 'stick arcade', 'gamepad', 'controleur jeu', 'bouton manette', 'gachette manette',
-      'console portable', 'cartouche jeu', 'disque jeu', 'jeu dematerialise', 'telechargement jeu', 'connexion gaming',
-      'jeu online', 'mode multijoueur', 'mode solo', 'mode campagne', 'histoire jeu', 'scenario jeu', 'personnage jeu',
-      'avatar gaming', 'profil joueur', 'sauvegarde jeu', 'checkpoint', 'niveau jeu', 'monde virtuel', 'environnement jeu',
-      'graphisme jeu', 'frame rate', 'resolution gaming', 'texture jeu', 'pixel art', 'polygone', 'rendu 3D',
-      'shader', 'feedback haptique', 'vibration manette', 'retour de force', 'camera jeu', 'vue subjective',
-      'jeu tps', 'jeu rts', 'jeu moba', 'battle royale', 'jeu survie', 'jeu horreur', 'jeu puzzle', 'jeu reflexion',
-      'jeu roguelike', 'jeu roguelite', 'jeu indie', 'jeu AAA', 'editeur jeu', 'developpeur jeu', 'studio gaming',
-      'patch jeu', 'mise a jour jeu', 'dlc', 'extension jeu', 'season pass', 'jeu free-to-play', 'version premium',
-      'abonnement gaming', 'boutique jeu', 'microtransaction', 'skin jeu', 'cosmetique jeu', 'emote', 'buff jeu',
-      'nerf', 'spawn', 'respawn', 'hitbox', 'lag gaming', 'ping jeu', 'serveur jeu', 'cross-play', 'cross-platform'
+      'videojeu', 'console', 'manette', 'gaming', 'playstation', 'xbox',
+      'nintendo', 'switch', 'gamer', 'arcade', 'simulation',
+      'aventure', 'rpg', 'combat', 'plateforme',
+      'strategie', 'fps', 'mmorpg', 'casque', 'virtuelle', 'joystick',
+      'volant', 'pedalier', 'gamepad', 'controleur', 'gachette',
+      'portable', 'cartouche', 'disque', 'dematerialise', 'telechargement',
+      'online', 'multijoueur', 'solo', 'campagne', 'histoire', 'scenario', 'personnage',
+      'avatar', 'profil', 'sauvegarde', 'checkpoint', 'niveau', 'virtuel', 'environnement',
+      'graphisme', 'framerate', 'resolution', 'texture', 'pixel', 'polygone', 'rendu',
+      'shader', 'haptique', 'vibration', 'camera', 'subjective',
+      'tps', 'rts', 'moba', 'royale', 'survie', 'horreur', 'reflexion',
+      'roguelike', 'roguelite', 'indie', 'editeur', 'developpeur', 'studio',
+      'patch', 'dlc', 'extension', 'premium',
+      'abonnement', 'microtransaction', 'skin', 'cosmetique', 'emote', 'buff',
+      'nerf', 'spawn', 'respawn', 'hitbox', 'lag', 'ping', 'serveur', 'esport'
     ],
     en: [
-      'video game', 'gaming video', 'game console', 'game controller', 'gaming accessory', 'playstation', 'xbox',
-      'nintendo', 'nintendo switch', 'gaming pc', 'gamer', 'gaming', 'arcade game', 'simulation game',
-      'action game', 'adventure game', 'rpg game', 'sports game', 'racing game', 'fighting game', 'platform game',
-      'strategy game', 'fps game', 'mmorpg game', 'vr headset', 'virtual reality', 'gaming headset', 'gaming joystick',
-      'gaming steering wheel', 'gaming pedals', 'arcade stick', 'gamepad', 'game controller', 'controller button', 'controller trigger',
-      'handheld console', 'game cartridge', 'game disc', 'digital game', 'game download', 'gaming connection',
-      'online gaming', 'multiplayer mode', 'singleplayer mode', 'campaign mode', 'game story', 'game plot', 'game character',
-      'gaming avatar', 'player profile', 'game save', 'checkpoint', 'game level', 'virtual world', 'game environment',
-      'game graphics', 'frame rate', 'gaming resolution', 'game texture', 'pixel art', 'polygon', '3D rendering',
-      'shader', 'haptic feedback', 'controller vibration', 'force feedback', 'game camera', 'first-person view',
-      'tps game', 'rts game', 'moba game', 'battle royale', 'survival game', 'horror game', 'puzzle game', 'brain teaser game',
-      'roguelike game', 'roguelite game', 'indie game', 'AAA game', 'game publisher', 'game developer', 'gaming studio',
-      'game patch', 'game update', 'dlc', 'game expansion', 'season pass', 'free-to-play game', 'premium version',
-      'gaming subscription', 'game store', 'microtransaction', 'game skin', 'game cosmetic', 'emote', 'game buff',
-      'nerf', 'spawn', 'respawn', 'hitbox', 'gaming lag', 'game ping', 'game server', 'cross-play', 'cross-platform',
-      'early access', 'beta test', 'alpha test', 'game mod', 'modding', 'lootbox', 'achievement', 'trophy'
+      'videogame', 'console', 'controller', 'gaming', 'playstation', 'xbox',
+      'nintendo', 'switch', 'gamer', 'arcade', 'simulation',
+      'adventure', 'rpg', 'fighting', 'platform',
+      'strategy', 'fps', 'mmorpg', 'headset', 'virtual', 'joystick',
+      'steering', 'pedals', 'gamepad', 'trigger',
+      'handheld', 'cartridge', 'disc', 'digital', 'download',
+      'online', 'multiplayer', 'singleplayer', 'campaign', 'story', 'plot', 'character',
+      'avatar', 'profile', 'save', 'checkpoint', 'level', 'virtual', 'environment',
+      'graphics', 'framerate', 'resolution', 'texture', 'pixel', 'polygon', 'rendering',
+      'shader', 'haptic', 'vibration', 'camera', 'firstperson',
+      'tps', 'rts', 'moba', 'royale', 'survival', 'horror', 'teaser',
+      'roguelike', 'roguelite', 'indie', 'publisher', 'developer', 'studio',
+      'patch', 'dlc', 'expansion', 'premium',
+      'subscription', 'microtransaction', 'skin', 'cosmetic', 'emote', 'buff',
+      'nerf', 'spawn', 'respawn', 'hitbox', 'lag', 'ping', 'server', 'esport'
     ]
   },
     
@@ -1589,20 +1597,20 @@ const TfIdfClassifier = {
   
           // Pondération plus forte pour les termes spécifiques
           if (titleTerms.has(term)) {
-            multiplier = 4; // Augmenté de 3 à 4
-            termScore *= 4;
+            multiplier = SCORE_MULTIPLIERS.TITLE;
+            termScore *= SCORE_MULTIPLIERS.TITLE;
             source = 'title';
           } else if (breadcrumbTerms.has(term)) {
-            multiplier = 3; // Augmenté de 2.5 à 3
-            termScore *= 3;
+            multiplier = SCORE_MULTIPLIERS.BREADCRUMBS;
+            termScore *= SCORE_MULTIPLIERS.BREADCRUMBS;
             source = 'breadcrumbs';
           } else if (brandTerms.has(term)) {
-            multiplier = 2; // Augmenté de 1.5 à 2
-            termScore *= 2;
+            multiplier = SCORE_MULTIPLIERS.BRAND;
+            termScore *= SCORE_MULTIPLIERS.BRAND;
             source = 'brand';
           } else if (descriptionTerms.has(term)) {
-            multiplier = 1.2;
-            termScore *= 1.2;
+            multiplier = SCORE_MULTIPLIERS.DESCRIPTION;
+            termScore *= SCORE_MULTIPLIERS.DESCRIPTION;
             source = 'description';
           }
   
