@@ -19,48 +19,203 @@
   "productCategories": [
     {
       "name": "Carte mémoire Lexar",
-      "url": "https://www.amazon.ca/-/fr/dp/B08XQ7R3GC/",
+      "asin": "B08XQ7R3GC",
       "expectedCategory": "Électronique et Informatique"
     },
     {
       "name": "Casque audio",
-      "url": "https://www.amazon.ca/-/fr/dp/B0F2N1YCQ3",
+      "asin": "B0F2N1YCQ3",
       "expectedCategory": "Électronique et Informatique"
     },
     {
       "name": "Nourriture pour chien Pedigree",
-      "url": "https://www.amazon.ca/-/fr/dp/B0769CJSV3",
+      "asin": "B0769CJSV3",
       "expectedCategory": "Animalerie"
     },
     {
       "name": "Huile moteur Castrol GTX",
-      "url": "https://www.amazon.ca/dp/B00ICSWGJ0",
+      "asin": "B00ICSWGJ0",
       "expectedCategory": "Auto et Moto"
     },
     {
       "name": "Samsonite Valise SCURE Spinner Large",
-      "url": "https://www.amazon.ca/-/fr/dp/B00IOXA6WW",
+      "asin": "B00IOXA6WW",
       "expectedCategory": "Bagages et Voyage"
     },
     {
       "name": "Parfum Chanel N°5",
-      "url": "https://www.amazon.ca/-/fr/dp/B000VOJ9BG",
+      "asin": "B000VOJ9BG",
       "expectedCategory": "Beauté et Parfum"
     },
     {
       "name": "Poussette Graco Modes",
-      "url": "https://www.amazon.ca/-/fr/dp/B08VG8BBX4",
+      "asin": "B08VG8BBX4",
       "expectedCategory": "Bébés et Puériculture"
     },
     {
       "name": "Collier Swarovski Hyperbola",
-      "url": "https://www.amazon.ca/-/fr/dp/B0CPYTYH7H",
+      "asin": "B0CPYTYH7H",
       "expectedCategory": "Bijoux et Accessoires"
     },
     {
       "name": "Sandales Stretch 06",
-      "url": "https://www.amazon.ca/-/fr/dp/B09TWKJJ81",
+      "asin": "B09TWKJJ81",
       "expectedCategory": "Chaussures"
+    },
+    {
+      "name": "Collier pour chien en cuir",
+      "asin": "B01N6SSZKQ",
+      "expectedCategory": "Animalerie"
+    },
+    {
+      "name": "Filtre à huile Fram",
+      "asin": "B000C33MI2",
+      "expectedCategory": "Auto et Moto"
+    },
+    {
+      "name": "cadenas de sécurité à 3 chiffres",
+      "asin": "B07D3N1365",
+      "expectedCategory": "Bagages et Voyage"
+    },
+    {
+      "name": "Rouge à lèvres liquide",
+      "asin": "B0CXF8S8WX",
+      "expectedCategory": "Beauté et Parfum"
+    },
+    {
+      "name": "Couchette de chevet en bois",
+      "asin": "B0CSLJVJPZ",
+      "expectedCategory": "Bébés et Puériculture"
+    },
+    {
+      "name": "Le Creuset Poêle à frire antiadhésive",
+      "asin": "B087SJJQ8X",
+      "expectedCategory": "Cuisine"
+    },
+    {
+      "name": "Cadre photo numérique",
+      "asin": "B0D8VTQKQX",
+      "expectedCategory": "Photographie"
+    },
+    {
+      "name": "Napoleon TravelQ TQ240-BL Barbecue portable ",
+      "asin": "B0934CBYPZ",
+      "expectedCategory": "Électroménager"
+    },
+    {
+      "name": "Logitech G Souris de jeu filaire",
+      "asin": "B07YN82X3B",
+      "expectedCategory": "Jeux Vidéo et Consoles"
+    },
+    {
+      "name": "CHEERIOS - Lot de 2 boîtes à céréales multi-grains",
+      "asin": "B01LX5ZWWE",
+      "expectedCategory": "Épicerie et Alimentation"
+    },
+    {
+      "name": "Oppenheimer - 4K Ultra HD + Blu-ray",
+      "asin": "B0CL7R91X1",
+      "expectedCategory": "Films et Séries TV"
+    },
+    {
+      "name": "Stanley Bostitch No-Jam BOSB660BK",
+      "asin": "B0006HVURE",
+      "expectedCategory": "Fournitures de Bureau"
+    },
+    {
+      "name": "Yamaha C40II Guitare classique",
+      "asin": "B005B6EZ36",
+      "expectedCategory": "Instruments de Musique"
+    },
+    {
+      "name": "Sécateur Fiskars",
+      "asin": "B000HHO7AU",
+      "expectedCategory": "Jardin"
+    },
+    {
+      "name": "Manette Xbox Series X",
+      "asin": "B0BXQ5RMNV",
+      "expectedCategory": "Jeux Vidéo et Consoles"
+    },
+    {
+      "name": "Puzzle 1000 pièces Ravensburger",
+      "asin": "B0CPFKFLDL",
+      "expectedCategory": "Jouets et Jeux"
+    },
+    {
+      "name": "Housse de couette 100% coton",
+      "asin": "B07SN29DSN",
+      "expectedCategory": "Literie"
+    },
+    {
+      "name": "Microsoft Office 365",
+      "asin": "B08MNXC1NF",
+      "expectedCategory": "Logiciels"
+    },
+    {
+      "name": "Lampe de table LED",
+      "asin": "B087CDBKCH",
+      "expectedCategory": "Luminaire"
+    },
+    {
+      "name": "T-shirt Adidas homme",
+      "asin": "B09XM27L2T",
+      "expectedCategory": "Mode et Vêtements"
+    },
+    {
+      "name": "Montre Fossil automatique",
+      "asin": "B01487C6WA",
+      "expectedCategory": "Bijoux et Accessoires"
+    },
+    {
+      "name": "Under Armour Charged Assert 10",
+      "asin": "B09XBWB468",
+      "expectedCategory": "Chaussures"
+    },
+    {
+      "name": "CD The Beatles Abbey Road",
+      "asin": "B07VLMMG2F",
+      "expectedCategory": "Musique et CD"
+    },
+    {
+      "name": "DEWALT Kit combiné de perceuse sans fil 20 V Max",
+      "asin": "B00IJ0ALYS",
+      "expectedCategory": "Outils et Bricolage"
+    },
+    {
+      "name": "Objectif Canon 50mm f/1.8",
+      "asin": "B00X8MRBCW",
+      "expectedCategory": "Photographie"
+    },
+    {
+      "name": "Dawn Platinum Powerwash Kit de démarrage",
+      "asin": "B082DLGV3F",
+      "expectedCategory": "Produits Ménagers"
+    },
+    {
+      "name": "Mr. Pen Assortiment de vis à bois",
+      "asin": "B092LP684Q",
+      "expectedCategory": "Quincaillerie"
+    },
+    {
+      "name": "SparkPod – Pommeau haute pression",
+      "asin": "B074PR4FRT",
+      "expectedCategory": "Salle de bain"
+    },
+    {
+      "name": "Brosse à dents électrique rechargeable Oral-B PRO 1000",
+      "asin": "B003UKM9CO",
+      "expectedCategory": "Santé et Soins personnels"
+    },
+    {
+      "name": "Ballon de basketball Wilson",
+      "asin": "B091MJMKVK",
+      "expectedCategory": "Sports et Plein air"
+    },
+    {
+      "name": "Kobo Libra 2 eReader",
+      "asin": "B09HSRGZRL",
+      "expectedCategory": "Électronique et Informatique"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "dansmazone",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Extension pour chercher sur Amazon et acheter localement.",
   "author": "Bolet <info@dansmazone.ca> (https://dAnsMAZONe.ca)",
   "license": "MIT",
@@ -34,7 +34,9 @@
     "last 2 Safari versions"
   ],
   "dependencies": {
+    "jsdom": "^26.1.0",
     "lru-cache": "^10.2.0",
+    "node-fetch": "^3.3.2",
     "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {

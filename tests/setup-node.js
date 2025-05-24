@@ -14,24 +14,12 @@ function setupNodeEnvironment() {
   // Remplacer le module webextension-polyfill par notre mock
   global.browser = browserMock;
   
-  // Mock pour document et window si nécessaire
-  if (typeof global.document === 'undefined') {
-    global.document = {
-      querySelector: () => null,
-      querySelectorAll: () => [],
-      documentElement: {
-        lang: 'fr'
-      }
-    };
-  }
-  
-  if (typeof global.window === 'undefined') {
-    global.window = {
-      location: {
-        href: 'https://www.amazon.ca/dp/B08XQ7R3GC/',
-        pathname: '/dp/B08XQ7R3GC/'
-      },
-      open: () => {}
+  // Mock minimal pour fetch si pas disponible
+  if (typeof global.fetch === 'undefined') {
+    global.fetch = async (url, options) => {
+      // Import dynamique de node-fetch si nécessaire
+      const { default: fetch } = await import('node-fetch');
+      return fetch(url, options);
     };
   }
   
@@ -51,11 +39,8 @@ function setupNodeEnvironment() {
       }
     };
   }
-
-  // Mock pour la fonctions getCombinedKeywords
-  global.getCombinedKeywords = () => Promise.resolve({});
   
-  console.log("✅ Environnement Node.js configuré pour les tests");
+  console.log("✅ Environnement Node.js configuré pour utiliser les vraies pages Amazon");
 }
 
 // Exécuter la configuration
