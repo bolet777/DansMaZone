@@ -136,37 +136,43 @@ async function initSites() {
  * @returns {string|null} L'ISBN détecté ou null si aucun ISBN n'est trouvé
  */
 function getISBN() {
-  // Définir un pattern plus strict pour l'ISBN
-  const isbnRegex = /(?:ISBN(?:-13)?:?\s*)?(?=[0-9X]{13}|[0-9X]{10})([0-9]{9}[0-9X]|[0-9]{12}[0-9X])/i;
-  
-  // Vérifier la validité d'un ISBN trouvé
-  const isValidISBN = (isbn) => {
-    // Enlever les tirets et espaces
+  // Patterns séparés pour ISBN-13 et ISBN-10
+  const isbn13Regex = /(?:ISBN(?:-13)?:?\s*)?(?=[0-9]{13})([0-9]{12}[0-9X])/i;
+  const isbn10Regex = /(?:ISBN(?:-10)?:?\s*)?(?=[0-9X]{10})([0-9]{9}[0-9X])/i;
+
+  // Vérifier la validité d'un ISBN-13
+  const isValidISBN13 = (isbn) => {
     const cleanIsbn = isbn.replace(/[-\s]/g, '');
     
-    // Vérifier la longueur (ISBN-10 ou ISBN-13)
-    if (cleanIsbn.length !== 10 && cleanIsbn.length !== 13) {
-      return false;
-    }
+    if (cleanIsbn.length !== 13) return false;
+    
+    // Doit commencer par 978 ou 979
+    if (!cleanIsbn.startsWith('978') && !cleanIsbn.startsWith('979')) return false;
     
     // Exclure les valeurs suspectes
-    if (cleanIsbn === '4294967295' || // 2^32-1, valeur limite
-        cleanIsbn === '0000000000' ||
-        cleanIsbn === '1111111111' ||
-        cleanIsbn === '9999999999' ||
-        /^(.)\1+$/.test(cleanIsbn)) { // Tous les chiffres identiques
-      return false;
-    }
+    if (/^(.)\1+$/.test(cleanIsbn)) return false;
     
-    // Vérification supplémentaire : les ISBN-13 commencent généralement par 978 ou 979
-    if (cleanIsbn.length === 13 && !cleanIsbn.startsWith('978') && !cleanIsbn.startsWith('979')) {
-      return false;
-    }
-    
-    // Si l'ISBN semble valide, le retourner
     return cleanIsbn;
   };
-  
+
+  // Vérifier la validité d'un ISBN-10
+  const isValidISBN10 = (isbn) => {
+    const cleanIsbn = isbn.replace(/[-\s]/g, '');
+    
+    if (cleanIsbn.length !== 10) return false;
+    
+    // Exclure les valeurs suspectes
+    if (cleanIsbn === '0000000000' || 
+        cleanIsbn === '1111111111' ||
+        cleanIsbn === '9999999999' ||
+        cleanIsbn === '4294967295' ||
+        /^(.)\1+$/.test(cleanIsbn)) {
+      return false;
+    }
+    
+    return cleanIsbn;
+  };
+
   // Méthode 1: Recherche dans la section détails
   const detailBullets = document.getElementById('detailBullets_feature_div');
   if (detailBullets) {
@@ -177,78 +183,125 @@ function getISBN() {
         const isbnSpan = item.querySelector('span:not(.a-text-bold)');
         if (isbnSpan) {
           const potentialIsbn = isbnSpan.textContent.trim();
-          const validIsbn = isValidISBN(potentialIsbn);
-          if (validIsbn) {
-            console.log('DansMaZone: ISBN trouvé dans les détails:', validIsbn);
-            return validIsbn;
+          
+          // Tester d'abord l'ISBN-13
+          const match13 = potentialIsbn.match(isbn13Regex);
+          if (match13) {
+            const validIsbn13 = isValidISBN13(match13[1]);
+            if (validIsbn13) {
+              console.log('DansMaZone: ISBN-13 trouvé dans les détails:', validIsbn13);
+              return validIsbn13;
+            }
+          }
+          
+          // Fallback vers ISBN-10
+          const match10 = potentialIsbn.match(isbn10Regex);
+          if (match10) {
+            const validIsbn10 = isValidISBN10(match10[1]);
+            if (validIsbn10) {
+              console.log('DansMaZone: ISBN-10 trouvé dans les détails:', validIsbn10);
+              return validIsbn10;
+            }
           }
         }
       }
     }
   }
-  
+
   // Méthode 2: Chercher dans les métadonnées
   const metaIsbn = document.querySelector('meta[property="books:isbn"]');
   if (metaIsbn && metaIsbn.content) {
-    const match = metaIsbn.content.match(isbnRegex);
-    if (match && match[1]) {
-      const validIsbn = isValidISBN(match[1]);
-      if (validIsbn) {
-        console.log('DansMaZone: ISBN trouvé dans les métadonnées:', validIsbn);
-        return validIsbn;
+    const match13 = metaIsbn.content.match(isbn13Regex);
+    if (match13) {
+      const validIsbn13 = isValidISBN13(match13[1]);
+      if (validIsbn13) {
+        console.log('DansMaZone: ISBN-13 trouvé dans les métadonnées:', validIsbn13);
+        return validIsbn13;
+      }
+    }
+    
+    const match10 = metaIsbn.content.match(isbn10Regex);
+    if (match10) {
+      const validIsbn10 = isValidISBN10(match10[1]);
+      if (validIsbn10) {
+        console.log('DansMaZone: ISBN-10 trouvé dans les métadonnées:', validIsbn10);
+        return validIsbn10;
       }
     }
   }
-  
+
   // Méthode 3: Chercher dans des zones de contenu spécifiques
   const textContentElements = [
     document.getElementById('productDescription'),
     document.getElementById('feature-bullets'),
     document.getElementById('bookDescription_feature_div')
   ];
-  
+
   for (const element of textContentElements) {
     if (element) {
       const text = element.textContent;
-      const matches = text.match(isbnRegex);
-      if (matches && matches[1]) {
-        const validIsbn = isValidISBN(matches[1]);
-        if (validIsbn) {
-          console.log('DansMaZone: ISBN trouvé dans le contenu:', validIsbn);
-          return validIsbn;
+      
+      // Prioriser ISBN-13
+      const matches13 = text.match(isbn13Regex);
+      if (matches13) {
+        const validIsbn13 = isValidISBN13(matches13[1]);
+        if (validIsbn13) {
+          console.log('DansMaZone: ISBN-13 trouvé dans le contenu:', validIsbn13);
+          return validIsbn13;
+        }
+      }
+      
+      // Fallback vers ISBN-10
+      const matches10 = text.match(isbn10Regex);
+      if (matches10) {
+        const validIsbn10 = isValidISBN10(matches10[1]);
+        if (validIsbn10) {
+          console.log('DansMaZone: ISBN-10 trouvé dans le contenu:', validIsbn10);
+          return validIsbn10;
         }
       }
     }
   }
-  
+
   // Méthode 4: Vérifier s'il existe une section d'informations sur les livres
   const bookSections = [
     document.getElementById('rpi-attribute-book_details-isbn13'),
     document.getElementById('rpi-attribute-book_details-isbn10'),
     document.querySelector('[data-feature-name="bookDescription"]')
   ];
-  
+
   if (!bookSections.some(element => element !== null)) {
     console.log('DansMaZone: Aucune section liée aux livres trouvée');
-    return null; // Pas de section liée aux livres, donc pas un livre
+    return null;
   }
-  
-  // Méthode 5 (prudente): Chercher dans le corps entier de la page, mais avec une confiance faible
-  // Uniquement si les sections liées aux livres existent
+
+  // Méthode 5: Chercher dans le corps entier de la page (en dernier recours)
   const pageText = document.body.textContent;
-  const bodyMatches = pageText.match(isbnRegex);
-  if (bodyMatches && bodyMatches[1]) {
-    const validIsbn = isValidISBN(bodyMatches[1]);
-    if (validIsbn) {
-      console.log('DansMaZone: ISBN potentiel trouvé dans le corps du texte:', validIsbn);
-      return validIsbn;
+
+  // Prioriser ISBN-13
+  const bodyMatch13 = pageText.match(isbn13Regex);
+  if (bodyMatch13) {
+    const validIsbn13 = isValidISBN13(bodyMatch13[1]);
+    if (validIsbn13) {
+      console.log('DansMaZone: ISBN-13 potentiel trouvé dans le corps du texte:', validIsbn13);
+      return validIsbn13;
     }
   }
-  
+
+  // Fallback vers ISBN-10
+  const bodyMatch10 = pageText.match(isbn10Regex);
+  if (bodyMatch10) {
+    const validIsbn10 = isValidISBN10(bodyMatch10[1]);
+    if (validIsbn10) {
+      console.log('DansMaZone: ISBN-10 potentiel trouvé dans le corps du texte:', validIsbn10);
+      return validIsbn10;
+    }
+  }
+
   // Aucun ISBN valide trouvé
   console.log('DansMaZone: Aucun ISBN valide trouvé');
   return null;
-}
+  };
 
 /**
  * Extrait les détails du produit (nom, fabricant) pour créer un terme de recherche
