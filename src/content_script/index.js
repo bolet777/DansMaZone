@@ -26,7 +26,7 @@ if (window.dansMaZoneLoaded) {
 
   // Stockage pour les sites combinés (par défaut + personnalisés)
   let combinedSites = {};
-  
+
   // Stockage pour les chaînes de traduction
   let i18nStrings = {};
 
@@ -259,6 +259,68 @@ if (window.dansMaZoneLoaded) {
   }
 
   /**
+   * Récupère le prix d'un livre depuis l'API des Librairies
+   * @param {string} isbn - L'ISBN du livre
+   * @returns {Promise<Object|null>} Données du livre ou null si erreur
+   */
+  async function fetchBookPrice(isbn) {
+    try {
+      const response = await fetch(`https://app.leslibraires.ca/api/v1/public/books/isbn/${isbn}`);
+      
+      if (!response.ok) {
+        console.log('DansMaZone: Livre non trouvé dans les librairies locales');
+        return null;
+      }
+      
+      const data = await response.json();
+      console.log('DansMaZone: Prix récupéré:', data.data);
+      return data.data;
+    } catch (error) {
+      console.error('DansMaZone: Erreur API librairies:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Ajoute le prix du livre à la sidebar
+   * @param {number} price - Prix du livre
+   * @param {string} bookUrl - URL directe du livre
+   */
+  function addPriceToSidebar(price, bookUrl) {
+    const sidebar = document.querySelector('.dmz-sidebar');
+    if (!sidebar) return;
+
+    // Chercher le bouton "Les Libraires" (nom exact du default-sites.json)
+    const librariesButton = Array.from(sidebar.querySelectorAll('.dmz-sidebar-button'))
+      .find(button => button.textContent.includes('Les Libraires'));
+
+    if (librariesButton) {
+      // Mettre à jour l'URL vers la page directe du livre
+      librariesButton.href = bookUrl;
+      librariesButton.onclick = (e) => {
+        e.preventDefault();
+        window.open(bookUrl, '_blank');
+        return false;
+      };
+
+      // Ajouter le prix
+      const priceElement = document.createElement('span');
+      priceElement.className = 'dmz-price';
+      priceElement.textContent = ` - ${price.toFixed(2)} $`;
+      priceElement.style.cssText = `
+        color: #28a745;
+        font-weight: bold;
+        font-size: 12px;
+      `;
+      
+      librariesButton.appendChild(priceElement);
+      console.log('DansMaZone: Prix ajouté à la sidebar:', price);
+    } else {
+      console.log('DansMaZone: Bouton "Les Libraires" non trouvé dans la sidebar');
+    }
+  }
+
+  /**
    * Ajoute le panneau latéral avec les liens vers les sites alternatifs
    * @param {Array} sites - Liste des sites pour la catégorie détectée
    * @param {string} searchTerm - Terme de recherche à utiliser
@@ -358,7 +420,7 @@ if (window.dansMaZoneLoaded) {
         
         const button = document.createElement('a');
         button.href = url;
-        button.target = "_blank";  // Ceci devrait déjà ouvrir dans un nouvel onglet
+        button.target = "_blank";
         button.classList.add('dmz-sidebar-button');
         
         // Ajouter un gestionnaire d'événements explicite pour s'assurer qu'il s'ouvre dans un nouvel onglet
@@ -396,12 +458,21 @@ if (window.dansMaZoneLoaded) {
       optionsButton.appendChild(optionsText);
       contentContainer.appendChild(optionsButton);
       
-      
       sidebarEl.appendChild(contentContainer);
+      
       // Ajouter à la page (directement au body pour un positionnement absolu)
       if (document.body) {
         document.body.appendChild(sidebarEl);
         console.log('DansMaZone: Sidebar added to the page with', sites.length, 'sites');
+        
+        // Si c'est un livre avec ISBN, récupérer le prix chez Les Libraires après création de la sidebar
+        if (detectedCategory === 'Livres' && /^\d{10}$|^\d{13}$/.test(searchTerm)) {
+          fetchBookPrice(searchTerm).then(bookData => {
+            if (bookData && bookData.available) {
+              addPriceToSidebar(bookData.price, bookData.url);
+            }
+          });
+        }
       } else {
         console.error('DansMaZone: document.body not found, cannot add sidebar');
       }

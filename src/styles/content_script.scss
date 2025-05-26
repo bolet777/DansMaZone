@@ -151,6 +151,17 @@
   }
 }
 
+.dmz-price {
+  color: #28a745 !important;
+  font-weight: bold;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.dmz-sidebar-button:hover .dmz-price {
+  color: #fff !important;
+}
+
 // Cache les éléments Amazon non nécessaires
 #moreBuyingChoices_feature_div,
 #amazonClubSuggestionWidget_feature_div,
