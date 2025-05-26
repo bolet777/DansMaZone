@@ -1572,10 +1572,10 @@
   ],
   "Livres": [
     {
-      "name": "Librairies Locales Québécoises",
+      "name": "Les Libraires",
       "urls": {
-        "fr": "https://www.leslibraires.ca/catalogue?s=##ISBN##",
-        "en": "https://www.leslibraires.ca/catalogue?s=##ISBN##"
+        "fr": "https://www.leslibraires.ca/livres/##ISBN##.html",
+        "en": "https://www.leslibraires.ca/livres/##ISBN##.html"
       },
       "validation": {
         "fr": {
