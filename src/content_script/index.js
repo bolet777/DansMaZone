@@ -16,6 +16,7 @@ import browser from 'webextension-polyfill';
 import '../styles/content_script.scss';
 import defaultSites from '../datas/default-sites.json';
 import { classifyPage, categoryMapping, detectLanguage } from '../datas/category-classifier.js';
+import { fetchBookPrice as fetchBookPriceAPI } from '../datas/pricesAPI.js';
 
 // Protection contre double chargement
 if (window.dansMaZoneLoaded) {
@@ -259,26 +260,12 @@ if (window.dansMaZoneLoaded) {
   }
 
   /**
-   * Récupère le prix d'un livre depuis l'API des Librairies
+   * Récupère le prix d'un livre depuis l'API configurée
    * @param {string} isbn - L'ISBN du livre
    * @returns {Promise<Object|null>} Données du livre ou null si erreur
    */
   async function fetchBookPrice(isbn) {
-    try {
-      const response = await fetch(`https://app.leslibraires.ca/api/v1/public/books/isbn/${isbn}`);
-      
-      if (!response.ok) {
-        console.log('DansMaZone: Livre non trouvé dans les librairies locales');
-        return null;
-      }
-      
-      const data = await response.json();
-      console.log('DansMaZone: Prix récupéré:', data.data);
-      return data.data;
-    } catch (error) {
-      console.error('DansMaZone: Erreur API librairies:', error);
-      return null;
-    }
+    return await fetchBookPriceAPI('Les Libraires', isbn);
   }
 
   /**
@@ -290,20 +277,17 @@ if (window.dansMaZoneLoaded) {
     const sidebar = document.querySelector('.dmz-sidebar');
     if (!sidebar) return;
 
-    // Chercher le bouton "Les Libraires" (nom exact du default-sites.json)
     const librariesButton = Array.from(sidebar.querySelectorAll('.dmz-sidebar-button'))
       .find(button => button.textContent.includes('Les Libraires'));
 
     if (librariesButton) {
-      // Mettre à jour l'URL vers la page directe du livre
-      librariesButton.href = bookUrl;
-      librariesButton.onclick = (e) => {
-        e.preventDefault();
-        window.open(bookUrl, '_blank');
-        return false;
-      };
-
-      // Ajouter le prix
+      // Supprimer tous les gestionnaires d'événements existants
+      const cleanButton = librariesButton.cloneNode(false); // Clone sans enfants
+      
+      // Recréer le contenu
+      const siteName = document.createElement('span');
+      siteName.textContent = 'Les Libraires';
+      
       const priceElement = document.createElement('span');
       priceElement.className = 'dmz-price';
       priceElement.textContent = ` - ${price.toFixed(2)} $`;
@@ -313,10 +297,25 @@ if (window.dansMaZoneLoaded) {
         font-size: 12px;
       `;
       
-      librariesButton.appendChild(priceElement);
+      cleanButton.appendChild(siteName);
+      cleanButton.appendChild(priceElement);
+      
+      // Configurer le nouveau bouton
+      cleanButton.href = bookUrl;
+      cleanButton.target = "_blank";
+      cleanButton.classList.add('dmz-sidebar-button');
+      
+      // Ajouter UN SEUL gestionnaire d'événements
+      cleanButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.open(bookUrl, '_blank');
+        return false;
+      });
+      
+      // Remplacer l'ancien bouton
+      librariesButton.parentNode.replaceChild(cleanButton, librariesButton);
+      
       console.log('DansMaZone: Prix ajouté à la sidebar:', price);
-    } else {
-      console.log('DansMaZone: Bouton "Les Libraires" non trouvé dans la sidebar');
     }
   }
 
@@ -466,11 +465,17 @@ if (window.dansMaZoneLoaded) {
         console.log('DansMaZone: Sidebar added to the page with', sites.length, 'sites');
         
         // Si c'est un livre avec ISBN, récupérer le prix chez Les Libraires après création de la sidebar
-        if (detectedCategory === 'Livres' && /^\d{10}$|^\d{13}$/.test(searchTerm)) {
+        if (detectedCategory === 'Livres' && /^(\d{10}|\d{13})$/.test(searchTerm)) {
+          console.log('DansMaZone: Tentative de récupération du prix pour ISBN:', searchTerm);
           fetchBookPrice(searchTerm).then(bookData => {
+            console.log('DansMaZone: Réponse API prix:', bookData);
             if (bookData && bookData.available) {
               addPriceToSidebar(bookData.price, bookData.url);
+            } else {
+              console.log('DansMaZone: Pas de prix disponible ou livre non disponible');
             }
+          }).catch(error => {
+            console.error('DansMaZone: Erreur lors de la récupération du prix:', error);
           });
         }
       } else {

@@ -1,165 +1,167 @@
 // Styles pour le bandeau vertical modernisé
 .dmz-sidebar {
-  position: fixed;
-  top: 200px;
-  right: 0;
-  width: 60px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-right: none;
-  border-radius: 20px 0 0 8px;
-  box-shadow: -3px 3px 10px rgba(0, 0, 0, 0.1);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: width 0.3s ease;
-  
-  // En-tête avec seulement l'icône visible initialement
-  .dmz-sidebar-header {
-    padding: 12px;
-    background-color: #ffffff;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    min-height: 40px;
-    
-    img {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      background-color: white;
-      padding: 3px;
-      flex-shrink: 0;
-    }
-    
-    span {
-      white-space: nowrap;
-      font-size: 1rem;
-      margin-left: 10px;
-      color: rgb(229, 11, 10);
-      opacity: 0;
-      transform: translateX(-20px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      overflow: hidden;
-    }
-  }
-  
-  // Styles pour l'élément d'information sur la catégorie
-  .dmz-category-info {
-    padding: 6px 12px;  // Moins haut que les boutons normaux
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    span {
-      font-style: italic;
-      color: #444;  // Gris foncé
-      font-size: 12px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      opacity: 0;  // Initialement invisible
-      transform: translateX(-20px);  // Animation cohérente avec le titre
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-  }
-  
-  // Conteneur pour les boutons
-  .dmz-sidebar-content {
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    max-height: 0;
-    overflow: hidden;
-  }
-  
-  // Style des boutons
-  .dmz-sidebar-button {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    text-decoration: none;
-    color: #333;
-    border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.2s;
-    background-color: white;
-    
-    &:hover {
-      background-color: #f8f8f8;
-    }
-    
-    img {
-      width: 24px;
-      height: 24px;
-      margin-right: 12px;
-      flex-shrink: 0;
-    }
-    
-    span {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-size: 13px;
-    }
-    
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-  
-  // Styles spécifiques pour le bouton d'options
-  .dmz-options-button {
-    margin-top: auto;
-    background-color: #f8f8f8;
-    border-top: 1px solid #e0e0e0;
-    
-    &:hover {
-      background-color: #e8e8e8;
-    }
-    
-    span {
-      display: flex;
-      align-items: center;
-    }
-    
-    span:before {
-      content: "⚙️";
-      font-size: 16px;
-      margin-right: 10px;
-    }
-  }
-  
-  // Effet de déplacement au survol - une seule définition regroupée
-  &:hover {
-    width: 220px;
-    
-    .dmz-sidebar-header span,
-    .dmz-category-info span {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    
-    .dmz-sidebar-content {
-      max-height: 500px;
-      opacity: 1;
-    }
-  }
-}
-
-.dmz-price {
-  color: #28a745 !important;
-  font-weight: bold;
-  font-size: 12px;
-  margin-left: 8px;
-}
-
-.dmz-sidebar-button:hover .dmz-price {
-  color: #fff !important;
+ position: fixed;
+ top: 200px;
+ right: 0;
+ width: 60px;
+ background-color: #ffffff;
+ border: 1px solid #e0e0e0;
+ border-right: none;
+ border-radius: 20px 0 0 8px;
+ box-shadow: -3px 3px 10px rgba(0, 0, 0, 0.1);
+ z-index: 9999;
+ display: flex;
+ flex-direction: column;
+ overflow: hidden;
+ transition: width 0.3s ease;
+ 
+ // En-tête avec seulement l'icône visible initialement
+ .dmz-sidebar-header {
+   padding: 12px;
+   background-color: #ffffff;
+   display: flex;
+   align-items: center;
+   border-bottom: 1px solid #e0e0e0;
+   min-height: 40px;
+   
+   img {
+     width: 36px;
+     height: 36px;
+     border-radius: 50%;
+     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+     background-color: white;
+     padding: 3px;
+     flex-shrink: 0;
+   }
+   
+   span {
+     white-space: nowrap;
+     font-size: 1rem;
+     margin-left: 10px;
+     color: rgb(229, 11, 10);
+     opacity: 0;
+     transform: translateX(-20px);
+     transition: opacity 0.3s ease, transform 0.3s ease;
+     overflow: hidden;
+   }
+ }
+ 
+ // Styles pour l'élément d'information sur la catégorie
+ .dmz-category-info {
+   padding: 6px 12px;  // Moins haut que les boutons normaux
+   background-color: #f8f8f8;
+   border-bottom: 1px solid #e0e0e0;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   
+   span {
+     font-style: italic;
+     color: #444;  // Gris foncé
+     font-size: 12px;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     opacity: 0;  // Initialement invisible
+     transform: translateX(-20px);  // Animation cohérente avec le titre
+     transition: opacity 0.3s ease, transform 0.3s ease;
+   }
+ }
+ 
+ // Conteneur pour les boutons
+ .dmz-sidebar-content {
+   display: flex;
+   flex-direction: column;
+   opacity: 0;
+   transition: max-height 0.3s ease, opacity 0.3s ease;
+   max-height: 0;
+   overflow: hidden;
+ }
+ 
+ // Style des boutons
+ .dmz-sidebar-button {
+   display: flex;
+   align-items: center;
+   padding: 12px;
+   text-decoration: none;
+   color: #333;
+   border-bottom: 1px solid #f0f0f0;
+   transition: background-color 0.2s;
+   background-color: white;
+   
+   &:hover {
+     background-color: #f8f8f8;
+   }
+   
+   img {
+     width: 24px;
+     height: 24px;
+     margin-right: 12px;
+     flex-shrink: 0;
+   }
+   
+   span {
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     font-size: 13px;
+   }
+   
+   &:last-child {
+     border-bottom: none;
+   }
+   
+   // Styles pour le prix
+   .dmz-price {
+     color: #28a745;
+     font-weight: bold;
+     font-size: 12px;
+     margin-left: 8px;
+   }
+   
+   // Garder la couleur verte du prix au survol
+   &:hover .dmz-price {
+     color: #28a745;
+   }
+ }
+ 
+ // Styles spécifiques pour le bouton d'options
+ .dmz-options-button {
+   margin-top: auto;
+   background-color: #f8f8f8;
+   border-top: 1px solid #e0e0e0;
+   
+   &:hover {
+     background-color: #e8e8e8;
+   }
+   
+   span {
+     display: flex;
+     align-items: center;
+   }
+   
+   span:before {
+     content: "⚙️";
+     font-size: 16px;
+     margin-right: 10px;
+   }
+ }
+ 
+ // Effet de déplacement au survol - une seule définition regroupée
+ &:hover {
+   width: 220px;
+   
+   .dmz-sidebar-header span,
+   .dmz-category-info span {
+     opacity: 1;
+     transform: translateX(0);
+   }
+   
+   .dmz-sidebar-content {
+     max-height: 500px;
+     opacity: 1;
+   }
+ }
 }
 
 // Cache les éléments Amazon non nécessaires
@@ -174,5 +176,5 @@
 #availability,
 #selectQuantity,
 #fast-track {
-  display: none !important;
+ display: none !important;
 }
